@@ -1,5 +1,28 @@
 # Vizualizacni portal
 **To Do**
+### konec října
+* Tvorba uživatelského rozhraní
+* Návrh struktury API pro komunikaci mezi frontend a backend, komunikace zajištěna protokolem HTTP.
+
+### polovina Listopad
+* uživatelská administrace (přihlášení, registrace, změna hesla). 
+* ukládání dat NoSQL databázi MongoDB.
+
+### polovina prosince
+* animace
+* šifrovaná hesla
+
+### polovina ledna 
+* Výpis historie změn 
+* návod na použití webu. 
+
+### konec unora
+* administrace zařízení (přidat, spravovat). 
+* data zobrazena pomocí grafů
+
+### konec března
+* Dokumentace DMP
+
 ## login 
 **have an option to login with**
 **nickname + password** (Google, Github, Discord)
