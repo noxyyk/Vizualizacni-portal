@@ -18,4 +18,4 @@ app.get('/login', async function(req, res) {
   })
 
 app.use(express.static(__dirname + "/public"));
-app.listen(8080);
+app.listen(8080)
