@@ -1,7 +1,6 @@
 //start the website
 const express = require("express")
 const app = express()
-let PORT = 8080
 var logintest = {name:"Noxyyk", password:"Noxyyk"};
 
 /* REQUESTS*/
@@ -19,4 +18,4 @@ app.get('/login', async function(req, res) {
   })
 
 app.use(express.static(__dirname + "/public"));
-app.listen(PORT)
+app.listen(8080)
