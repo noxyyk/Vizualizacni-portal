@@ -1,4 +1,12 @@
 ## Change Log
+**7.10.2022**
+* Working Login TEST
+* Made communication with frontend to backend
+* deployed website using railway (runs on backend)
+* removed vercel
+
+**1.10.2022**
+* Added sweetalerts
 
 **28.9.2022**
 * make buttons work
