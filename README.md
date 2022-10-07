@@ -1,5 +1,6 @@
 # Vizualizacni portal
 **To Do**
+
 ## login 
 **have an option to login with**
 **nickname + password** (Google, Github, Discord)
