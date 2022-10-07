@@ -1,6 +1,22 @@
 //start the website
 const express = require("express")
 const app = express()
+let PORT = 8080
+var logintest = {name:"Noxyyk", password:"Noxyyk"};
+
+/* REQUESTS*/
+app.get('/login', async function(req, res) {
+    res.header("Content-Type", 'application/json');   
+    if(logintest.name == req.headers.username){ //check if name exists
+      if (req.headers.password == logintest.password) { //check if password matches db
+      res.send({valid: true}); //return a valid credencials 
+        var user = req.headers.username
+        return
+  
+    }
+    }
+    res.send({valid: false});//return an invalid credencials 
+  })
 
 app.use(express.static(__dirname + "/public"));
-app.listen(8080)
+app.listen(PORT)
