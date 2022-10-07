@@ -17,6 +17,6 @@ app.get('/login', async function(req, res) {
     res.send({valid: false});//return an invalid credencials 
   })
 
-app.use(express.static(__dirname + "/public"));¨
+app.use(express.static(__dirname + "/public"));
 const PORT = 5000
 app.listen(process.env.PORT || PORT);
