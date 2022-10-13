@@ -1,4 +1,9 @@
 ## Change Log
+**13.10.2022**
+* Switched GET to POST request
+* Save login inside local variable
+* Updated logOut and logIn functions
+
 **7.10.2022**
 * Working Login TEST
 * Made communication with frontend to backend

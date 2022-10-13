@@ -3,20 +3,23 @@
 
 
 <head>
-  <header>
-    <p><h2>Vizualizační IoT portál</h2></p>
- </header>
   <meta charset="utf-8"> <!--Define UTF-8 Characters-->
   <meta name="viewport" content="width=device-width">
   <title>IoT portál</title>
   <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
-  <script src="script.js"></script>
+  <link rel="icon" type="image/x-icon" href="./images/logo.png">
 </head>
 
 <body> 
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<header>
+  <div class="name_text"><h1>Vizualizační Portál</h1></div>
+  <div class="logo"><img src="./images/logo.png" width="80px";></div>
+  <h5><div class="welcome"><div id="login_welcome"></div></h5> 
+</header>
 
   <div class="navigation">
     <ul>
@@ -83,6 +86,7 @@
   <footer>
     <p>® 2022 - Noxyyk</p>
   </footer>
+  <script src="script.js"></script>
 </body>
 
 </html>

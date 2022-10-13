@@ -19,6 +19,7 @@ footer {
     }
 header {
   background-color: rgb(255, 255, 255);
+  position: fixed;
   text-align: center;
   color: black;
   position: fixed;
@@ -26,18 +27,66 @@ header {
   left:0; 
   width: 100%;
   height: 60px;
+  
+}
+
+.logo{
+  pointer-events: none;
+  background-color: rgb(255, 255, 255);
+  position: fixed;
+  display: flex;
+  width: 100px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+}
+.logo_text{
+
+  font-size: 13px;
+  position: fixed;
+  display: flex;
+  left: 110px;
+  justify-content: center;
+  align-items: center;
 }
 article{
   padding:70px;
   
 }
-h2{
+/*h2{
   text-decoration-line: underline;
   letter-spacing: 1px;
+}*/
+.logo{
+  pointer-events: none;
+  background-color: rgb(255, 255, 255);
+  position: fixed;
+  display: flex;
+  width: 100px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
 }
+.name_text{
+      
+  font-size: 13px;
+  position: fixed;
+  display: flex;
+  left: 110px;
+  justify-content: center;
+  align-items: center;
+}
+.welcome{
+  color: black;
+  position: fixed;
+   top: 20px;
+  right: 250px;
+  }
 .navigation {
   float: left;
-  left: 300px;
+  left: 400px;
   padding: 14px 16px;
   width: 350px;
   height: 50px;
