@@ -25,4 +25,4 @@ app.post('/login', async function(req, res) {
 
 app.use(express.static(__dirname + "/public"));
 
-app.listen(PORT);
+app.listen(process.env.PORT || PORT);
