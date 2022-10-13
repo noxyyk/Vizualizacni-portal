@@ -1,5 +1,6 @@
 ## Change Log
 **13.10.2022**
+* Added logo
 * Switched GET to POST request
 * Save login inside local variable
 * Updated logOut and logIn functions
