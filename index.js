@@ -16,7 +16,7 @@ var logintest = {name:"Noxyyk", password:"Noxyyk"};
 /* REQUESTS*/
 app.post('/login', async function(req, res) {
     res.header("Content-Type", 'application/json');   
-    if(logintest.name == req.headers.username && req.headers.password == logintest.password){ //check if name and password exists
+    if(logintest.name == req.body.username && req.body.password == logintest.password){ //check if name and password exists
       res.send({valid: true}); //return a valid credencials 
     }else{
     res.send({valid: false});//return an invalid credencials 
