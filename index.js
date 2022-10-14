@@ -16,6 +16,7 @@ var logintest = {name:"Noxyyk", password:"Noxyyk"};
 /* REQUESTS*/
 app.post('/login', async function(req, res) {
     res.header("Content-Type", 'application/json');   
+
     if(logintest.name == req.body.username && req.body.password == logintest.password){ //check if name and password exists
       res.send({valid: true}); //return a valid credencials 
     }else{
@@ -25,4 +26,4 @@ app.post('/login', async function(req, res) {
 
 app.use(express.static(__dirname + "/public"));
 
-app.listen(process.env.PORT || PORT);
+app.listen(PORT);
