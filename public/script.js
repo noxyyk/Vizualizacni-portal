@@ -73,7 +73,7 @@ function Status(status) {
   
 }
 /* LOGIN */
-async function logInn() {
+async function logIn() {
   if (user !== null) {
     Swal.fire({
       position: 'top-end',
