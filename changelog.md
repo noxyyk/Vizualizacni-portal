@@ -1,4 +1,13 @@
 ## Change Log
+**16.10.2022**
+* Made interface optimal
+
+**15.10.2022**
+* Updated user interface, react to the screen size
+
+**14.10.2022**
+* Added response function
+
 **13.10.2022**
 * Added logo
 * Switched GET to POST request

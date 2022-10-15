@@ -1,6 +1,28 @@
 var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
   document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
+  document.getElementById('login_list').innerHTML = '<div class="login">' + 
+  '<ul>' +
+  '<li id="logout" onclick=logOut() class="list">'+
+  '<a>'+
+  '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>'+
+  '<span class="text">Log out</span>'+
+  '</a>'+
+  '</li>'+
+  '</ul>'+
+  '</div>';
+}else{
+  document.getElementById('login_list').innerHTML = '<div class="login">' + 
+  '<ul>' +
+  '<li id="login" onclick=logIn() class="list">' + 
+  '<a>' +
+  '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' +
+  '<span class="text">Log in</span>' +
+  '</a>' +
+  '</li>'+
+  '</ul>'+
+  '</div>';
+  
 }
 //Functions
 
@@ -51,7 +73,7 @@ function Status(status) {
   
 }
 /* LOGIN */
-async function logIn() {
+async function logInn() {
   if (user !== null) {
     Swal.fire({
       position: 'top-end',
