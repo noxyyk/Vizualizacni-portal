@@ -1,4 +1,7 @@
 ## Change Log
+**19.10.2022**
+* Fixed overlaping of article
+
 **16.10.2022**
 * Made interface optimal
 
