@@ -1,4 +1,7 @@
 ## Change Log
+**20.10.2022**
+* Changed color
+
 **19.10.2022**
 * Fixed overlaping of article
 
