@@ -19,6 +19,29 @@ small pop up window to README.MD on github to get started (maybe)
 ## about me 
 have an image, description of 1. this project, how it went
 ## footer
-link to about ME
 link to manage devices
+help
+contact
+about us
+plans
+mobile app
+### Resources
+zdroje  
+
 ## pop up window with github
+## benefits
+add benefits to the main page with images
+## features
+plans
+* Free
+* Basic
+* Profesional
+* Trial of basic plan 1 week
+## on small width screen
+pop up to download an app
+button to dismis
+picture with screen on phone and pc
+
+## To do
+Use SVG images to optimize images for different screen sizes
+Add a meta description to the <head>

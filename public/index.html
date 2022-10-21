@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cz">
 
 
 <head>
   <meta charset="utf-8"> <!--Define UTF-8 Characters-->
   <meta name="viewport" content="width=device-width">
-  <title>IoT portal</title>
+  <title>Vizualizační Portál</title>
   <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
   <link rel="icon" type="image/x-icon" href="./images/logo.png">
 </head>
 
 <body> 
 <header>
-  <div class="name_text"><h1>Visualization Portal</h1></div>
+  <div class="name_text"><h1>Vizualizační Portál</h1></div>
   <div class="logo"><img src="./images/logo.png" width="80px";></div>
   <h5><div class="welcome"><div id="login_welcome"></div></h5> 
 </header>
@@ -21,25 +21,25 @@
       <li class="list">
           <a href="./index.html">
               <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
-              <span class="text">Home</span>
+              <span class="text">Domů</span>
           </a>
       </li>
       <li class="list" onclick=ChangeLog()>
           <a>
               <span class="icon"><ion-icon name="code-slash-outline"></ion-icon></span>
-              <span class="text">Changelog</span> 
+              <span class="text">Změny</span> 
           </a>
       </li>
       <li class="list">
           <a href="#setup">
               <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
-              <span class="text">Get started</span>
+              <span class="text">Zařízení</span>
           </a>
       </li>
       <li class="list">
           <a href="#about">
               <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
-              <span class="text">About</span>
+              <span class="text">O projektu</span>
           </a>
       </li>
   </ul>
@@ -50,34 +50,42 @@
     <div class="dropdown-content">
       <a href="./index.html">
         <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
-        <span class="text">Home</span>
+        <span class="text">Domů</span>
     </a>
       <a onclick=ChangeLog()>
         <span class="icon"><ion-icon name="code-slash-outline"></ion-icon></span>
-                <span class="text">Changelog</span> 
+                <span class="text">Změny</span> 
             </a>
             <a href="#setup">
               <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
-              <span class="text">Get started</span>
+              <span class="text">Zařízení</span>
           </a>
           <a href="#about">
             <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
-            <span class="text">About</span>
+            <span class="text">O projektu</span>
         </a>
     </div>
   </div>
-  <setup id="setup">
+  <description>
+    <div class="title"><b>Vizualizace pro vaše data</b></div>
+    <p>Tento portál slouží pro zobrazení a následné zpracování dat do grafů. <br>Pomůcka pro studenty Internetu Věcí. </p>
+    <div style="text-align: center;position: relative;top: -5px;"> <button type="button" onclick="alert('Hello world!')">Začít!</button></div>
+  </description>
+
+
+  
+  <about id="about">
     <article> 
-        <h2>Getting started</h2> 
+        <h2>O projektu</h2> 
+        <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
+     </article>
+  </about>
+     <setup id="setup">
+     <article>
+        <h2>Zařízení</h2> 
         <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
      </article>
     </setup>
-     <about id="about">
-     <article>
-        <h2>About</h2> 
-        <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
-     </article>
-    </about>
   <footer>
     <p>® 2022 - Tomáš Setunský 4. P</p>
   </footer>

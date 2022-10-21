@@ -6,7 +6,7 @@ if (user !== null) {
   '<li id="logout" onclick=logOut() class="list">'+
   '<a>'+
   '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>'+
-  '<span class="text">Log out</span>'+
+  '<span class="text">Odhlášení</span>'+
   '</a>'+
   '</li>'+
   '</ul>'+
@@ -17,7 +17,7 @@ if (user !== null) {
   '<li id="login" onclick=logIn() class="list">' + 
   '<a>' +
   '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' +
-  '<span class="text">Log in</span>' +
+  '<span class="text">Přihlášení</span>' +
   '</a>' +
   '</li>'+
   '</ul>'+
