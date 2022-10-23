@@ -1,5 +1,6 @@
 ## Change Log
 **23.10.2022**
+* upraveno odhlášení
 * změněny div do lepší podoby, místo posouvání pixelů
 * nastavena maximální velikost
 * zpraven footer

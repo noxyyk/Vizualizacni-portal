@@ -1,4 +1,7 @@
 var user = localStorage.getItem("user"); //load logged user from local storage
+login_btn();
+function login_btn(){
+  var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
   document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
   document.getElementById('login_list').innerHTML = '<div class="login">' + 
@@ -23,6 +26,7 @@ if (user !== null) {
   '</ul>'+
   '</div>';
   
+}
 }
 //Functions
 
@@ -74,17 +78,6 @@ function Status(status) {
 }
 /* LOGIN */
 async function logIn() {
-  if (user !== null) {
-    Swal.fire({
-      position: 'top-end',
-      icon: 'warning',
-      toast: true,
-      text: 'You are already logged in!',
-      showConfirmButton: false,
-      timer: 2000
-    })
-    return
-  }
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
@@ -119,6 +112,8 @@ async function logIn() {
           if (json.valid == true) {
             localStorage.setItem("user", login.name);
             document.getElementById('login_welcome').innerHTML = "Welcome " + login.name;//send a welcome message
+            user = localStorage.getItem("user");
+            login_btn();
             Swal.fire({ //match
               toast: true,
               timerProgressBar: true,
@@ -152,11 +147,9 @@ async function logIn() {
 
 /* LOGOUT*/
 async function logOut() {
-  user = localStorage.getItem("user");
-
-  if (user !== null) {
     localStorage.removeItem("user");
-
+    document.getElementById('login_welcome').innerHTML = "" 
+    login_btn();
     Swal.fire({ //match
       position: 'top-end',
       icon: 'info',
@@ -165,19 +158,8 @@ async function logOut() {
       showConfirmButton: false,
       timer: 3000
     })
-    setTimeout(function() {
+    /*setTimeout(function() {
 
       window.location = window.location.href;
-    }, 3500);
-
-  } else {
-    Swal.fire({
-      icon: 'error',
-      toast: true,
-      position: 'top-end',
-      title: 'You aren´t logged in!',
-      showConfirmButton: false,
-      timer: 3000
-    })
-  }
+    }, 3500);*/
 }
