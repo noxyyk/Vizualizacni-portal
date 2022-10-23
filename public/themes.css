@@ -6,7 +6,7 @@
     --footer_clr: #fff;
     --article_bg: #96F8B7;
     --article_border: 4px solid #fff;
-    --article_border_radius: 6vmin;
+    --article_border_radius: 40px;
     --article_left: 5%;
     --article_padding: 0 10px;
     --header_clr: #fff;
@@ -15,84 +15,75 @@
   html, body {
     background-color: var(--background_clr);
     font-family: "Poppins", sans-serif;
+    padding-bottom: 110px; 
     
   }
-  footer {
+  .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 60px;  
     background-color: var(--footer_bg);
     text-align: center;
     color: var(--footer_clr);
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
       }
-  header {
-    background-color: var(--header_clr);
-    position: fixed;
-    top:0;
-    left:0; 
-    width: 100%;
-    height: 60px;
-    z-index: 1;
-    
+.header{
+  background-color: var(--header_clr);
+  position: fixed;
+  width: 100%;
+  height: 60px;
+  top: 0;
+  left: 0px;
+  z-index: 1;
+}
+  .articles{
+    align-items: center;
+    display: flex;
+    justify-content: center;
   }
-  description{
+  .article h2{
+    text-align: center
+  }
+  .article p{
+    padding: 5px;
+  }
+  .article{
     display: inline-block;
     position: relative;
     background-color: var(--article_bg);
     border-radius: var(--article_border_radius);
     border: var(--article_border);
-    top: 100px;
-    left: var(--article_left);
-    width: 90%;
+    top: 120px;
     word-wrap:break-word;
     padding: var(--article_padding);
-    height: 150px;
+    width: 45%;
+    max-width: 1000px;
   }
-  description .title{
-    text-align: center;
-    position: relative;
-    top: 10px;
-    font-size: large;
+  .article:first-child{
+    margin-right: 10px;
   }
-  description button{
+  .article:last-child{
+    margin-left: 10px;
+  }
+ .article button{
     background-color: var(--button_clr);
     border: var(--article_border);
     border-radius: var(--article_border_radius);
     width: 100px;
     height: 40px;
   }
-  article{
-    border: var(--article_border);
-    border-radius: var(--article_border_radius);
-    z-index: 0;
-    position: relative;
-    width: 42vw;
-    top: 120px;
-    padding: var(--article_padding);
-    left: var(--article_left);
-    background-color: var(--article_bg);
-  }
-  article h2{
-    text-align: center;
-  }
-  setup article{
-    position:relative; 
-    top: -254px;
-    left: 50.7vw;
-  }
-
-  .logo{
-    pointer-events: none;
-    background-color: var(--header_clr);
-    position: fixed;
-    display: flex;
-    width: 100px;
-    height: 100px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50px;
-  }
+.logo{
+  pointer-events: none;
+  background-color: var(--header_clr);
+  display: flex;
+  width: 100px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+}
   .name_text{
     font-size: 11px;
     position: fixed;
@@ -207,7 +198,7 @@
   .dropdown{
     opacity: 0;
   }
-  @media only screen and (max-width: 870px) {
+  @media only screen and (max-width: 900px) {
     description{
       width: 88%;
     }
@@ -220,34 +211,33 @@
       left: var(--article_left);
     }
   @media only screen and (max-width: 720px) {
-  .navigation{
-    top: -7px;
-    left: 50vw;
-    background: none;
-  }
+    .article{
+      width: 90%;
+    }
+    .articles{
+      flex-direction: column;
+      
+    }
+    .article:first-child{
+      margin-right: 0px;
+    
+    }
+    .article:last-child{
+      margin-top: 20px;
+      margin-left: 0px;
+    }
+    .article .setup{
+      top: 20px;
+    }
 
-  .welcome{
-    display: none;
-  }
-  @media only screen and (max-width: 640px) {
-  .name_text{
-    font-size: 1.5vw;
-    top: 5px;
-  }
-  .navigation ul li{
-    width: 40px;
-    left: -30%;
-    display: inline-block;
-  }
-  @media only screen and (max-width: 530px) {
-    html{
-      height: 200%
-    }
+      .welcome{
+        display: none;
+      }
     .name_text{
-      font-size: 1.7vw;
-      top: 11px;
+      font-size: 9px;
+      top: 5px;
     }
-    .navigation ul li{
+    .navigation{
       display:none;
       
     }
@@ -308,8 +298,6 @@
         }
       }
 
-  }
-  }
   }
   }
   } 

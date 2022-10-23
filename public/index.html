@@ -11,11 +11,10 @@
 </head>
 
 <body> 
-<header>
+<div class="header">
   <div class="name_text"><h1>Vizualizační Portál</h1></div>
   <div class="logo"><img src="./images/logo.png" width="80px";></div>
-  <h5><div class="welcome"><div id="login_welcome"></div></h5> 
-</header>
+  <h5><div class="welcome"><div id="login_welcome"></div></h5>
   <div class="navigation">
     <ul>
       <li class="list">
@@ -66,29 +65,28 @@
         </a>
     </div>
   </div>
-  <description>
-    <div class="title"><b>Vizualizace pro vaše data</b></div>
+</div> 
+<div class="articles">
+  <div class="article">
+    <h2>Vizualizace pro vaše data</h2>
     <p>Tento portál slouží pro zobrazení a následné zpracování dat do grafů. <br>Pomůcka pro studenty Internetu Věcí. </p>
     <div style="text-align: center;position: relative;top: -5px;"> <button type="button" onclick="alert('Hello world!')">Začít!</button></div>
-  </description>
+  </div>
+</div>
 
-
-  
-  <about id="about">
-    <article> 
-        <h2>O projektu</h2> 
+  <div class="articles">
+    <div class="article" id="about" style="position: relative;top: 140px;">
+      <h2>O projektu</h2> 
         <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
-     </article>
-  </about>
-     <setup id="setup">
-     <article>
-        <h2>Zařízení</h2> 
-        <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
-     </article>
-    </setup>
-  <footer>
-    <p>® 2022 - Tomáš Setunský 4. P</p>
-  </footer>
+    </div>
+    <div class="article" id="setup" style="position: relative;top: 140px;">
+      <h2>Zařízen</h2> 
+      <p>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum<br>Lorem ipsum</p>
+    </div>
+  </div>
+  <div class="footer">
+    <p>® 2022 T.S. 4. P</p>
+  </div>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>  

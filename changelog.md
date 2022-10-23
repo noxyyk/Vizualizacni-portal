@@ -1,45 +1,52 @@
 ## Change Log
+**23.10.2022**
+* změněny div do lepší podoby, místo posouvání pixelů
+* nastavena maximální velikost
+* zpraven footer
+* dropdown se bude zobrazovat dřív
+
 **20.10.2022**
-* Changed color
+* změna barev
 
 **19.10.2022**
-* Fixed overlaping of article
+* Opraveno překrývání článku
+* zobrazit pouze přihlášení NEBO odhlášení
 
 **16.10.2022**
-* Made interface optimal
+* Optimální rozhraní
 
 **15.10.2022**
-* Updated user interface, react to the screen size
+* Aktualizováno uživatelské rozhraní, reagovat na velikost obrazovky
 
 **14.10.2022**
-* Added response function
+* pčidaná response funkce
 
 **13.10.2022**
-* Added logo
-* Switched GET to POST request
-* Save login inside local variable
-* Updated logOut and logIn functions
+* Přidáno logo
+* Přepnuto na požadavek z GET na POST
+* Uložit přihlášení do lokální proměnné
+* Aktualizované funkce odhlášení a přihlášení
 
 **7.10.2022**
-* Working Login TEST
-* Made communication with frontend to backend
-* deployed website using railway (runs on backend)
-* removed vercel
+* TEST fungujícího přihlášení
+* Provedena komunikace mezi frontendem a backendem
+* spuštěný web pomocí railway.app
+* odstraněn vercel
 
 **1.10.2022**
-* Added sweetalerts
+* přidáno sweetalerts
 
 **28.9.2022**
-* make buttons work
-* added styles and icons to the buttons and translation on hover
-* added navigation bar with buttons 1.(home, changelog,#setup,#about), 2.(login, logout)
-* font changed to Poppins, sans-serif
+* tlačítka fungují
+* přidány styly a ikony k tlačítkům a animace při najetí myší
+* přidána navigační lišta s tlačítky 1.(domů, changelog,#setup,#about), 2.(přihlášení, odhlášení)
+* písmo změněno na Poppins, sans-serif
   
 **27.9.2022**
-* Added Change log
-* Added footer
-* Added Header
+* Přidán seznam změn 
+* Přidáno zápatí 
+* Přidáno záhlaví
 
 **26.9.2022**
-* deployed website using vercel
-* Created website
+* spuštěny webové stránky pomocí vercel 
+* Vytvoření webových stránek
