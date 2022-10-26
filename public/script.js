@@ -3,6 +3,7 @@ login_btn();
 function login_btn(){
   var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
+  document.getElementById('html').innerHTML = "";
   document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
   document.getElementById('login_list').innerHTML = '<div class="login">' + 
   '<ul>' +
