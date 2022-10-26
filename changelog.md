@@ -1,4 +1,8 @@
 ## Change Log
+*26.10.2022*
+* přidán device stránka
+* dokumentace k API https://app.swaggerhub.com/apis-docs/noxyyk/login/1.0#/default/post_login
+
 **23.10.2022**
 * upraveno odhlášení
 * změněny div do lepší podoby, místo posouvání pixelů
