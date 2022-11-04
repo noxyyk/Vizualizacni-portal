@@ -3,7 +3,6 @@ login_btn();
 function login_btn(){
   var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
-  document.getElementById('html').innerHTML = "";
   document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
   document.getElementById('login_list').innerHTML = '<div class="login">' + 
   '<ul>' +
@@ -164,3 +163,60 @@ async function logOut() {
       window.location = window.location.href;
     }, 3500);*/
 }
+
+//registration
+
+async function register() {
+  const { value: formValues } = await Swal.fire({
+title: 'Register',
+html:
+  '<input id="register_name" placeholder="Nickname" class="swal2-input">' +
+  '<form><input id="register_pswrd" type="password" autocomplete="on" placeholder="Password" class="swal2-input"></form>',
+focusConfirm: false,
+showCancelButton: true,
+footer: '<a href="#" onclick="logIn();">Already registered? </a>',
+preConfirm: () => {
+  return [
+    document.getElementById('register_name').value,
+    document.getElementById('register_pswrd').value
+         ]
+}
+})
+let register = {name: document.getElementById('register_name').value, password: document.getElementById('register_pswrd').value}; // make an object register with values
+if (formValues) {
+requestOptions = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    'username': register.name,
+    'password': register.password
+  })
+};
+fetch(`/register`, requestOptions) //fetch data from request
+  .then(result => result.json()
+    .then(json => { console.log("response: ", Status(result.status), "Registered: ", json.valid);
+
+    if(json.valid == true){
+Swal.fire({ //match
+position: 'top-end',
+icon: 'success',
+text: 'successfully registered as ' + register.name + ' you can now login',
+footer: '<a href="#" onclick="login();">Click to Login </a>',
+showConfirmButton: false,
+confirmButtonText: 'Dismiss',
+timer: 5000
+})
+  }else{ //name already exists
+  Swal.fire({
+position: 'top-end',
+icon: 'warning',
+text: json.valid,
+footer: '<a href="#" onclick="login();">Already registered? </a>',
+confirmButtonText: 'Dismiss',
+timer: 5000
+})
+
+
+} })) }}
