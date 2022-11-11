@@ -3,7 +3,7 @@ login_btn();
 function login_btn(){
   var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
-  document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
+  document.getElementById('login_welcome').innerHTML = "Vítej " + user;//send a welcome message
   document.getElementById('login_list').innerHTML = '<div class="login">' + 
   '<ul>' +
   '<li id="logout" onclick=logOut() class="list">'+
@@ -81,11 +81,11 @@ async function logIn() {
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
-      '<input id="login_name" placeholder="Nickname" class="swal2-input">' +
-      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Password" class="swal2-input"></form>',
+      '<input id="login_name" placeholder="Jméno" class="swal2-input">' +
+      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
     focusConfirm: false,
     showCancelButton: true,
-    footer: '<a href="#" onclick="register();">Not registered? </a>',
+    footer: '<a href="#" onclick="register();">Nejste registrováni? </a>',
     preConfirm: () => {
       return [
         document.getElementById('login_name').value,
@@ -111,7 +111,7 @@ async function logIn() {
 
           if (json.valid == true) {
             localStorage.setItem("user", login.name);
-            document.getElementById('login_welcome').innerHTML = "Welcome " + login.name;//send a welcome message
+            document.getElementById('login_welcome').innerHTML = "Vítej " + login.name;//send a welcome message
             user = localStorage.getItem("user");
             login_btn();
             Swal.fire({ //match
@@ -119,7 +119,7 @@ async function logIn() {
               timerProgressBar: true,
               position: 'top-end',
               icon: 'success',
-              title: 'logged in as ' + login.name,
+              title: 'přihlášen jako ' + login.name,
               showConfirmButton: false,
               timer: 3000,
 
@@ -131,8 +131,8 @@ async function logIn() {
               toast: true,
               showConfirmButton: false,
               icon: 'error',
-              title: 'Name or Password don´t match!',
-              footer: '<a href="#" onclick="register();">Not registered? </a>',
+              title: 'Jméno nebo heslo je nesprávně!',
+              footer: '<a href="#" onclick="register();">nejste registrováni? </a>',
               timer: 5000,
               didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -154,7 +154,7 @@ async function logOut() {
       position: 'top-end',
       icon: 'info',
       toast: true,
-      text: 'You have been logged out',
+      text: 'Byly jste odhlášeni',
       showConfirmButton: false,
       timer: 3000
     })
@@ -167,23 +167,36 @@ async function logOut() {
 //registration
 
 async function register() {
-  const { value: formValues } = await Swal.fire({
-title: 'Register',
-html:
-  '<input id="register_name" placeholder="Nickname" class="swal2-input">' +
-  '<form><input id="register_pswrd" type="password" autocomplete="on" placeholder="Password" class="swal2-input"></form>',
-focusConfirm: false,
-showCancelButton: true,
-footer: '<a href="#" onclick="logIn();">Already registered? </a>',
-preConfirm: () => {
-  return [
-    document.getElementById('register_name').value,
-    document.getElementById('register_pswrd').value
-         ]
-}
-})
-let register = {name: document.getElementById('register_name').value, password: document.getElementById('register_pswrd').value}; // make an object register with values
-if (formValues) {
+  const { value: password } = await Swal.fire({
+    title: 'Registrace',
+    html:'<input id="register_name" placeholder="Jméno" class="swal2-input">',
+    input: 'password',
+    inputPlaceholder: 'Heslo',
+    showCancelButton: true,
+    footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
+    inputValidator: (value) => {
+      if (!value.match(/^.{8,}$/g)) {
+        return 'Alespoň 8 znaků'
+      }
+      if (!value.match(/[a-z]/g)) {
+        return 'Alespoň 1 malé písmeno'
+      }
+      if (!value.match(/[A-Z]/g)) {
+        return 'Alespoň 1 Velké písmeno'
+      }
+      if (!value.match(/\d/g)) {
+        return 'Alespoň 1 číslo'
+      }
+      if (value == document.getElementById('register_name').value){
+        return 'Heslo se nesmí shodovat s jménem' 
+      }
+    },
+    preConfirm: (value) => {
+      return  value
+    }
+  })
+let register = {name: document.getElementById('register_name').value, password: password}; // make an object register with values
+if (password) {
 requestOptions = {
   method: 'POST',
   headers: {
@@ -200,23 +213,29 @@ fetch(`/register`, requestOptions) //fetch data from request
 
     if(json.valid == true){
 Swal.fire({ //match
-position: 'top-end',
 icon: 'success',
-text: 'successfully registered as ' + register.name + ' you can now login',
-footer: '<a href="#" onclick="login();">Click to Login </a>',
+text: 'Úspěšně pregistrován jako ' + register.name + ' nyní se můžete přihlásit',
+footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
 showConfirmButton: false,
 confirmButtonText: 'Dismiss',
 timer: 5000
 })
   }else{ //name already exists
   Swal.fire({
-position: 'top-end',
-icon: 'warning',
-text: json.valid,
-footer: '<a href="#" onclick="login();">Already registered? </a>',
+icon: 'error',
+text: 'Jejda... uživatel s tímto jménem už existuje',
+footer: '<a href="#" onclick="login();">Už jste registrovaní? </a>',
 confirmButtonText: 'Dismiss',
 timer: 5000
 })
 
 
-} })) }}
+} })) }
+}
+function start(){
+  if(localStorage.getItem("user") == null){
+    logIn()
+  }else{
+    window.open("./zarizeni.html","_self");
+  }
+}
