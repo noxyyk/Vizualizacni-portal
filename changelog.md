@@ -2,7 +2,6 @@
 **13.11.2022**
 * Uživatel odhlášen po změně localStorage
 
-
 **10*11.2022**
 * Regex pro heslo
 * upravena zarizeni.html
