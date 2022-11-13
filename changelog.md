@@ -1,5 +1,8 @@
 ## Change Log
 **13.11.2022**
+* hotová registrace a přihlášení
+* šifrování pomocí HASH
+* vytvoření objektu při registraci
 * Uživatel odhlášen po změně localStorage
 
 **10*11.2022**
