@@ -7,7 +7,7 @@ const cors = require('cors');
 var path = require('path');
 fetch = import("node-fetch");
 // initialize database
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 let { DB } = require("mongquick");
 const db = new DB('mongodb+srv://Noxyyk:T4ir4t3xi3@rguis.zkcth.mongodb.net/uiotv?retryWrites=true&w=majority'/*process.env.MongoLogin*/);
 
