@@ -3,7 +3,8 @@ login_btn();
 function login_btn(){
   var user = localStorage.getItem("user"); //load logged user from local storage
 if (user !== null) {
-  document.getElementById('login_welcome').innerHTML = "Vítej " + user;//send a welcome message
+  document.getElementById('html').innerHTML = "";
+  document.getElementById('login_welcome').innerHTML = "Welcome " + user;//send a welcome message
   document.getElementById('login_list').innerHTML = '<div class="login">' + 
   '<ul>' +
   '<li id="logout" onclick=logOut() class="list">'+
@@ -81,11 +82,11 @@ async function logIn() {
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
-      '<input id="login_name" placeholder="Nickname" class="swal2-input">' +
-      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Password" class="swal2-input"></form>',
+      '<input id="login_name" placeholder="Jméno" class="swal2-input">' +
+      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
     focusConfirm: false,
     showCancelButton: true,
-    footer: '<a href="#" onclick="register();">Not registered? </a>',
+    footer: '<a href="#" onclick="register();">Nejste registrováni? </a>',
     preConfirm: () => {
       return [
         document.getElementById('login_name').value,
@@ -111,7 +112,7 @@ async function logIn() {
 
           if (json.valid == true) {
             localStorage.setItem("user", login.name);
-            document.getElementById('login_welcome').innerHTML = "Welcome " + login.name;//send a welcome message
+            document.getElementById('login_welcome').innerHTML = "Vítej " + login.name;//send a welcome message
             user = localStorage.getItem("user");
             login_btn();
             Swal.fire({ //match
@@ -119,7 +120,7 @@ async function logIn() {
               timerProgressBar: true,
               position: 'top-end',
               icon: 'success',
-              title: 'logged in as ' + login.name,
+              title: 'přihlášen jako ' + login.name,
               showConfirmButton: false,
               timer: 3000,
 
@@ -131,8 +132,8 @@ async function logIn() {
               toast: true,
               showConfirmButton: false,
               icon: 'error',
-              title: 'Name or Password don´t match!',
-              footer: '<a href="#" onclick="register();">Not registered? </a>',
+              title: 'Jméno nebo heslo je nesprávně!',
+              footer: '<a href="#" onclick="register();">nejste registrováni? </a>',
               timer: 5000,
               didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -147,99 +148,19 @@ async function logIn() {
 
 /* LOGOUT*/
 async function logOut() {
-  localStorage.removeItem("user");
-  document.getElementById('login_welcome').innerHTML = "" 
-  login_btn();
-  Swal.fire({ //match
-    position: 'top-end',
-    icon: 'info',
-    toast: true,
-    text: 'Byly jste odhlášeni',
-    showConfirmButton: false,
-    timer: 3000
-  })
-  /*setTimeout(function() {
+    localStorage.removeItem("user");
+    document.getElementById('login_welcome').innerHTML = "" 
+    login_btn();
+    Swal.fire({ //match
+      position: 'top-end',
+      icon: 'info',
+      toast: true,
+      text: 'You have been logged out',
+      showConfirmButton: false,
+      timer: 3000
+    })
+    /*setTimeout(function() {
 
     window.location = window.location.href;
   }, 3500);*/
-}
-
-//registration
-
-async function register() {
-const { value: password } = await Swal.fire({
-  title: 'Registrace',
-  html:'<input id="register_name" placeholder="Jméno" class="swal2-input">',
-  input: 'password',
-  inputPlaceholder: 'Heslo',
-  showCancelButton: true,
-  footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
-  inputValidator: (value) => {
-    if (!value.match(/^.{8,}$/g)) {
-      return 'Alespoň 8 znaků'
-    }
-    if (!value.match(/[a-z]/g)) {
-      return 'Alespoň 1 malé písmeno'
-    }
-    if (!value.match(/[A-Z]/g)) {
-      return 'Alespoň 1 Velké písmeno'
-    }
-    if (!value.match(/\d/g)) {
-      return 'Alespoň 1 číslo'
-    }
-    if (value == document.getElementById('register_name').value){
-      return 'Heslo se nesmí shodovat s jménem' 
-    }
-  },
-  preConfirm: (value) => {
-    return  value
-  }
-})
-let register = {name: document.getElementById('register_name').value, password: password}; // make an object register with values
-if (password) {
-requestOptions = {
-method: 'POST',
-headers: {
-  'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-  'username': register.name,
-  'password': register.password
-})
-};
-fetch(`/register`, requestOptions) //fetch data from request
-.then(result => result.json()
-  .then(json => { console.log("response: ", Status(result.status), "Registered: ", json.valid);
-
-  if(json.valid == true){
-Swal.fire({ //match
-icon: 'success',
-text: 'Úspěšně pregistrován jako ' + register.name + ' nyní se můžete přihlásit',
-footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-showConfirmButton: false,
-confirmButtonText: 'Dismiss',
-timer: 5000
-})
-}else{ //name already exists
-Swal.fire({
-icon: 'error',
-text: 'Jejda... uživatel s tímto jménem už existuje',
-footer: '<a href="#" onclick="login();">Už jste registrovaní? </a>',
-confirmButtonText: 'Dismiss',
-timer: 5000
-})
-
-
-} })) }
-}
-function start(){
-if(localStorage.getItem("user") == null){
-  logIn()
-}else{
-  window.open("./zarizeni.html","_self");
-}
-}
-addEventListener('storage', (event) => { });
-onstorage = (event) => { 
-  logOut();
 }
