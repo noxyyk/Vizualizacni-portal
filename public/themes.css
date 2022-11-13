@@ -18,6 +18,13 @@ html, body {
   padding-bottom: 110px; 
   
 }
+.swal2-input :child(){
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+    width: 10%;
+}
 .footer {
   position: fixed;
   bottom: 0;

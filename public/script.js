@@ -45,13 +45,22 @@ function Status(status) {
       case 200:
         Response_text = "OK";
         break;
+        case 201:
+        Response_text = "Created";
+        break;
       default:
         break;
     }
   } else if ((String(status)).startsWith('3')) {
     switch (status) {
-      case value:
-
+      case 401:
+        Response_text = "Unauthorized";
+        break;
+      case 404:
+        Response_text = "Not Found";
+        break;
+        case 409:
+        Response_text = "Already exists";
         break;
       default:
         break;
@@ -81,11 +90,13 @@ async function logIn() {
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
-      '<input id="login_name" placeholder="Nickname" class="swal2-input">' +
-      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Password" class="swal2-input"></form>',
+      '<input id="login_name" placeholder="Jméno" class="swal2-input">' +
+      '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
     focusConfirm: false,
     showCancelButton: true,
-    footer: '<a href="#" onclick="register();">Not registered? </a>',
+    confirmButtonText: 'Přihlásit',
+    cancelButtonText: 'Zrušit',
+    footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
     preConfirm: () => {
       return [
         document.getElementById('login_name').value,
@@ -163,70 +174,81 @@ async function logOut() {
 //registration
 
 async function register() {
-const { value: password } = await Swal.fire({
+  const { value: register } = await Swal.fire({
   title: 'Registrace',
-  html:'<input id="register_name" placeholder="Jméno" class="swal2-input">',
-  input: 'password',
-  inputPlaceholder: 'Heslo',
+  html:`<input type="text" id="name" class="swal2-input" placeholder="Jméno">
+  <input type="password" id="password" class="swal2-input" placeholder="Heslo">`,
   showCancelButton: true,
+  confirmButtonText: 'Registrovat',
+  cancelButtonText: 'Zrušit',
+  allowOutsideClick: false,
   footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
-  inputValidator: (value) => {
-    if (!value.match(/^.{8,}$/g)) {
-      return 'Alespoň 8 znaků'
+    preConfirm: () => {
+      const login = Swal.getPopup().querySelector('#name').value
+      const password = Swal.getPopup().querySelector('#password').value
+/*
+    if (!password.match(/[a-z]/g)) {
+      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
     }
-    if (!value.match(/[a-z]/g)) {
-      return 'Alespoň 1 malé písmeno'
+    if (!password.match(/[A-Z]/g)) {
+      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
     }
-    if (!value.match(/[A-Z]/g)) {
-      return 'Alespoň 1 Velké písmeno'
+    if (!password.match(/\d/g)) {
+      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
     }
-    if (!value.match(/\d/g)) {
-      return 'Alespoň 1 číslo'
+    if (password == login){
+      Swal.showValidationMessage('Heslo se nesmí shodovat s jménem' )
     }
-    if (value == document.getElementById('register_name').value){
-      return 'Heslo se nesmí shodovat s jménem' 
+    if (!password.match(/^.{8,}$/g)) {
+      Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
     }
+    if(login.match(/[^a-zA-Z0-9]/g)){
+      Swal.showValidationMessage('Jméno nesmí obsahovat speciální znaky')
+    }
+    if(login.length < 4){
+      Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
+    }
+    if (!login || !password) {
+      Swal.showValidationMessage(`Vyplňte prosím jméno a heslo`)
+    }*/
+    return { login: login, password: password }
   },
-  preConfirm: (value) => {
-    return  value
-  }
 })
-let register = {name: document.getElementById('register_name').value, password: password}; // make an object register with values
-if (password) {
-requestOptions = {
-method: 'POST',
-headers: {
-  'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-  'username': register.name,
-  'password': register.password
-})
-};
-fetch(`/register`, requestOptions) //fetch data from request
-.then(result => result.json()
-  .then(json => { console.log("response: ", Status(result.status), "Registered: ", json.valid);
-
-  if(json.valid == true){
-Swal.fire({ //match
-icon: 'success',
-text: 'Úspěšně pregistrován jako ' + register.name + ' nyní se můžete přihlásit',
-footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-showConfirmButton: false,
-confirmButtonText: 'Dismiss',
-timer: 5000
-})
-}else{ //name already exists
-Swal.fire({
-icon: 'error',
-text: 'Jejda... uživatel s tímto jménem už existuje',
-footer: '<a href="#" onclick="login();">Už jste registrovaní? </a>',
-confirmButtonText: 'Dismiss',
-timer: 5000
-})
-
-
-} })) }
+if(register){
+  requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'username': register.login,
+      'password': register.password
+    })
+    };
+    fetch(`/register`, requestOptions) //fetch data from request
+    .then(result => result.json()
+      .then(json => { console.log("response: ", Status(result.status), "Registered: ", json.valid);
+      if (json.valid == true){
+    Swal.fire({ //match
+    icon: 'success',
+    text: 'Úspěšně pregistrován jako ' + result.value.login + ' nyní se můžete přihlásit',
+    footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
+    showConfirmButton: false,
+    confirmButtonText: 'Dismiss',
+    timer: 5000
+    })
+    } else { //name already exists
+    Swal.fire({
+    icon: 'error',
+    text: 'Jejda... uživatel s tímto jménem už existuje',
+    footer: '<a href="#" onclick="login();">Už jste registrovaní? </a>',
+    confirmButtonText: 'Dismiss',
+    timer: 5000
+    })
+    
+    
+    } }))
+}
 }
 function start(){
 if(localStorage.getItem("user") == null){
@@ -237,5 +259,5 @@ if(localStorage.getItem("user") == null){
 }
 addEventListener('storage', (event) => { });
 onstorage = (event) => { 
-  logOut();
+ /* logOut();*/
 }
