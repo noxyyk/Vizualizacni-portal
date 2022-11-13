@@ -1,5 +1,17 @@
 ## Change Log
-*26.10.2022*
+**13.11.2022**
+* Uživatel odhlášen po změně localStorage
+
+
+**10*11.2022**
+* Regex pro heslo
+* upravena zarizeni.html
+
+**4.11.2022**
+* registrace
+* propojení s mongoDB
+
+**26.10.2022**
 * přidán device stránka
 * dokumentace k API https://app.swaggerhub.com/apis-docs/noxyyk/login/1.0#/default/post_login
 
