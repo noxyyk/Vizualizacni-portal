@@ -1,4 +1,11 @@
 ## Change Log
+
+**24.11.2022**
+* Úprava, opravy, přidání posuvníku k textu
+
+**17.11.2022**
+* Změněny response statusu
+
 **13.11.2022**
 * hotová registrace a přihlášení
 * šifrování pomocí HASH
