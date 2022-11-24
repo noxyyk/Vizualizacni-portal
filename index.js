@@ -29,12 +29,12 @@ app.post('/login', async function(req, res) {
   res.header("Content-Type", 'application/json');
   if (await (db.has(req.body.username))) { //check if name exists in database
     if (bcrypt.compareSync(req.body.password, (((await (db.get(req.body.username)))[String('user')])[String('password')]))) {
-      res.send({ status: 200, valid: true });
+      res.status(200).send({valid: true });
     } else {
-      res.send({ status: 401, valid: false, user_exists: true, valid_password: false });
+      res.status(401).send({valid: false });
     }
   } else {
-    res.send({ status: 404, valid: false, user_exists: false });
+    res.status(404).send({valid: false});
   }
 })
 
@@ -55,9 +55,9 @@ app.post('/register', async function(req, res) {
     };
     db.set(req.body.username, object);
     db.add('ID', 1);
-    res.send({ status: 201, valid: true, registered: true });
+    res.status(201).send({valid: true});
   } else {
-    res.send({ status: 409,valid: false, user_exists: true});
+    res.status(409).send({valid: false});
   }
 })
 

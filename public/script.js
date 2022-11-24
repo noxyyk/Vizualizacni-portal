@@ -1,33 +1,18 @@
-var user = localStorage.getItem("user"); //load logged user from local storage
-login_btn();
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+// HTML
+function login_name(){
+  var user = localStorage.getItem("user");
+  if(user == null) return document.getElementById('login_welcome').innerHTML = "";
+   document.getElementById('login_welcome').innerHTML = "Vítej " + user;
+}
+
 function login_btn(){
-  var user = localStorage.getItem("user"); //load logged user from local storage
-if (user !== null) {
-  document.getElementById('login_welcome').innerHTML = "Vítej " + user;//send a welcome message
-  document.getElementById('login_list').innerHTML = '<div class="login">' + 
-  '<ul>' +
-  '<li id="logout" onclick=logOut() class="list">'+
-  '<a>'+
-  '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>'+
-  '<span class="text">Odhlášení</span>'+
-  '</a>'+
-  '</li>'+
-  '</ul>'+
-  '</div>';
-}else{
-  document.getElementById('login_list').innerHTML = '<div class="login">' + 
-  '<ul>' +
-  '<li id="login" onclick=logIn() class="list">' + 
-  '<a>' +
-  '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' +
-  '<span class="text">Přihlášení</span>' +
-  '</a>' +
-  '</li>'+
-  '</ul>'+
-  '</div>';
-  
+  login_name()
+  var user = localStorage.getItem("user");
+  document.getElementById('login_list').innerHTML = '<div class="login">' + '<ul>' + (user == null ? '<li id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>': '<li id="logout" onclick=logOut() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>' + '<span class="text">Odhlášení</span>') +   '</a>' + '</li>'+  '</ul>'+  '</div>';
 }
-}
+// INIT
+login_btn()
 //Functions
 
 function Status(status) {
@@ -49,9 +34,19 @@ function Status(status) {
         Response_text = "Created";
         break;
       default:
+        Response_text = "ERROR";
         break;
     }
   } else if ((String(status)).startsWith('3')) {
+    switch (status) {
+      case value:
+
+        break;
+      default:
+        Response_text = "ERROR";
+        break;
+    }
+  } else if ((String(status)).startsWith('4')) {
     switch (status) {
       case 401:
         Response_text = "Unauthorized";
@@ -63,14 +58,7 @@ function Status(status) {
         Response_text = "Already exists";
         break;
       default:
-        break;
-    }
-  } else if ((String(status)).startsWith('4')) {
-    switch (status) {
-      case value:
-
-        break;
-      default:
+        Response_text = "ERROR";
         break;
     }
   } else {
@@ -90,7 +78,7 @@ async function logIn() {
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
-      '<input id="login_name" placeholder="Jméno" class="swal2-input">' +
+      '<input id="login_name" placeholder="Jméno" autocomplete="on" class="swal2-input">' +
       '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
     focusConfirm: false,
     showCancelButton: true,
@@ -118,12 +106,10 @@ async function logIn() {
     };
     fetch(`/login`, requestOptions) //fetch data from request
       .then(result => result.json()
-        .then(json => { console.log("response: ", Status(result.status), "logged in: ", json.valid);
+        .then(json => { console.log("response: ", Status(result.status));
 
           if (json.valid == true) {
             localStorage.setItem("user", login.name);
-            document.getElementById('login_welcome').innerHTML = "Welcome " + login.name;//send a welcome message
-            user = localStorage.getItem("user");
             login_btn();
             Swal.fire({ //match
               toast: true,
@@ -159,16 +145,21 @@ async function logIn() {
 /* LOGOUT*/
 async function logOut() {
   localStorage.removeItem("user");
-  document.getElementById('login_welcome').innerHTML = "" 
   login_btn();
-  Swal.fire({ //match
-    position: 'top-end',
-    icon: 'info',
-    toast: true,
-    text: 'Byly jste odhlášeni',
-    showConfirmButton: false,
-    timer: 3000
-  })
+  
+  
+    Swal.fire({ //match
+      position: 'top-end',
+      icon: 'info',
+      toast: true,
+      text: 'Byly jste odhlášeni',
+      showConfirmButton: false,
+      timer: 3000
+    })
+    delay(3000).then(() => {
+    window.location.href = "./index.html";
+  });
+ 
 }
 
 //registration
@@ -176,12 +167,11 @@ async function logOut() {
 async function register() {
   const { value: register } = await Swal.fire({
   title: 'Registrace',
-  html:`<input type="text" id="name" class="swal2-input" placeholder="Jméno">
-  <input type="password" id="password" class="swal2-input" placeholder="Heslo">`,
+  html:`<input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Jméno">
+  <form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
   showCancelButton: true,
   confirmButtonText: 'Registrovat',
   cancelButtonText: 'Zrušit',
-  allowOutsideClick: false,
   footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
     preConfirm: () => {
       const login = Swal.getPopup().querySelector('#name').value
@@ -227,11 +217,11 @@ if(register){
     };
     fetch(`/register`, requestOptions) //fetch data from request
     .then(result => result.json()
-      .then(json => { console.log("response: ", Status(result.status), "Registered: ", json.valid);
+      .then(json => { console.log("response: ", Status(result.status));
       if (json.valid == true){
     Swal.fire({ //match
     icon: 'success',
-    text: 'Úspěšně pregistrován jako ' + result.value.login + ' nyní se můžete přihlásit',
+    text: 'Úspěšně pregistrován jako ' + register.login + ' nyní se můžete přihlásit',
     footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
     showConfirmButton: false,
     confirmButtonText: 'Dismiss',
@@ -241,7 +231,7 @@ if(register){
     Swal.fire({
     icon: 'error',
     text: 'Jejda... uživatel s tímto jménem už existuje',
-    footer: '<a href="#" onclick="login();">Už jste registrovaní? </a>',
+    footer: '<a href="#" onclick="logIn();">Už jste registrovaní? </a>',
     confirmButtonText: 'Dismiss',
     timer: 5000
     })
@@ -251,11 +241,8 @@ if(register){
 }
 }
 function start(){
-if(localStorage.getItem("user") == null){
-  logIn()
-}else{
+if(localStorage.getItem("user") == null) return logIn()
   window.open("./zarizeni.html","_self");
-}
 }
 addEventListener('storage', (event) => { });
 onstorage = (event) => { 
