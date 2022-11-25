@@ -1,5 +1,9 @@
 ## Change Log
 
+**25.11.2022**
+* nový dropdown s účtem pokud je uživatel přihlášen
+* oprava posuvníku u malého rozlišení
+
 **24.11.2022**
 * Úprava, opravy, přidání posuvníku k textu
 

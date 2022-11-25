@@ -89,7 +89,6 @@ z-index: 1;
   border: 3px solid #f6f6f6;
 }
 .scroll{
-
 min-height: 400px;
 }
 .article button{
@@ -252,7 +251,6 @@ transform: translateY(-15px);
   }
   .article:first-child{
     margin-right: 0px;
-  
   }
   .article:last-child{
     margin-top: 20px;
@@ -261,19 +259,17 @@ transform: translateY(-15px);
   .article .setup{
     top: 20px;
   }
-  #content{display:none;}
-  #more, #content label{display: block;}
+  .scroll{
+    min-height: fit-content;
+  }
+  .scroll label{
+    text-align: center;
+  }
+#content label,#more{display:block;}
+#content {display: none;}
 #show:checked~#content{display:block;}
 #show:checked~#more{display:none;}
-.expandable{
-  display:block;
-}
-.expandable_content{
-display: none;
-}
-.expandable:checked ~ .expandable_content {
-  display: block;
-}
+
     .welcome{
       display: none;
     }
@@ -295,6 +291,9 @@ transform: translateY(0px);
 }
   .login ul li a .text{
 display: none;
+}
+#login_list{
+  display: none;
 }
   .dropbtn {
     padding: 10px;
@@ -326,8 +325,15 @@ display: none;
     text-decoration: none;
     display: block;
   }
-  
-
+  .dropdown{
+    right:  50px;
+  }
+  .dropdown:last-child{
+    right:  5px;
+  }
+ #login{
+    right:  -10px;
+  }
   
   .dropdown:hover .dropdown-content {display: block;}
   
@@ -336,7 +342,7 @@ display: none;
       z-index: 1;
       opacity: 1;
     }
-  
+
     @media only screen and (max-width: 300px) {
       .name_text{
         display: none;

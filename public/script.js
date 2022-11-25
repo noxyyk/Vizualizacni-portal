@@ -6,10 +6,13 @@ function login_name(){
    document.getElementById('login_welcome').innerHTML = "Vítej " + user;
 }
 
-function login_btn(){
+async function login_btn(){
   login_name()
   var user = localStorage.getItem("user");
   document.getElementById('login_list').innerHTML = '<div class="login">' + '<ul>' + (user == null ? '<li id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>': '<li id="logout" onclick=logOut() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>' + '<span class="text">Odhlášení</span>') +   '</a>' + '</li>'+  '</ul>'+  '</div>';
+  document.getElementById('dropdown_account').innerHTML = (user == null ? '<div class="login">' + '<ul>' + '<li  id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>' +   '</a>' + '</li>'+  '</ul>'+  '</div>' : '<button class="dropbtn">' + '<ion-icon name="accessibility-outline"></ion-icon>'/*OBRÁZEK UŽIVATELE (poslat dotaz na backend a zpátky získat obrázek)*/  + '</button>' + 
+  '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text">Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text">Odhlášení</span></a></div>'
+  )
 }
 // INIT
 login_btn()
@@ -239,6 +242,12 @@ if(register){
     
     } }))
 }
+}
+function account() {
+  Swal.fire({
+    title: 'Účet',
+    html: 'Jméno: ' + localStorage.getItem("user")
+  })
 }
 function start(){
 if(localStorage.getItem("user") == null) return logIn()
