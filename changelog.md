@@ -1,6 +1,7 @@
 ## Change Log
 
 **25.11.2022**
+* změna hesla, jména, smazání účtu
 * nový dropdown s účtem pokud je uživatel přihlášen
 * oprava posuvníku u malého rozlišení
 
