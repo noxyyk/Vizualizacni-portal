@@ -8,11 +8,14 @@ function login_name(){
 
 async function login_btn(){
   login_name()
-  var user = localStorage.getItem("user");
-  document.getElementById('login_list').innerHTML = '<div class="login">' + '<ul>' + (user == null ? '<li id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>': '<li id="logout" onclick=logOut() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>' + '<span class="text">Odhlášení</span>') +   '</a>' + '</li>'+  '</ul>'+  '</div>';
-  document.getElementById('dropdown_account').innerHTML = (user == null ? '<div class="login">' + '<ul>' + '<li  id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>' +   '</a>' + '</li>'+  '</ul>'+  '</div>' : '<button class="dropbtn">' + '<ion-icon name="accessibility-outline"></ion-icon>'/*OBRÁZEK UŽIVATELE (poslat dotaz na backend a zpátky získat obrázek)*/  + '</button>' + 
-  '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text">Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text">Odhlášení</span></a></div>'
-  )
+  if (localStorage.getItem("user") == null) {
+    document.getElementById('dropdown_account').innerHTML =''
+    document.getElementById('login_list').innerHTML ='<div class="login">' + '<ul>' + '<li  id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>' +   '</a>' + '</li>'+  '</ul>'+  '</div>'
+  }else{
+    document.getElementById('login_list').innerHTML =''
+    document.getElementById('dropdown_account').innerHTML = '<button class="dropbtn">' + '<ion-icon name="accessibility-outline"></ion-icon>'/*OBRÁZEK UŽIVATELE (poslat dotaz na backend a zpátky získat obrázek)*/  + '</button>' + 
+  '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text">Odhlášení</span></a></div>'
+  }
 }
 // INIT
 login_btn()
@@ -243,11 +246,141 @@ if(register){
     } }))
 }
 }
-function account() {
-  Swal.fire({
-    title: 'Účet',
-    html: 'Jméno: ' + localStorage.getItem("user")
-  })
+async function account(type) {
+  switch (type) {
+    case "username":
+      const { value: username } = await Swal.fire({
+        title: 'Změna jména',
+        html:`<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Nové jméno" ></form>`,
+        showCancelButton: true,
+        confirmButtonText: 'Zněnit heslo',
+        cancelButtonText: 'Zrušit',
+          preConfirm: () => {
+            const name = Swal.getPopup().querySelector('#name').value
+          return {name: name }
+        },
+      })
+      if(username){
+        requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            'username': localStorage.getItem("user"),
+            'newname': username.newname,
+            'type': 'name'
+          })
+          };
+          fetch(`/change`, requestOptions) //fetch data from request
+          .then(result => result.json()
+            .then(json => { console.log("response: ", Status(result.status));
+            if (json.valid == true){
+          Swal.fire({ //match
+          icon: 'success',
+          text: 'Změna jména proběhla úspěšně',
+          showConfirmButton: false,
+          confirmButtonText: 'Dismiss',
+          timer: 5000
+          })
+          } }))
+      }
+  break;
+    case "password":
+      const { value: value } = await Swal.fire({
+        title: 'Změna hesla',
+        html:`<form><input type="password" id="password" autocomplete="on" class="swal2-input" placeholder="Nové heslo" ></form>
+              <form><input type="password" id="password_again" autocomplete="on" class="swal2-input" placeholder="Nové heslo znovu" ></form>`,
+        showCancelButton: true,
+        confirmButtonText: 'Zněnit heslo',
+        cancelButtonText: 'Zrušit',
+          preConfirm: () => {
+            const password_again = Swal.getPopup().querySelector('#password_again').value
+            const password = Swal.getPopup().querySelector('#password').value
+      
+          if (!password.match(/[a-z]/g)) {
+            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
+          }
+          if (!password.match(/[A-Z]/g)) {
+            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
+          }
+          if (!password.match(/\d/g)) {
+            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
+          }
+          if (password != password_again){
+            Swal.showValidationMessage('Heslo se musí shodovat' )
+          }
+          if (!password.match(/^.{8,}$/g)) {
+            Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
+          }
+          if (!password_again || !password) {
+            Swal.showValidationMessage(`Vyplňte prosím oboje pole`)
+          }
+          return password
+        },
+      })
+      if(value){
+        requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            'username': localStorage.getItem("user"),
+            'password': value,
+            'type': 'password'
+          })
+          };
+          fetch(`/change`, requestOptions) //fetch data from request
+          .then(result => result.json()
+            .then(json => { console.log("response: ", Status(result.status));
+            if (json.valid == true){
+          Swal.fire({ //match
+          icon: 'success',
+          text: 'Změna hesla proběhla úspěšně',
+          showConfirmButton: false,
+          confirmButtonText: 'Dismiss',
+          timer: 5000
+          })
+          } }))
+      }
+  break;
+    case "email"://not yet implemented
+  break;
+    case "delete":
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'username': localStorage.getItem("user")
+        })
+        };
+        fetch(`/delete`, requestOptions) //fetch data from request
+        .then(result => result.json()
+          .then(json => { console.log("response: ", Status(result.status));
+          if (json.valid == true){
+        Swal.fire({ //match
+        icon: 'success',
+        text: 'Účet byl úspěšně smazán',
+        showConfirmButton: false,
+        confirmButtonText: 'Dismiss',
+        timer: 5000
+        })
+        } }))
+        delay(5000).then(() => {
+        logOut();
+        })
+  break;
+  default:
+    Swal.fire({
+      title: 'Účet',
+      html: 'Jméno: ' + localStorage.getItem("user") +' '+'<button id="username" onclick=account("username") class="btn btn-warning">' + 'Změnit jméno' + '</button><br>Heslo: ********** <button onclick=account("password") id="password" class="btn btn-warning">' + 'Změnit heslo' + '</button><br><button onclick=logOut() class="btn btn-danger">' + 'Odhlásit se' + '</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' + 'Smazat účet' + '</button><br>',
+    })
+  break;
+  }
+
 }
 function start(){
 if(localStorage.getItem("user") == null) return logIn()
