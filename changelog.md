@@ -1,5 +1,9 @@
 ## Change Log
 
+**30.11.2022**
+* backend zpraven
+* odhlášení při změně local storage
+
 **25.11.2022**
 * změna hesla, jména, smazání účtu
 * nový dropdown s účtem pokud je uživatel přihlášen

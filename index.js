@@ -61,7 +61,29 @@ app.post('/register', async function(req, res) {
   }
 })
 
-
+app.post('/change', async function(req, res) {
+  res.header("Content-Type", 'application/json');
+ if (await ((db.has(req.body.username)))) var object = await (db.get(req.body.username)); 
+  switch (req.body.type) {
+    case 'password':
+      if (object.user.password == req.body.password || req.body.password == req.body.username) return res.status(401).send({valid: false});
+      object.user.password = (bcrypt.hashSync(req.body.password, 10));
+      db.set(req.body.username, object);
+            res.status(200).send({valid: true});
+    break;
+    case 'name':
+      if (req.body.username == req.body.name || (await (db.has(req.body.name)))) return res.status(401).send({valid: false});
+      db.set(req.body.name, object);
+      db.delete(req.body.username);
+      res.status(200).send({valid: true});
+     break;
+     case 'check':
+      if (await (!(db.has(req.body.username)))) return res.status(409).send({valid: false});
+      res.status(200).send({valid: true});
+     default:
+      res.status(400).send({valid: false});
+    }
+    })
 app.use(express.static(__dirname + "/public"));
 
 app.listen(PORT);

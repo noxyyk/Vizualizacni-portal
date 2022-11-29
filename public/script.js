@@ -5,7 +5,13 @@ function login_name(){
   if(user == null) return document.getElementById('login_welcome').innerHTML = "";
    document.getElementById('login_welcome').innerHTML = "Vítej " + user;
 }
-
+function swalError(){
+  Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'Něco se pokazilo!'
+  })
+}
 async function login_btn(){
   login_name()
   if (localStorage.getItem("user") == null) {
@@ -238,7 +244,7 @@ if(register){
     icon: 'error',
     text: 'Jejda... uživatel s tímto jménem už existuje',
     footer: '<a href="#" onclick="logIn();">Už jste registrovaní? </a>',
-    confirmButtonText: 'Dismiss',
+    confirmButtonText: 'zrušit',
     timer: 5000
     })
     
@@ -253,11 +259,10 @@ async function account(type) {
         title: 'Změna jména',
         html:`<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Nové jméno" ></form>`,
         showCancelButton: true,
-        confirmButtonText: 'Zněnit heslo',
+        confirmButtonText: 'Zněnit jméno',
         cancelButtonText: 'Zrušit',
           preConfirm: () => {
-            const name = Swal.getPopup().querySelector('#name').value
-          return {name: name }
+           return Swal.getPopup().querySelector('#name').value
         },
       })
       if(username){
@@ -268,14 +273,16 @@ async function account(type) {
           },
           body: JSON.stringify({
             'username': localStorage.getItem("user"),
-            'newname': username.newname,
+            'name': username,
             'type': 'name'
           })
           };
           fetch(`/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
-            if (json.valid == true){
+            if (json.valid != true) return swalError();
+            localStorage.setItem("user", username);
+            document.getElementById('login_welcome').innerHTML = "Vítej " + user;
           Swal.fire({ //match
           icon: 'success',
           text: 'Změna jména proběhla úspěšně',
@@ -283,7 +290,7 @@ async function account(type) {
           confirmButtonText: 'Dismiss',
           timer: 5000
           })
-          } }))
+           }))
       }
   break;
     case "password":
@@ -334,15 +341,15 @@ async function account(type) {
           fetch(`/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
-            if (json.valid == true){
-          Swal.fire({ //match
+            if (json.valid != true) return swalError()
+          Swal.fire({ 
           icon: 'success',
           text: 'Změna hesla proběhla úspěšně',
           showConfirmButton: false,
           confirmButtonText: 'Dismiss',
           timer: 5000
-          })
-          } }))
+          }).then(() => {logOut()})
+           }))
       }
   break;
     case "email"://not yet implemented
@@ -388,5 +395,16 @@ if(localStorage.getItem("user") == null) return logIn()
 }
 addEventListener('storage', (event) => { });
 onstorage = (event) => { 
- /* logOut();*/
+  requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'username': event.newValue
+    })
+    };
+    fetch(`/change`, requestOptions) //fetch data from request
+    .then(result => result.json()
+      .then(json => { if (!json.valid) return logOut() }))
 }
