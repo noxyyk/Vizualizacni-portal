@@ -1,5 +1,18 @@
 ## Change Log
 
+**6.12.2022**
+* funkce time(s) - zobrazí čas od expirace tokenu
+* validace tokenu při jeho změně
+* přidán JWT token
+
+**5.12.2022**
+* vypsat detailnější "chyby"
+* request /delete - smaže účet
+
+**3.12.2022**
+* povolené origins pro CORS
+* profilový obrázek
+
 **30.11.2022**
 * backend zpraven
 * odhlášení při změně local storage
@@ -18,7 +31,7 @@
 **13.11.2022**
 * hotová registrace a přihlášení
 * šifrování pomocí HASH
-* vytvoření objektu při registraci
+* vytvoření objekt při registraci
 * Uživatel odhlášen po změně localStorage
 
 **10*11.2022**
