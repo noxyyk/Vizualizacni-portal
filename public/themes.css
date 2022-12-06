@@ -79,9 +79,11 @@ z-index: 1;
   scroll-margin: 10px;
 }
 *::-webkit-scrollbar-track {
+  background: #fff;
+}
+.article::-webkit-scrollbar-track {
   margin: 30px;
   border-radius: 20px;
-  background: #f6f6f6;
 }
 *::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar_clr);
@@ -90,6 +92,10 @@ z-index: 1;
 }
 .scroll{
 min-height: 400px;
+}
+.pfp{
+  max-width:220%;
+  border-radius: 50%
 }
 .article button{
   background-color: var(--button_clr);
@@ -204,10 +210,13 @@ transform: translateY(10px);
 transform: translateY(-15px);
 }
 .dropdown {
-  top: 8px;
-  right: 60px;
   position: fixed;
+  top: 12px;
+  right: 70px;
   display: inline-block;
+}
+.login{
+  right: 10px;
 }
 
 .dropdown-content {
@@ -217,7 +226,7 @@ transform: translateY(-15px);
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  right: 1vh;
+  right: 0px;
 }
 
 .dropdown-content a {
@@ -226,23 +235,18 @@ transform: translateY(-15px);
   text-decoration: none;
   display: block;
 }
-.dropdown{
-  right:  50px;
-}
-.dropdown:last-child{
-  right:  5px;
-}
 .dropdown:hover .dropdown-content {display: block;}
 .dropdown{
   z-index: 1;
   opacity: 1;
 }
 .dropbtn {
-  padding: 10px;
-  font-size: 25px;
+  font-size: 35px;
   border: none;
+  cursor: pointer;
   background-color: var(--header_clr);
 }
+
 #show,#content label,#more{display:none;}
 .mobile {
   display: none;
@@ -263,10 +267,11 @@ transform: translateY(-15px);
     width: 50px;
     left: -10%;
   }
-.welcome{
-  display: none;
-}
+
 @media only screen and (max-width: 900px) {
+  .welcome{
+    display: none;
+  }
   description{
     width: 88%;
   }
@@ -278,10 +283,16 @@ transform: translateY(-15px);
     top: 150px;
     left: var(--article_left);
   }
+  .article{
+    width: 100%;
+  }
 @media only screen and (max-width: 720px) {
   .mobile{
     display: block;
   }
+.pfp{
+  max-width:150%;
+}
   *::-webkit-scrollbar {
     display: none;
   }
@@ -338,19 +349,15 @@ transform: translateY(0px);
 .welcome{
   display: none;
 }
-}
-
 .login ul li a .text{
   display: none;
   }
-
- #login{
-    right:  20px;
+  #login{
+    right: 0px;
   }
+}
 
-
-
-    @media only screen and (max-width: 300px) {
+    @media only screen and (max-width: 400px) {
       .name_text{
         display: none;
       }
