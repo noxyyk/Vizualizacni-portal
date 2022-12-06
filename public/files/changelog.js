@@ -3,6 +3,12 @@ Swal.fire({
     position: 'center',
     width: "900px",
     html: `
+    <style> 
+    ul{
+        list-style: none; 
+        display:contents;
+    }    
+    </style>
     <h2 id="change-log">Change Log</h2>
 
     <p><strong>16.10.2022</strong></p>
