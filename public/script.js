@@ -1,32 +1,70 @@
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 // HTML
-function login_name(){
-  var user = localStorage.getItem("user");
-  if(user == null) return document.getElementById('login_welcome').innerHTML = "";
-   document.getElementById('login_welcome').innerHTML = "Vítej " + user;
-}
-function swalError(){
-  Swal.fire({
-    icon: 'error',
-    title: 'Oops...',
-    text: 'Něco se pokazilo!'
-  })
-}
 async function login_btn(){
-  login_name()
-  if (localStorage.getItem("user") == null) {
-    document.getElementById('dropdown_account').innerHTML =''
+  var user = localStorage.getItem("user")
+  var pfp = localStorage.getItem("pfp")
+  pfp = pfp? '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+ pfp + '">' : '<ion-icon name="accessibility-outline"></ion-icon>'
+  document.getElementById('login_welcome').innerHTML = user == null? "" : "Vítej " + user
+  if (user == null) {
+    document.getElementById("dropdown_account").style.display= "none";
+    document.getElementById("login_list").style.display= "inline-block";
     document.getElementById('login_list').innerHTML ='<div class="login">' + '<ul>' + '<li  id="login" onclick=logIn() class="list">' + '<a>' + '<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' + '<span class="text">Přihlášení</span>' +   '</a>' + '</li>'+  '</ul>'+  '</div>'
   }else{
-    document.getElementById('login_list').innerHTML =''
-    document.getElementById('dropdown_account').innerHTML = '<button class="dropbtn">' + '<ion-icon name="accessibility-outline"></ion-icon>'/*OBRÁZEK UŽIVATELE (poslat dotaz na backend a zpátky získat obrázek)*/  + '</button>' + 
+    document.getElementById("dropdown_account").style.display= "inline-block";
+    document.getElementById("login_list").style.display= "none";
+    document.getElementById('dropdown_account').innerHTML = '<button class="dropbtn" style="width:100%;height:100%;display:flex;padding:10px;align-items:center;justify-content:center;border-radius: 50%;">' + pfp + '</button>' + 
   '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text">Odhlášení</span></a></div>'
   }
 }
 // INIT
+verifyToken()
 login_btn()
 //Functions
+function time(s) {
+  var day = Math.floor(s / 86400);
+  var hour = Math.floor((s % 86400) / 3600);
+  var minute = Math.floor(((s % 86400) % 3600) / 60);
+  var second = ((s % 86400) % 3600) % 60;
+  return day > 1 ? day + " dny": day == 1? day + " dnem": hour > 1 ? hour + " hodinami" : hour == 1? hour + " hodinou" : minute > 1 ? minute + " minutami" : minute == 1? minute + " minutou" : second + " sekundami"
+}
+function verifyToken(){
+  var token = localStorage.getItem("token")
+  if (token == null) return
 
+  requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'token': token
+    })
+  };
+  fetch(`/verify`, requestOptions) //fetch data from request
+    .then(result => result.json()
+      .then(json => { console.log("response: ", Status(result.status));
+      if (json.valid) return true
+      localStorage.removeItem("token");
+          login_btn();
+          Swal.fire({ 
+            timerProgressBar: true,
+            position: 'bottom-end',
+            toast: true,
+            icon: 'warning',
+            text: json.response.name == 'TokenExpiredError'? 'Token expiroval před ' + time(Math.floor(((new Date().getTime())-(new Date(json.response.expiredAt).getTime()))/1000)) + ', přihlášení je vyžadováno' : 'Token je neplatný, přihlášení je vyžadováno' ,
+            showConfirmButton: false,
+            timer: 10000,
+          })
+          return false
+      }))
+}
+function swalError(response){
+  Swal.fire({
+    icon: 'error',
+    title: 'Jejda...',
+    text: response
+  })
+}
 function Status(status) {
   var Response_text;
   if ((String(status)).startsWith('1')) {
@@ -46,7 +84,7 @@ function Status(status) {
         Response_text = "Created";
         break;
       default:
-        Response_text = "ERROR";
+        Response_text = "Unexpected Output";
         break;
     }
   } else if ((String(status)).startsWith('3')) {
@@ -55,7 +93,7 @@ function Status(status) {
 
         break;
       default:
-        Response_text = "ERROR";
+        Response_text = "Unexpected Output";
         break;
     }
   } else if ((String(status)).startsWith('4')) {
@@ -70,15 +108,16 @@ function Status(status) {
         Response_text = "Already exists";
         break;
       default:
-        Response_text = "ERROR";
+        Response_text = "Unexpected Output";
         break;
     }
   } else {
     switch (status) {
-      case value:
-
+      case 500:
+        Response_text = "Internal Server Error";
         break;
       default:
+        Response_text = "Unexpected Output";
         break;
     }
   }
@@ -119,59 +158,40 @@ async function logIn() {
     fetch(`/login`, requestOptions) //fetch data from request
       .then(result => result.json()
         .then(json => { console.log("response: ", Status(result.status));
+        if (!json.valid) return swalError(json.response)
 
-          if (json.valid == true) {
             localStorage.setItem("user", login.name);
+            localStorage.setItem("pfp", json.pfp);
+            localStorage.setItem("token", json.token);
             login_btn();
-            Swal.fire({ //match
+            Swal.fire({
               toast: true,
               timerProgressBar: true,
-              position: 'top-end',
+              position: 'bottom-end',
               icon: 'success',
               title: 'logged in as ' + login.name,
               showConfirmButton: false,
               timer: 3000,
-
             })
-          } else { // password or name don´t match
-            Swal.fire({
-              position: 'top-end',
-              timerProgressBar: true,
-              toast: true,
-              showConfirmButton: false,
-              icon: 'error',
-              title: 'Name or Password don´t match!',
-              footer: '<a href="#" onclick="register();">Not registered? </a>',
-              timer: 5000,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            })
-          }
         }))
-
   }
 }
 
 /* LOGOUT*/
 async function logOut() {
   localStorage.removeItem("user");
+  localStorage.removeItem("pfp");
   login_btn();
   
   
     Swal.fire({ //match
-      position: 'top-end',
+      position: 'bottom-end',
       icon: 'info',
       toast: true,
-      text: 'Byly jste odhlášeni',
+      text: 'Byli jste odhlášeni',
       showConfirmButton: false,
       timer: 3000
     })
-    delay(3000).then(() => {
-    window.location.href = "./index.html";
-  });
- 
 }
 
 //registration
@@ -188,31 +208,15 @@ async function register() {
     preConfirm: () => {
       const login = Swal.getPopup().querySelector('#name').value
       const password = Swal.getPopup().querySelector('#password').value
-/*
-    if (!password.match(/[a-z]/g)) {
-      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
-    }
-    if (!password.match(/[A-Z]/g)) {
-      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
-    }
-    if (!password.match(/\d/g)) {
-      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
-    }
-    if (password == login){
-      Swal.showValidationMessage('Heslo se nesmí shodovat s jménem' )
-    }
-    if (!password.match(/^.{8,}$/g)) {
-      Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
-    }
-    if(login.match(/[^a-zA-Z0-9]/g)){
-      Swal.showValidationMessage('Jméno nesmí obsahovat speciální znaky')
-    }
-    if(login.length < 4){
-      Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
-    }
-    if (!login || !password) {
-      Swal.showValidationMessage(`Vyplňte prosím jméno a heslo`)
-    }*/
+    if (!password.match(/[a-z]/g))    Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
+    if (!password.match(/[A-Z]/g))    Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
+    if (!password.match(/\d/g))       Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
+    if (password == login)  	        Swal.showValidationMessage('Heslo se nesmí shodovat s jménem' )
+    if (!password.match(/^.{8,}$/g))  Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
+    if(login.match(/[^a-zA-Z0-9]/g))  Swal.showValidationMessage('Jméno nesmí obsahovat speciální znaky')
+    if(login.length < 4)              Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
+    if (!login || !password)          Swal.showValidationMessage(`Vyplňte prosím jméno a heslo`)
+
     return { login: login, password: password }
   },
 })
@@ -230,26 +234,17 @@ if(register){
     fetch(`/register`, requestOptions) //fetch data from request
     .then(result => result.json()
       .then(json => { console.log("response: ", Status(result.status));
-      if (json.valid == true){
-    Swal.fire({ //match
-    icon: 'success',
-    text: 'Úspěšně pregistrován jako ' + register.login + ' nyní se můžete přihlásit',
-    footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-    showConfirmButton: false,
-    confirmButtonText: 'Dismiss',
-    timer: 5000
-    })
-    } else { //name already exists
-    Swal.fire({
-    icon: 'error',
-    text: 'Jejda... uživatel s tímto jménem už existuje',
-    footer: '<a href="#" onclick="logIn();">Už jste registrovaní? </a>',
-    confirmButtonText: 'zrušit',
-    timer: 5000
-    })
-    
-    
-    } }))
+      if (!json.valid) return swalError(json.response)
+      
+      Swal.fire({ //match
+      icon: 'success',
+      text: 'Úspěšně registrován jako ' + register.login + ' nyní se můžete přihlásit',
+      footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
+      showConfirmButton: false,
+      confirmButtonText: 'Dismiss',
+      timer: 5000
+    }) 
+  }))
 }
 }
 async function account(type) {
@@ -280,16 +275,17 @@ async function account(type) {
           fetch(`/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
-            if (json.valid != true) return swalError();
+            if (!json.valid) return swalError(json.response)
+
             localStorage.setItem("user", username);
             document.getElementById('login_welcome').innerHTML = "Vítej " + user;
-          Swal.fire({ //match
-          icon: 'success',
-          text: 'Změna jména proběhla úspěšně',
-          showConfirmButton: false,
-          confirmButtonText: 'Dismiss',
-          timer: 5000
-          })
+            Swal.fire({ //match
+            icon: 'success',
+            text: 'Změna jména proběhla úspěšně',
+            showConfirmButton: false,
+            confirmButtonText: 'Dismiss',
+            timer: 5000
+            })
            }))
       }
   break;
@@ -305,24 +301,13 @@ async function account(type) {
             const password_again = Swal.getPopup().querySelector('#password_again').value
             const password = Swal.getPopup().querySelector('#password').value
       
-          if (!password.match(/[a-z]/g)) {
-            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
-          }
-          if (!password.match(/[A-Z]/g)) {
-            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
-          }
-          if (!password.match(/\d/g)) {
-            Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
-          }
-          if (password != password_again){
-            Swal.showValidationMessage('Heslo se musí shodovat' )
-          }
-          if (!password.match(/^.{8,}$/g)) {
-            Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
-          }
-          if (!password_again || !password) {
-            Swal.showValidationMessage(`Vyplňte prosím oboje pole`)
-          }
+          if (!password.match(/[a-z]/g))   Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
+          if (!password.match(/[A-Z]/g))   Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
+          if (!password.match(/\d/g))      Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
+          if (password != password_again)  Swal.showValidationMessage('Heslo se musí shodovat' )
+          if (!password.match(/^.{8,}$/g)) Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
+          if (!password_again || !password)Swal.showValidationMessage(`Vyplňte prosím oboje pole`)
+
           return password
         },
       })
@@ -341,14 +326,15 @@ async function account(type) {
           fetch(`/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
-            if (json.valid != true) return swalError()
-          Swal.fire({ 
-          icon: 'success',
-          text: 'Změna hesla proběhla úspěšně',
-          showConfirmButton: false,
-          confirmButtonText: 'Dismiss',
-          timer: 5000
-          }).then(() => {logOut()})
+            if (!json.valid) return swalError(json.response)
+            
+            Swal.fire({ 
+            icon: 'success',
+            text: 'Změna hesla proběhla úspěšně',
+            showConfirmButton: false,
+            confirmButtonText: 'Dismiss',
+            timer: 5000
+            }).then(() => {logOut()})
            }))
       }
   break;
@@ -367,7 +353,9 @@ async function account(type) {
         fetch(`/delete`, requestOptions) //fetch data from request
         .then(result => result.json()
           .then(json => { console.log("response: ", Status(result.status));
-          if (json.valid == true){
+          if (!json.valid) return swalError(json.response)
+          localStorage.removeItem("user");
+          localStorage.removeItem("pfp");
         Swal.fire({ //match
         icon: 'success',
         text: 'Účet byl úspěšně smazán',
@@ -375,7 +363,7 @@ async function account(type) {
         confirmButtonText: 'Dismiss',
         timer: 5000
         })
-        } }))
+         }))
         delay(5000).then(() => {
         logOut();
         })
@@ -393,18 +381,10 @@ function start(){
 if(localStorage.getItem("user") == null) return logIn()
   window.open("./zarizeni.html","_self");
 }
-addEventListener('storage', (event) => { });
+
 onstorage = (event) => { 
-  requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'username': event.newValue
-    })
-    };
-    fetch(`/change`, requestOptions) //fetch data from request
-    .then(result => result.json()
-      .then(json => { if (!json.valid) return logOut() }))
-}
+  console.log("storage event");
+  if (event.key == 'token' && event.newValue != null) if(!verifyToken()) logOut()
+  
+};
+
