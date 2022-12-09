@@ -95,7 +95,7 @@ min-height: 400px;
 }
 .pfp{
   max-width:220%;
-  border-radius: 50%
+  border-radius: 50%;
 }
 .article button{
   background-color: var(--button_clr);
@@ -211,7 +211,7 @@ transform: translateY(-15px);
 }
 .dropdown {
   position: fixed;
-  top: 12px;
+  top:  0px;
   right: 70px;
   display: inline-block;
 }
@@ -287,6 +287,9 @@ transform: translateY(-15px);
     width: 100%;
   }
 @media only screen and (max-width: 720px) {
+  .dropdown {
+    top:  12px;
+  }
   .mobile{
     display: block;
   }
