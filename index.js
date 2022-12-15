@@ -23,7 +23,8 @@ app.use(bodyParser.json());
 
 const originsAllowed = [
   "http://localhost:5000",
-  "https://vizualizacni-portal.up.railway.app/"
+  "https://vizualizacni-portal.up.railway.app/",
+    "https://vizualizacni-portal.up.railway.app"
 ]
 /*FUNCTIONS*/
 function listsGetRandomItem(list, remove) {
@@ -42,6 +43,7 @@ function createToken(username,user) {
 // Routes
 app.post('/login', async function(req, res) {
   res.header("Content-Type", 'application/json');
+  console.log(req.get('origin'))
   if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
   if (!(await (db.has(req.body.username)))) return res.status(404).send({valid: false, response: "Uživatel s tímto jménem neexistuje"})
   if (!(bcrypt.compareSync(req.body.password, (await (db.get(req.body.username))).user.password))) return res.status(401).send({valid: false, response: "Heslo se neshhoduje"});
