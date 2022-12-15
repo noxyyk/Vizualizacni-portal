@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 var path = require('path');
 fetch = import("node-fetch");
+var package= require('./package.json');
+console.log(package.version)
 // initialize database
 const bcrypt = require("bcryptjs");
 let { DB } = require("mongquick");
@@ -113,7 +115,7 @@ app.post('/delete', async function(req, res) {
       jwt.verify(req.body.token, process.env.JWTSECRET, function(err, decoded) {
 
         if (err) return res.status(401).send({valid: false, response: err})
-        if (decoded == 'undefined') return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
+        if (decoded == undefined) return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
           
         res.status(200).send({valid: true, pfp: decoded.avatar, user: decoded.iss});
       });
