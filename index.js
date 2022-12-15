@@ -1,3 +1,4 @@
+console.log("Starting server...")
 //start the website
 const express = require("express")
 const app = express()
@@ -7,7 +8,7 @@ const cors = require('cors');
 var path = require('path');
 fetch = import("node-fetch");
 var package= require('./package.json');
-console.log(package.version)
+console.log("version: ",package.version)
 // initialize database
 const bcrypt = require("bcryptjs");
 let { DB } = require("mongquick");
@@ -120,9 +121,17 @@ app.post('/delete', async function(req, res) {
           
         res.status(200).send({valid: true, pfp: decoded.avatar, user: decoded.iss});
       });
-
       });
+
+      app.post('/getallusers', async function(req, res) {
+        res.header("Content-Type", 'application/json');
+        if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
+        var result = (await db.all()).filter(key => key.data.user != undefined);
+        res.status(200).send({valid: true, users: result});
+      })
 
 app.use(express.static(__dirname + "/public"));
 
-app.listen(PORT);
+var server = app.listen(PORT, function() {
+  console.log("Port: " + PORT, "Adress: " + server.address().address, "Family: " + server.address().family);
+});
