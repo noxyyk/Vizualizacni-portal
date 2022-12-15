@@ -373,7 +373,7 @@ async function account(type) {
   default:
     Swal.fire({
       title: 'Účet',
-      html: 'Jméno: ' + JSON.parse(localStorage.getItem("user")).name +' '+'<button id="username" onclick=account("username") class="btn btn-warning">' + 'Změnit jméno' + '</button><br>Heslo: ********** <button onclick=account("password") id="password" class="btn btn-warning">' + 'Změnit heslo' + '</button><br><button onclick=logOut() class="btn btn-danger">' + 'Odhlásit se' + '</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' + 'Smazat účet' + '</button><br>',
+      html: 'Jméno: ' + JSON.parse(localStorage.getItem("user")).user +' '+'<button id="username" onclick=account("username") class="btn btn-warning">' + 'Změnit jméno' + '</button><br>Heslo: ********** <button onclick=account("password") id="password" class="btn btn-warning">' + 'Změnit heslo' + '</button><br><button onclick=logOut() class="btn btn-danger">' + 'Odhlásit se' + '</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' + 'Smazat účet' + '</button><br>',
     })
   break;
   }
@@ -391,4 +391,3 @@ onstorage = (event) => {
     login_btn()
   })
 }
-
