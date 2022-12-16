@@ -2,9 +2,8 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 // HTML
 async function login_btn(){
   var user = localStorage.getItem("user")
-  try{user = JSON.parse(user)}catch{user == null}
+  try{user = JSON.parse(user)}catch{user = null}
   var pfp = user?.pfp == null || !user.pfp.includes("https://")? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
-  document.getElementById('login_welcome').innerHTML = user == null? "" : "Vítej " + user.user
   if (user?.token == null) {
     document.getElementById("dropdown_account").style.display= "none";
     document.getElementById("login_list").style.display= "inline-block";
@@ -13,8 +12,9 @@ async function login_btn(){
     document.getElementById("dropdown_account").style.display= "inline-block";
     document.getElementById("login_list").style.display= "none";
     document.getElementById('dropdown_account').innerHTML = '<button class="dropbtn" style="width:100%;height:100%;display:flex;padding:10px;align-items:center;justify-content:center;border-radius: 50%;">' + pfp + '</button>' + 
-  '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text">Odhlášení</span></a></div>'
+  '<div class="dropdown-content"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text"> Odhlášení</span></a>'+ (user.admin? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a>' : '' )+'</div>'
   }
+    document.getElementById('login_welcome').innerHTML = user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
 }
 
 // INIT
@@ -46,7 +46,7 @@ function verifyToken(){
     .then(result => result.json()
       .then(json => { console.log("response: ", Status(result.status));
       if (json.valid){ validation = true;
-        localStorage.setItem("user",JSON.stringify({"user": json.user, "pfp": json.pfp, "token": token}))
+        localStorage.setItem("user",JSON.stringify({"user": json.user, "pfp": json.pfp, "token": token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
         return
       }
       localStorage.removeItem("user");
@@ -165,8 +165,7 @@ async function logIn() {
       .then(result => result.json()
         .then(json => { console.log("response: ", Status(result.status));
         if (!json.valid) return swalError(json.response)
-
-            localStorage.setItem("user",JSON.stringify({"name": login.name, "pfp": json.pfp, "token": json.token}) );
+        localStorage.setItem("user",JSON.stringify({"user": login.name, "pfp": json.pfp, "token": json.token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
             login_btn();
             Swal.fire({
               toast: true,
@@ -280,8 +279,8 @@ async function account(type) {
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
 
-            localStorage.setItem("user", JSON.stringify({"name":username}));
-            document.getElementById('login_welcome').innerHTML = "Vítej " + username;
+            localStorage.setItem("user", JSON.stringify({"user":username}));
+            document.getElementById('login_welcome').innerHTML = user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
             Swal.fire({ //match
             icon: 'success',
             text: 'Změna jména proběhla úspěšně',
@@ -382,6 +381,26 @@ async function account(type) {
 function start(){
 if(localStorage.getItem("user") == null) return logIn()
   window.open("./zarizeni.html","_self");
+}
+
+async function userlist(){
+  var userlist = await fetch('/userlist')
+  .then(result => result.json()
+    .then(json => { console.log("response: ", Status(result.status));
+    if (!json.valid) return swalError(json.response)
+    return json.users
+   }))
+   
+  var html = ""
+  userlist.forEach(element => {
+    html += '<img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '">' + element.ID + '<br>'
+  });
+  Swal.fire({
+    title: 'Uživatelé',
+    html: html,
+  })
+
+
 }
 
 onstorage = (event) => { 

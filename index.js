@@ -1,4 +1,5 @@
-console.log("Starting server...")
+console.clear();
+process.stdout.write("\r" + "Starting server...");
 //start the website
 const express = require("express")
 const app = express()
@@ -8,7 +9,6 @@ const cors = require('cors');
 var path = require('path');
 fetch = import("node-fetch");
 var package= require('./package.json');
-console.log("version: ",package.version)
 // initialize database
 const bcrypt = require("bcryptjs");
 let { DB } = require("mongquick");
@@ -16,6 +16,7 @@ require('dotenv').config();
 const db = new DB(process.env.MongoLogin);
 // Security
 const jwt = require('jsonwebtoken');
+const { defaultMaxListeners } = require("events");
 
 const avatars = ['https://i.imgur.com/2CXjyN6.png', 'https://i.imgur.com/7bwnZht.png', 'https://i.imgur.com/UmwVaRU.png', 'https://i.imgur.com/ZJT5vOm.png'];
 app.use(cors());
@@ -23,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const originsAllowed = [
-  "http://localhost:5000",
+  "http://localhost:"+PORT,
   "https://vizualizacni-portal.up.railway.app",
 ]
 /*FUNCTIONS*/
@@ -36,14 +37,13 @@ function listsGetRandomItem(list, remove) {
   }
 }
 function createToken(username,user) {
-  return jwt.sign({iss: username,avatar: user.user.avatar,admin: user.user.admin, exp: Math.floor(Date.now() / 1000) + (14 * 86400) 
+  return jwt.sign({iss: username,avatar: user.user.avatar,admin: user.user.admin,role: user.user.role, ID: user.user.ID,createdTimestamp: user.user.createdTimestamp, exp: Math.floor(Date.now() / 1000) + (14 * 86400) 
 }, process.env.JWTSECRET , { algorithm: 'HS256' })
 }
 
 // Routes
 app.post('/login', async function(req, res) {
   res.header("Content-Type", 'application/json');
-  console.log(req.get('origin'))
   if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
   if (!(await (db.has(req.body.username)))) return res.status(404).send({valid: false, response: "Uživatel s tímto jménem neexistuje"})
   if (!(bcrypt.compareSync(req.body.password, (await (db.get(req.body.username))).user.password))) return res.status(401).send({valid: false, response: "Heslo se neshhoduje"});
@@ -52,7 +52,7 @@ app.post('/login', async function(req, res) {
   var token = createToken(req.body.username,object)
   if (token == 'undefined') return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
       
-    res.status(200).send({valid: true, pfp: object.user.avatar, token: token});
+    res.status(200).send({valid: true, pfp: object.user.avatar, token: token, admin: object.user.admin, role: object.user.role, ID: object.user.ID, createdTimestamp: object.user.createdTimestamp});
   });
 
 app.post('/register', async function(req, res) {
@@ -68,6 +68,7 @@ app.post('/register', async function(req, res) {
         "email": null,
         "ID": (await (db.get('ID'))),
         "admin": false,
+        "role": "user",
         "createdTimestamp": (Math.floor(new Date().getTime() / 1000))
       },
       "devices": []
@@ -114,18 +115,25 @@ app.post('/delete', async function(req, res) {
     app.post('/verify', async function(req, res) {
       res.header("Content-Type", 'application/json');
       if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
-      jwt.verify(req.body.token, process.env.JWTSECRET, function(err, decoded) {
+      jwt.verify(req.body.token, process.env.JWTSECRET, async function(err, decoded) {
 
         if (err) return res.status(401).send({valid: false, response: err})
         if (decoded == undefined) return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
-          
-        res.status(200).send({valid: true, pfp: decoded.avatar, user: decoded.iss});
-      });
+        var object = (await (db.get(decoded.iss))).user;
+        console.log("verify " + decoded.iss)
+        for (var j in object) {
+            d = decoded[String(j)]
+            o = object[String(j)] 
+            if (!(o && d)) continue;
+            console.log(j, o != d ? ("( database: ", o,", ","token: ", d, ")" ): d)
+            if (o != d) return res.status(401).send({valid: false, response: "Nastala chyba, přihlašte se znovu"})}
+    
+        res.status(200).send({valid: true, pfp: decoded.avatar, user: decoded.iss, role: decoded.role, admin: decoded.admin, ID: decoded.ID, createdTimestamp: decoded.createdTimestamp});
+      }); 
       });
 
-      app.post('/getallusers', async function(req, res) {
+      app.get('/userlist', async function(req, res) {
         res.header("Content-Type", 'application/json');
-        if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
         var result = (await db.all()).filter(key => key.data.user != undefined);
         res.status(200).send({valid: true, users: result});
       })
@@ -133,5 +141,6 @@ app.post('/delete', async function(req, res) {
 app.use(express.static(__dirname + "/public"));
 
 var server = app.listen(PORT, function() {
-  console.log("Port: " + PORT, "Adress: " + server.address().address, "Family: " + server.address().family);
+  twirlTimer = null
+  process.stdout.write("\r" + ((process.env.isDev ? "Development mode" + ", hosted on " + originsAllowed[0] : "Production mode" + ", hosted on " + originsAllowed[1] )+ " version: " + package.version + " Port: " + PORT + " Adress: " + server.address().address + "Family: " + server.address().family + "\n"));
 });
