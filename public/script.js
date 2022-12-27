@@ -500,12 +500,7 @@ async function userlist(){
       html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + '<select id="role">' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
     });
     currentPage = 0
-    Swal.update({
-      title: 'Uživatelé' + ' (' + currentPage + '/' +  lastPage + ')',
-      html: '<table style="width:100%;color:#000"><tr><th>avatar</th><th id="TEXT">jméno</th><th id="DATE">vytvoření</th><th id="ROLE">role</th></tr>' + html.slice(currentPage *usersperpage -usersperpage, currentPage * usersperpage).join('') + '</table>',
-      showDenyButton: false,
-      showConfirmButton: true
-    })
+    Swal.clickConfirm()
     }
       if (result.isConfirmed) {
         currentPage++
