@@ -2,7 +2,7 @@
   "author": "Noxyyk (https://noxyyk.vercel.app/)",
   "description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
   "name": "vizualizacni-portal",
-  "version": "3.2.2",
+  "version": "3.4.3",
   "bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
   "homepage": "https://vizualizacni-portal.up.railway.app/",
   "keywords": [
@@ -15,6 +15,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mongquick": "github:ahqsoftwares/quickmongo",
@@ -22,7 +23,6 @@
     "sweetalert2": "^11.4.38"
   },
   "devDependencies": {
-    "dotenv": "^16.0.3",
     "nodemon": "^2.0.20"
   },
   "engines": {
@@ -36,6 +36,6 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   }
 }

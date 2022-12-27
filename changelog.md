@@ -1,5 +1,20 @@
 ## Change Log
 
+### Prosinec
+
+**27.12.2022**
+* sezaření uživatelů podle, jména, role, datumu registrace 
+
+**26.12.2022**
+* pouze 1 admin
+* změna role uživatele
+
+**20.12.2022**
+* /role - změna role uživatele
+
+**15.12.2022**
+* získání array všech uživatelů
+
 **6.12.2022**
 * funkce time(s) - zobrazí čas od expirace tokenu
 * validace tokenu při jeho změně
@@ -12,6 +27,8 @@
 **3.12.2022**
 * povolené origins pro CORS
 * profilový obrázek
+
+### Říjem
 
 **30.11.2022**
 * backend zpraven
@@ -41,6 +58,8 @@
 **4.11.2022**
 * registrace
 * propojení s mongoDB
+
+### Listopad
 
 **26.10.2022**
 * přidán device stránka

@@ -16,17 +16,42 @@ async function login_btn(){
   }
     document.getElementById('login_welcome').innerHTML = user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
 }
-
 // INIT
 verifyToken()
 login_btn()
 //Functions
 function time(s) {
+  var year = Math.floor(s / 31536000);
   var day = Math.floor(s / 86400);
   var hour = Math.floor((s % 86400) / 3600);
   var minute = Math.floor(((s % 86400) % 3600) / 60);
-  var second = ((s % 86400) % 3600) % 60;
-  return day > 1 ? day + " dny": day == 1? day + " dnem": hour > 1 ? hour + " hodinami" : hour == 1? hour + " hodinou" : minute > 1 ? minute + " minutami" : minute == 1? minute + " minutou" : second + " sekundami"
+  var second = Math.round(((s % 86400) % 3600) % 60);
+  return year > 0? (year + year == 1? " rokem": " lety"): day > 1 ? day + " dny": day == 1? day + " dnem": hour > 1 ? hour + " hodinami" : hour == 1? hour + " hodinou" : minute > 1 ? minute + " minutami" : minute == 1? minute + " minutou" : second + " sekundami"
+}
+function listsGetSortCompare(type, direction) {
+  var compareFuncs = {
+      'NUMERIC': function(a, b) {
+          return Number(a) - Number(b);
+      },
+      'TEXT': function(a, b) {
+          return a.toString() > b.toString() ? 1 : -1;
+      },
+      'TEXT_NOCASE': function(a, b) {
+          return a.toString().toLowerCase() > b.toString().toLowerCase() ? 1 : -1;
+      },
+      'DATE': function(a, b) {
+          return b.data.user.createdTimestamp > a.data.user.createdTimestamp? 1 : -1;
+      },
+      'ROLE': function(a, b) {
+        let arole = (a.data.user.admin ? 3 : a.data.user.role == "advanced" ? 2 : 1)
+        let brole = (b.data.user.admin ? 3 : b.data.user.role == "advanced" ? 2 : 1)
+        return arole > brole? 1 : -1;
+      }
+  };
+  var compare = compareFuncs[type];
+  return function(a, b) {
+      return compare(a, b) * direction;
+  };
 }
 function verifyToken(){
   var validation = true
@@ -46,7 +71,7 @@ function verifyToken(){
     .then(result => result.json()
       .then(json => { console.log("response: ", Status(result.status));
       if (json.valid){ validation = true;
-        localStorage.setItem("user",JSON.stringify({"user": json.user, "pfp": json.pfp, "token": token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
+        localStorage.setItem("user",JSON.stringify({"email":json.email,"user": json.user, "pfp": json.pfp, "token": token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
         return
       }
       localStorage.removeItem("user");
@@ -57,7 +82,7 @@ function verifyToken(){
             position: 'bottom-end',
             toast: true,
             icon: 'warning',
-            text: json.response.name == 'TokenExpiredError'? 'Token expiroval před ' + time(Math.floor(((new Date().getTime())-(new Date(json.response.expiredAt).getTime()))/1000)) + ', přihlášení je vyžadováno' : 'Token je neplatný, přihlášení je vyžadováno' ,
+            text: json.response.name == 'TokenExpiredError'? 'Token expiroval před ' + time(Math.floor(((new Date().getTime())-(new Date(json.response.expiredAt).getTime()))/1000)) + ', přihlášení je vyžadováno' : 'Token je neplatný, přihlášení je vyžadováno',
             showConfirmButton: false,
             timer: 10000
           })
@@ -135,7 +160,7 @@ async function logIn() {
   const { value: formValues } = await Swal.fire({
     title: 'Login',
     html:
-      '<input id="login_name" placeholder="Jméno" autocomplete="on" class="swal2-input">' +
+      '<form><input id="login_name" type="name" placeholder="Jméno" autocomplete="on" class="swal2-input"></form>' +
       '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
     focusConfirm: false,
     showCancelButton: true,
@@ -384,24 +409,116 @@ if(localStorage.getItem("user") == null) return logIn()
 }
 
 async function userlist(){
+  //check if user is admin
+  if(!JSON.parse(localStorage.getItem("user")).admin) return swalError("Nemáte dostatečná oprávnění")
   var userlist = await fetch('/userlist')
   .then(result => result.json()
     .then(json => { console.log("response: ", Status(result.status));
     if (!json.valid) return swalError(json.response)
     return json.users
    }))
-   
-  var html = ""
-  userlist.forEach(element => {
-    html += '<img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '">' + element.ID + '<br>'
-  });
-  Swal.fire({
-    title: 'Uživatelé',
-    html: html,
-  })
+    var html = []
+    userlist.forEach(element => {
+      let userrole = (element.data.user.admin ? 3 : element.data.user.role == "advanced" ? 2 : 1) // (element.data.user.admin ? 'admin' : element.data.user.role)
+      let roles = ['user', 'advanced', 'admin']
+      html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + '<select id="role">' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
+    });
 
-
+  const swalPage = Swal.mixin({  
+    confirmButtonText: 'další',
+    denyButtonText: 'předchozí',
+    cancelButtonText: 'zavřít',
+    reverseButtons: true,
+    confirmButtonColor: '#3085d6',
+    denyButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+  })	
+  let usersperpage = 10
+  var sorttype = {
+    "direction": -1,
+    "type": "DATE",
+};
+  let lastPage = Math.ceil(html.length/usersperpage)
+  for (let currentPage = 1; currentPage < lastPage +1;) {
+   const result = await swalPage.fire({
+      title: 'Uživatelé' + ' (' + currentPage + '/' +  lastPage + ')',
+      html: '<table style="width:100%;color:#000"><tr><th>ID</th><th>avatar</th><th id="TEXT">jméno ' + (sorttype.type == "TEXT"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="DATE">vytvoření ' + (sorttype.type == "DATE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="ROLE">role ' + (sorttype.type == "ROLE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th></tr>' + html.slice(currentPage *usersperpage -usersperpage, currentPage * usersperpage).join('') + '</table>',
+      grow: "row",
+      showCancelButton: true,
+      showDenyButton: currentPage > 1,
+      showConfirmButton: currentPage < lastPage,
+      didOpen: () => {
+        document.getElementById("TEXT").onclick = function() {sortusers("TEXT")};
+        document.getElementById("DATE").onclick = function() {sortusers("DATE")};
+        document.getElementById("ROLE").onclick = function() {sortusers("ROLE")};
+        document.querySelectorAll('select').forEach((select, index) => {
+          select.addEventListener('change', (event) => {
+            let userrole = (event.target.value == 'admin' ? 3 : event.target.value == 'advanced' ? 2 : 1)
+            let roles = ['user', 'advanced', 'admin']
+            console.log(userlist[currentPage * usersperpage-usersperpage+index].ID, roles[userrole - 1])
+            let requestOptions = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify
+              ({
+                'username': userlist[currentPage * usersperpage-usersperpage+index].ID,
+                'role': roles[userrole - 1]
+              })
+              };
+              fetch(`/role`, requestOptions) //fetch data from request
+              .then(result => result.json()
+                .then(json => { console.log("response: ", Status(result.status));
+                if (!json.valid) return swalError(json.response)
+                
+                if(!JSON.parse(localStorage.getItem("user")).admin) return swalError("Nemáte dostatečná oprávnění")
+                //change html of selected users role
+                html = html.map((html, index2) => {
+                  if (index2 == index) {
+                    return html.replace(/<select>.*<\/select>/, '<select>' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>')
+                  }
+                  return html
+                })
+               if (userlist[index].ID == JSON.parse(localStorage.getItem("user")).user) return delay(1000).then(() => {verifyToken()})
+                }))
+          })
+        })
+      }
+    })
+    function sortusers(type){
+      let direction = sorttype.type == type ? sorttype.direction * -1 : 1
+      sorttype.direction = direction
+      direction = type == "TEXT" ? 1 : direction
+      sorttype.type = type
+      userlist.sort(listsGetSortCompare(type, direction))
+      html = []
+      console.log("sort: ", type, direction)
+      userlist.forEach(element => {
+      let userrole = (element.data.user.admin ? 3 : element.data.user.role == "advanced" ? 2 : 1) // (element.data.user.admin ? 'admin' : element.data.user.role)
+      let roles = ['user', 'advanced', 'admin']
+      html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + '<select id="role">' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
+    });
+    currentPage = 0
+    Swal.update({
+      title: 'Uživatelé' + ' (' + currentPage + '/' +  lastPage + ')',
+      html: '<table style="width:100%;color:#000"><tr><th>avatar</th><th id="TEXT">jméno</th><th id="DATE">vytvoření</th><th id="ROLE">role</th></tr>' + html.slice(currentPage *usersperpage -usersperpage, currentPage * usersperpage).join('') + '</table>',
+      showDenyButton: false,
+      showConfirmButton: true
+    })
+    }
+      if (result.isConfirmed) {
+        currentPage++
+        
+      } else if (result.isDenied) {
+        currentPage--
+        
+      } else {
+        break
+      }
+  }
 }
+
 
 onstorage = (event) => { 
  // console.log("storage change");
