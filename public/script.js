@@ -1,9 +1,42 @@
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+//set custom swal fire
+var toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+Swal = Swal.mixin({
+  denyButtonColor: '#d33',
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Potvrdit',
+  denyButtonText: 'Zrušit',
+  cancelButtonText: 'Zrušit',
+  allowOutsideClick: false,
+  focusConfirm : false,
+})
+var notif = Swal.mixin({
+  position: 'center',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  allowOutsideClick: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 // HTML
 async function login_btn(){
   var user = localStorage.getItem("user")
   try{user = JSON.parse(user)}catch{user = null}
-  var pfp = user?.pfp == null || !user.pfp.includes("https://")? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
+  var pfp = user?.pfp == null  || typeof user.pfp != "string" || !user.pfp.includes("https://") ? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
   if (user?.token == null) {
     document.getElementById("dropdown_account").style.display= "none";
     document.getElementById("login_list").style.display= "inline-block";
@@ -34,17 +67,22 @@ function listsGetSortCompare(type, direction) {
           return Number(a) - Number(b);
       },
       'TEXT': function(a, b) {
-          return a.toString() > b.toString() ? 1 : -1;
+          return a.ID.toString() > b.ID.toString() ? 1 : -1;
       },
       'TEXT_NOCASE': function(a, b) {
-          return a.toString().toLowerCase() > b.toString().toLowerCase() ? 1 : -1;
+          return a.ID.toString().toLowerCase() > b.ID.toString().toLowerCase() ? 1 : -1;
       },
       'DATE': function(a, b) {
           return b.data.user.createdTimestamp > a.data.user.createdTimestamp? 1 : -1;
       },
+      'DATE2': function(a, b) {
+        if (a.data.user.loggedTimestamp == undefined) return 1
+        return b.data.user.loggedTimestamp > a.data.user.loggedTimestamp? 1 : -1;
+    },
       'ROLE': function(a, b) {
         let arole = (a.data.user.admin ? 3 : a.data.user.role == "advanced" ? 2 : 1)
         let brole = (b.data.user.admin ? 3 : b.data.user.role == "advanced" ? 2 : 1)
+        if (arole == brole) return a.data.user.loggedTimestamp > b.data.user.loggedTimestamp ? 1 : -1;
         return arole > brole? 1 : -1;
       }
   };
@@ -77,20 +115,16 @@ function verifyToken(){
       localStorage.removeItem("user");
       login_btn();
       validation = false
-      Swal.fire({ 
-            timerProgressBar: true,
-            position: 'bottom-end',
-            toast: true,
+      toast.fire({ 
             icon: 'warning',
             text: json.response.name == 'TokenExpiredError'? 'Token expiroval před ' + time(Math.floor(((new Date().getTime())-(new Date(json.response.expiredAt).getTime()))/1000)) + ', přihlášení je vyžadováno' : 'Token je neplatný, přihlášení je vyžadováno',
-            showConfirmButton: false,
             timer: 10000
           })
       }))
 return validation
 }
 function swalError(response){
-  Swal.fire({
+  notif.fire({
     icon: 'error',
     title: 'Jejda...',
     text: response
@@ -162,10 +196,8 @@ async function logIn() {
     html:
       '<form><input id="login_name" type="name" placeholder="Jméno" autocomplete="on" class="swal2-input"></form>' +
       '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
-    focusConfirm: false,
     showCancelButton: true,
     confirmButtonText: 'Přihlásit',
-    cancelButtonText: 'Zrušit',
     footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
     preConfirm: () => {
       return [
@@ -192,14 +224,9 @@ async function logIn() {
         if (!json.valid) return swalError(json.response)
         localStorage.setItem("user",JSON.stringify({"user": login.name, "pfp": json.pfp, "token": json.token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
             login_btn();
-            Swal.fire({
-              toast: true,
-              timerProgressBar: true,
-              position: 'bottom-end',
+            toast.fire({
               icon: 'success',
-              title: 'logged in as ' + login.name,
-              showConfirmButton: false,
-              timer: 3000,
+              title: 'logged in as ' + login.name
             })
         }))
   }
@@ -211,13 +238,9 @@ async function logOut() {
   login_btn();
   
   
-    Swal.fire({ //match
-      position: 'bottom-end',
+    toast.fire({ //match
       icon: 'info',
-      toast: true,
       text: 'Byli jste odhlášeni',
-      showConfirmButton: false,
-      timer: 3000
     })
 }
 
@@ -230,7 +253,6 @@ async function register() {
   <form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
   showCancelButton: true,
   confirmButtonText: 'Registrovat',
-  cancelButtonText: 'Zrušit',
   footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
     preConfirm: () => {
       const login = Swal.getPopup().querySelector('#name').value
@@ -263,13 +285,10 @@ if(register){
       .then(json => { console.log("response: ", Status(result.status));
       if (!json.valid) return swalError(json.response)
       
-      Swal.fire({ //match
+      notif.fire({ //match
       icon: 'success',
       text: 'Úspěšně registrován jako ' + register.login + ' nyní se můžete přihlásit',
       footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-      showConfirmButton: false,
-      confirmButtonText: 'Dismiss',
-      timer: 5000
     }) 
   }))
 }
@@ -282,7 +301,6 @@ async function account(type) {
         html:`<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Nové jméno" ></form>`,
         showCancelButton: true,
         confirmButtonText: 'Zněnit jméno',
-        cancelButtonText: 'Zrušit',
           preConfirm: () => {
            return Swal.getPopup().querySelector('#name').value
         },
@@ -294,7 +312,7 @@ async function account(type) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            'username': JSON.parse(localStorage.getItem("user")).name,
+            'username': JSON.parse(localStorage.getItem("user")).user,
             'name': username,
             'type': 'name'
           })
@@ -303,15 +321,14 @@ async function account(type) {
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
-
-            localStorage.setItem("user", JSON.stringify({"user":username}));
-            document.getElementById('login_welcome').innerHTML = user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
-            Swal.fire({ //match
+            var user = JSON.parse(localStorage.getItem("user"));
+            user.user = username;
+            localStorage.setItem("user", JSON.stringify(user));
+            document.getElementById('login_welcome').innerHTML =  user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
+            notif.fire({ //match
             icon: 'success',
             text: 'Změna jména proběhla úspěšně',
-            showConfirmButton: false,
-            confirmButtonText: 'Dismiss',
-            timer: 5000
+            position: 'center',
             })
            }))
       }
@@ -323,7 +340,6 @@ async function account(type) {
               <form><input type="password" id="password_again" autocomplete="on" class="swal2-input" placeholder="Nové heslo znovu" ></form>`,
         showCancelButton: true,
         confirmButtonText: 'Zněnit heslo',
-        cancelButtonText: 'Zrušit',
           preConfirm: () => {
             const password_again = Swal.getPopup().querySelector('#password_again').value
             const password = Swal.getPopup().querySelector('#password').value
@@ -345,7 +361,7 @@ async function account(type) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            'username': JSON.parse(localStorage.getItem("user")).name,
+            'username': JSON.parse(localStorage.getItem("user")).user,
             'password': value,
             'type': 'password'
           })
@@ -355,11 +371,9 @@ async function account(type) {
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
             
-            Swal.fire({ 
+            notif.fire({ 
             icon: 'success',
             text: 'Změna hesla proběhla úspěšně',
-            showConfirmButton: false,
-            confirmButtonText: 'Dismiss',
             timer: 5000
             }).then(() => {logOut()})
            }))
@@ -374,7 +388,7 @@ async function account(type) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          'username': JSON.parse(localStorage.getItem("user")).name
+          'username': JSON.parse(localStorage.getItem("user")).user
         })
         };
         fetch(`/delete`, requestOptions) //fetch data from request
@@ -382,11 +396,9 @@ async function account(type) {
           .then(json => { console.log("response: ", Status(result.status));
           if (!json.valid) return swalError(json.response)
           localStorage.removeItem("user");
-        Swal.fire({ //match
+        notif.fire({ //match
         icon: 'success',
         text: 'Účet byl úspěšně smazán',
-        showConfirmButton: false,
-        confirmButtonText: 'Dismiss',
         timer: 5000
         })
          }))
@@ -394,10 +406,96 @@ async function account(type) {
         logOut();
         })
   break;
+    case "pfp":
+      //make avatar selection, on click show border, on confirm button send avatar to server
+      var avatars = ['https://i.imgur.com/2CXjyN6.png', 'https://i.imgur.com/7bwnZht.png', 'https://i.imgur.com/UmwVaRU.png', 'https://i.imgur.com/ZJT5vOm.png'];
+      var avatars_html = '';
+      for (var i = 0; i < avatars.length; i++) {
+        avatars_html += `<img id="avatar_${i}" class="avatar" width="20%" src="${avatars[i]}">`
+      }
+      var { value: avatar } = await Swal.fire({
+        title: 'Změna profilového obrázku',
+        html: '<div class="grid-container">'  + avatars_html + `</div>`,
+        showCancelButton: true,
+        showDenyButton: true,
+        denyButtonText: 'Vlastní obrázek',
+        confirmButtonText: 'Zněnit profilový obrázek',
+        didOpen: () => {
+          for (var i = 0; i < avatars.length; i++) {
+            document.getElementById(`avatar_${i}`).addEventListener('click', () => {
+              for (var i = 0; i < avatars.length; i++) {
+                document.getElementById(`avatar_${i}`).classList.remove('selected');
+              }
+              event.target.classList.add('selected');
+              console.log(event.target)
+            })
+          }
+        },
+        preConfirm: () => {
+          var avatar = '';
+          for (var i = 0; i < avatars.length; i++) {
+            if (document.getElementById(`avatar_${i}`).classList.contains('selected')) {
+              avatar = avatars[i];
+            }
+          }
+          if (avatar == '') Swal.showValidationMessage(`Vyberte prosím profilový obrázek`)
+          return avatar
+        },
+      })
+//on deny button pressed
+console.log(avatar)
+    if (avatar != undefined && !avatar) {
+      //add avatar using link
+avatar = await Swal.fire({
+        title: 'Změna profilového obrázku',
+        input: 'text',
+        inputLabel: 'Zadejte URL obrázku',
+        inputPlaceholder: 'https://i.imgur.com/2CXjyN6.png',
+        showCancelButton: true,
+        confirmButtonText: 'Zněnit profilový obrázek',
+        preConfirm: (avatar) => {
+          if (!avatar) Swal.showValidationMessage(`Vyberte prosím profilový obrázek`)
+          if (!avatar.match(/^http(s?):\/\/.*/g)) Swal.showValidationMessage(`Vyberte prosím platný obrázek`)
+          return avatar
+        },
+      })
+      avatar = avatar.value;
+      }
+
+      if (avatar) {
+        requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            'username': JSON.parse(localStorage.getItem("user")).user,
+            'avatar': avatar,
+            'type': 'avatar'
+          })
+          };
+          fetch(`/change`, requestOptions) //fetch data from request
+          .then(result => result.json()
+            .then(json => { console.log("response: ", Status(result.status));
+            if (!json.valid) return swalError(json.response)
+            notif.fire({
+              icon: 'success',
+              text: 'Změna profilového obrázku proběhla úspěšně',
+              timer: 5000
+            }).then(() => {object = (JSON.parse(localStorage.getItem("user")))
+            object.pfp = avatar
+            object.token = json.token
+            localStorage.setItem("user", JSON.stringify(object))	
+            login_btn()
+            
+          })
+            }))
+      }
+      break;
   default:
     Swal.fire({
       title: 'Účet',
-      html: 'Jméno: ' + JSON.parse(localStorage.getItem("user")).user +' '+'<button id="username" onclick=account("username") class="btn btn-warning">' + 'Změnit jméno' + '</button><br>Heslo: ********** <button onclick=account("password") id="password" class="btn btn-warning">' + 'Změnit heslo' + '</button><br><button onclick=logOut() class="btn btn-danger">' + 'Odhlásit se' + '</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' + 'Smazat účet' + '</button><br>',
+      html: 'Jméno: ' + JSON.parse(localStorage.getItem("user")).user +' '+'<button id="username" onclick=account("username") class="btn btn-warning">' + 'Změnit jméno' + '</button><br>Heslo: ********** <button onclick=account("password") id="password" class="btn btn-warning">' + 'Změnit heslo' + '</button><br><button onclick=account("pfp") class="btn btn-warning">' + 'Změna profilového obrázku' + '</button><br><button onclick=logOut() class="btn btn-danger">' + 'Odhlásit se' + '</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' + 'Smazat účet' + '</button><br>',
     })
   break;
   }
@@ -418,12 +516,23 @@ async function userlist(){
     return json.users
    }))
     var html = []
-    userlist.forEach(element => {
-      let userrole = (element.data.user.admin ? 3 : element.data.user.role == "advanced" ? 2 : 1) // (element.data.user.admin ? 'admin' : element.data.user.role)
-      let roles = ['user', 'advanced', 'admin']
-      html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + '<select id="role">' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
-    });
+    let roles = ['user', 'advanced', 'admin']
+    let usersperpage = 10
+    var sorttype = {
+      "direction": -1,
+      "type": "DATE",
+  };
+  userlist.forEach(element => {
+    if (element.data.user.avatar == undefined ||  typeof element.data.user.avatar != "string") element.data.user.avatar = "./images/0.png"
+    let img = new Image();
+    img.src = element.data.user.avatar;
+      img.onerror = function() {
+        element.data.user.avatar = "./images/0.png"
+      }
 
+  let userrole = (element.data.user.admin ? 3 : element.data.user.role == "advanced" ? 2 : 1) // (element.data.user.admin ? 'admin' : element.data.user.role)
+  html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + (element.data.user.loggedTimestamp ? ((new Date().getTime() / 1000) - element.data.user.loggedTimestamp <= 3600 || JSON.parse(localStorage.getItem("user")).user == element.ID ? '<span style="color:#00ff00">aktivní</span>' : time((new Date().getTime() / 1000) - element.data.user.loggedTimestamp)) : '<span style="color:#ff0a0a">nikdy</span>' )+ '</td><td>' +'<select id="role"' +(JSON.parse(localStorage.getItem("user")).user == element.ID? "disabled" : "" )+ '>' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
+  });
   const swalPage = Swal.mixin({  
     confirmButtonText: 'další',
     denyButtonText: 'předchozí',
@@ -433,23 +542,21 @@ async function userlist(){
     denyButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
   })	
-  let usersperpage = 10
-  var sorttype = {
-    "direction": -1,
-    "type": "DATE",
-};
+
   let lastPage = Math.ceil(html.length/usersperpage)
   for (let currentPage = 1; currentPage < lastPage +1;) {
    const result = await swalPage.fire({
       title: 'Uživatelé' + ' (' + currentPage + '/' +  lastPage + ')',
-      html: '<table style="width:100%;color:#000"><tr><th>ID</th><th>avatar</th><th id="TEXT">jméno ' + (sorttype.type == "TEXT"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="DATE">vytvoření ' + (sorttype.type == "DATE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="ROLE">role ' + (sorttype.type == "ROLE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th></tr>' + html.slice(currentPage *usersperpage -usersperpage, currentPage * usersperpage).join('') + '</table>',
+      html: '<table style="width:100%;color:#000"><tr><th>ID</th><th>avatar</th><th id="TEXT">jméno ' + (sorttype.type == "TEXT"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="DATE">vytvoření ' + (sorttype.type == "DATE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="DATE2">přihlášení ' + (sorttype.type == "DATE2"? (sorttype.direction == 1? "↓":"↑"): "") + '</th><th id="ROLE">role ' + (sorttype.type == "ROLE"? (sorttype.direction == 1? "↓":"↑"): "") + '</th></tr>' + html.slice(currentPage *usersperpage -usersperpage, currentPage * usersperpage).join('') + '</table>',
       grow: "row",
       showCancelButton: true,
       showDenyButton: currentPage > 1,
       showConfirmButton: currentPage < lastPage,
       didOpen: () => {
+        
         document.getElementById("TEXT").onclick = function() {sortusers("TEXT")};
         document.getElementById("DATE").onclick = function() {sortusers("DATE")};
+        document.getElementById("DATE2").onclick = function() {sortusers("DATE2")};
         document.getElementById("ROLE").onclick = function() {sortusers("ROLE")};
         document.querySelectorAll('select').forEach((select, index) => {
           select.addEventListener('change', (event) => {
@@ -487,20 +594,34 @@ async function userlist(){
       }
     })
     function sortusers(type){
-      let direction = sorttype.type == type ? sorttype.direction * -1 : 1
+      Swal.showLoading()
+      
+      let direction = sorttype.type == type ? sorttype.direction * -1 : -1
       sorttype.direction = direction
-      direction = type == "TEXT" ? 1 : direction
+     // direction = type == "TEXT" ? 1 : direction
       sorttype.type = type
       userlist.sort(listsGetSortCompare(type, direction))
       html = []
-      console.log("sort: ", type, direction)
+      var sorted = 0
       userlist.forEach(element => {
+        //check if image is valid otherwise use default image
+        let img = new Image();
+        img.src = element.data.user.avatar;
+        img.onerror = function() {
+          element.data.user.avatar = "./images/0.png"
+        }
       let userrole = (element.data.user.admin ? 3 : element.data.user.role == "advanced" ? 2 : 1) // (element.data.user.admin ? 'admin' : element.data.user.role)
-      let roles = ['user', 'advanced', 'admin']
-      html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + '<select id="role">' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
-    });
+      html.push('<tr><td>'+ element.data.user.ID+'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="'+ element.data.user.avatar + '"></td><td>' + element.ID + '</td><td>' + time((new Date().getTime() / 1000) - element.data.user.createdTimestamp) + '</td><td>' + (element.data.user.loggedTimestamp ? ((new Date().getTime() / 1000) - element.data.user.loggedTimestamp <= 3600 || JSON.parse(localStorage.getItem("user")).user == element.ID ? '<span style="color:#00ff00">aktivní</span>' : time((new Date().getTime() / 1000) - element.data.user.loggedTimestamp)) : '<span style="color:#ff0a0a">nikdy</span>' )+ '</td><td>' +'<select id="role"' +(JSON.parse(localStorage.getItem("user")).user == element.ID? "disabled" : "" )+ '>' + roles.map((role, index) => {return '<option value="'+ role +'" ' + (userrole == index + 1 ? 'selected' : '') + '>' + role + '</option>'}).join('') +'</select>' +'</td></tr>')
+sorted++
+if (sorted == userlist.length) {
+  delay(100).then(() => {
     currentPage = 0
-    Swal.clickConfirm()
+    Swal.hideLoading()
+    swalPage.clickConfirm()
+    
+    })
+  }
+    })
     }
       if (result.isConfirmed) {
         currentPage++

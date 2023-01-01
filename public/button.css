@@ -1,0 +1,41 @@
+.swal2-show .btn {
+  font-size: large;
+  background-color:#fff;
+  border: 2px solid var(--button_clr);
+  border-radius: var(--article_border_radius);
+  color: var(--button_clr);
+  width: fit-content;
+  min-width: 100px;
+  height: 25px;
+}
+.swal2-show .btn:hover {
+  background-color: var(--button_clr);
+    color: #fff;
+}
+.swal2-show br{
+  display: block;
+  content: "";
+  margin-top: 6px;
+}
+.swal2-show .avatar{
+  border: 5px solid #fff;
+  border-radius: 50%;
+  width: 100px;
+}
+.swal2-show .selected{
+  border: 5px solid #000;
+}
+.swal2-show .grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 10px;
+  justify-content: center;
+  grid-template-columns: auto auto;
+}
+.swal2-show img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -ms-user-drag: none;
+  user-drag: none;
+}

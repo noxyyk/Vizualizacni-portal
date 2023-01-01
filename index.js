@@ -51,7 +51,8 @@ app.post('/login', async function(req, res) {
   var object = await (db.get(req.body.username))
   var token = createToken(req.body.username,object)
   if (token == 'undefined') return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
-      
+      object.user.loggedTimestamp = (Math.floor(new Date().getTime() / 1000));
+      db.set(req.body.username, object);
     res.status(200).send({valid: true, pfp: object.user.avatar, token: token, admin: object.user.admin, role: object.user.role, ID: object.user.ID, createdTimestamp: object.user.createdTimestamp});
   });
 
@@ -81,7 +82,7 @@ app.post('/register', async function(req, res) {
 app.post('/change', async function(req, res) {
   res.header("Content-Type", 'application/json');
   if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
- if (await ((db.has(req.body.username)))) var object = await (db.get(req.body.username)); 
+ if (await (db.has(req.body.username))) var object = await (db.get(req.body.username)); 
   switch (req.body.type) {
     case 'password':
       if (bcrypt.compareSync(req.body.password, object.user.password)) return res.status(401).send({valid: false, response: "zvolené heslo je stejné jako předtím"});
@@ -100,6 +101,14 @@ app.post('/change', async function(req, res) {
      case 'check':
       if (await (!(db.has(req.body.username)))) return res.status(409).send({valid: false, response: "uživatel neexistuje"});
       res.status(200).send({valid: true});
+      break;
+      case 'avatar':
+        if (req.body.avatar == object.user.avatar) return res.status(401).send({valid: false, response: "zvolený avatar je stejný jako předtím"});
+        //if (!avatars.includes(req.body.avatar)) return res.status(401).send({valid: false, response: "zvolený avatar neexistuje"});
+        object.user.avatar = req.body.avatar;
+        db.set(req.body.username, object);
+        res.status(200).send({valid: true, token: createToken(req.body.username, object)});
+        break;
      default:
       res.status(400).send({valid: false, response: "neznámý typ"});
     }
@@ -116,7 +125,6 @@ app.post('/delete', async function(req, res) {
       res.header("Content-Type", 'application/json');
       if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
       jwt.verify(req.body.token, process.env.JWTSECRET, async function(err, decoded) {
-        if (decoded.iss == "Noxyyk" && process.env.isDev) return res.status(200).send({valid: true, pfp: "https://avatars.githubusercontent.com/u/79714899?v=4", token: req.body.token, admin: true, role: "admin", ID: "702000000000000000", createdTimestamp: 0});//temp admin for testing
         if (err) return res.status(401).send({valid: false, response: err})
         if (decoded == undefined) return res.status(500).send({valid: false, response: "Nastala chyba, zkuste to znovu později"})
         var object = (await (db.get(decoded.iss))).user;

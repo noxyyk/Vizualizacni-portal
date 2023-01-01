@@ -1,4 +1,8 @@
 # Vizualizacni portal
+
+login when you change username or password
+createToken() on change
+
 **To Do**
 
 ## login 
