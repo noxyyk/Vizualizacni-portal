@@ -23,16 +23,16 @@
   width: 100px;
 }
 .swal2-show .selected{
+  transition: 1s;
   border: 5px solid #000;
 }
 .swal2-show .grid-container {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   grid-gap: 10px;
   justify-content: center;
-  grid-template-columns: auto auto;
 }
-.swal2-show img {
+img {
   -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;

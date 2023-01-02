@@ -1,6 +1,18 @@
-## Change Log
+# Change Log
 
-### Prosinec
+## Leden
+
+**2.1.2023**
+
+* přidání nových avatarů
+* možnost zůstat přihlášený
+* nové animace
+
+**1.1.2023**
+
+* přidání sezaření podle posledního přihlášení
+
+## Prosinec
 
 **27.12.2022**
 * sezaření uživatelů podle, jména, role, datumu registrace 
@@ -28,7 +40,7 @@
 * povolené origins pro CORS
 * profilový obrázek
 
-### Říjem
+## Říjem
 
 **30.11.2022**
 * backend zpraven
@@ -59,7 +71,7 @@
 * registrace
 * propojení s mongoDB
 
-### Listopad
+## Listopad
 
 **26.10.2022**
 * přidán device stránka

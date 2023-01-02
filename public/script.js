@@ -36,7 +36,7 @@ var notif = Swal.mixin({
 async function login_btn(){
   var user = localStorage.getItem("user")
   try{user = JSON.parse(user)}catch{user = null}
-  var pfp = user?.pfp == null  || typeof user.pfp != "string" || !user.pfp.includes("https://") ? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
+  var pfp = user?.pfp == null  || typeof user.pfp != "string" || (!user.pfp.includes("https://") && !user.pfp.includes("./images/avatar_"))? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
   if (user?.token == null) {
     document.getElementById("dropdown_account").style.display= "none";
     document.getElementById("login_list").style.display= "inline-block";
@@ -196,17 +196,20 @@ async function logIn() {
     html:
       '<form><input id="login_name" type="name" placeholder="Jméno" autocomplete="on" class="swal2-input"></form>' +
       '<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
+    input: 'checkbox',
+    inputValue: 1,
+    inputPlaceholder: 'Zůstat přihlášen',
     showCancelButton: true,
     confirmButtonText: 'Přihlásit',
     footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
-    preConfirm: () => {
+    preConfirm: (result) => {
       return [
         document.getElementById('login_name').value,
-        document.getElementById('login_pswrd').value
+        document.getElementById('login_pswrd').value,
+        result == 1? true : false
       ]
     }
   })
-  let login = { name: document.getElementById('login_name').value, password: document.getElementById('login_pswrd').value }; // make an object login with values
   if (formValues) {
     requestOptions = {
       method: 'POST',
@@ -214,19 +217,20 @@ async function logIn() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'username': login.name,
-        'password': login.password
+        'username': formValues[0],
+        'password': formValues[1],
+        'stayLogged': formValues[2] 
       })
     };
     fetch(`/login`, requestOptions) //fetch data from request
       .then(result => result.json()
         .then(json => { console.log("response: ", Status(result.status));
         if (!json.valid) return swalError(json.response)
-        localStorage.setItem("user",JSON.stringify({"user": login.name, "pfp": json.pfp, "token": json.token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
+        localStorage.setItem("user",JSON.stringify({"user": formValues[0], "pfp": json.pfp, "token": json.token, "createdTimestamp": json.createdTimestamp, "admin": json.admin, "ID": json.ID, "role": json.role}))
             login_btn();
             toast.fire({
               icon: 'success',
-              title: 'logged in as ' + login.name
+              title: 'logged in as ' + formValues[0]
             })
         }))
   }
@@ -296,42 +300,48 @@ if(register){
 async function account(type) {
   switch (type) {
     case "username":
-      const { value: username } = await Swal.fire({
+      await Swal.fire({
         title: 'Změna jména',
         html:`<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Nové jméno" ></form>`,
         showCancelButton: true,
         confirmButtonText: 'Zněnit jméno',
-          preConfirm: () => {
-           return Swal.getPopup().querySelector('#name').value
+          preConfirm: () => {  
+            let username = Swal.getPopup().querySelector('#name').value
+            if (username == JSON.parse(localStorage.getItem("user")).user) return Swal.showValidationMessage(`zvolené jméno je stejné jako předtím`)
+            if(username.match(/[^a-zA-Z0-9]/g)) return Swal.showValidationMessage('Jméno nesmí obsahovat speciální znaky')
+            if(username.length < 4)             return Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
+            Swal.showLoading()
+            requestOptions = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                'username': JSON.parse(localStorage.getItem("user")).user,
+                'username_new': username,
+                'type': 'name'
+              })
+              };
+              fetch(`/change`, requestOptions) //fetch data from request
+              .then(result => result.json()
+                .then(json => { console.log("response: ", Status(result.status));
+                if (!json.valid) return swalError(json.response)
+                object = (JSON.parse(localStorage.getItem("user")))
+                object.user = username
+                object.token = json.token
+                localStorage.setItem("user", JSON.stringify(object))	
+                login_btn()
+                Swal.hideLoading()
+               // document.getElementById('login_welcome').innerHTML =  user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
+                notif.fire({ //match
+                icon: 'success',
+                text: 'Změna jména proběhla úspěšně',
+                position: 'center',
+                })
+                
+               }))
         },
       })
-      if(username){
-        requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            'username': JSON.parse(localStorage.getItem("user")).user,
-            'name': username,
-            'type': 'name'
-          })
-          };
-          fetch(`/change`, requestOptions) //fetch data from request
-          .then(result => result.json()
-            .then(json => { console.log("response: ", Status(result.status));
-            if (!json.valid) return swalError(json.response)
-            var user = JSON.parse(localStorage.getItem("user"));
-            user.user = username;
-            localStorage.setItem("user", JSON.stringify(user));
-            document.getElementById('login_welcome').innerHTML =  user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
-            notif.fire({ //match
-            icon: 'success',
-            text: 'Změna jména proběhla úspěšně',
-            position: 'center',
-            })
-           }))
-      }
   break;
     case "password":
       const { value: value } = await Swal.fire({
@@ -407,12 +417,13 @@ async function account(type) {
         })
   break;
     case "pfp":
-      //make avatar selection, on click show border, on confirm button send avatar to server
-      var avatars = ['https://i.imgur.com/2CXjyN6.png', 'https://i.imgur.com/7bwnZht.png', 'https://i.imgur.com/UmwVaRU.png', 'https://i.imgur.com/ZJT5vOm.png'];
-      var avatars_html = '';
-      for (var i = 0; i < avatars.length; i++) {
-        avatars_html += `<img id="avatar_${i}" class="avatar" width="20%" src="${avatars[i]}">`
+      var avatars = [];
+      var avatars_html = "";
+      for (var i = 0; i < 9; i++) {
+        avatars.push(`./images/avatar_${i}.png`);
+        avatars_html += `<img id="avatar_${i}" class="avatar" src="/images/avatar_${i}.png" alt="avatar_${i}">`;
       }
+
       var { value: avatar } = await Swal.fire({
         title: 'Změna profilového obrázku',
         html: '<div class="grid-container">'  + avatars_html + `</div>`,
@@ -427,7 +438,6 @@ async function account(type) {
                 document.getElementById(`avatar_${i}`).classList.remove('selected');
               }
               event.target.classList.add('selected');
-              console.log(event.target)
             })
           }
         },
@@ -439,11 +449,11 @@ async function account(type) {
             }
           }
           if (avatar == '') Swal.showValidationMessage(`Vyberte prosím profilový obrázek`)
+          if (avatar == JSON.parse(localStorage.getItem("user")).pfp) Swal.showValidationMessage(`zvolený avatar je stejný jako předtím`)
           return avatar
         },
       })
 //on deny button pressed
-console.log(avatar)
     if (avatar != undefined && !avatar) {
       //add avatar using link
 avatar = await Swal.fire({
@@ -481,8 +491,9 @@ avatar = await Swal.fire({
             notif.fire({
               icon: 'success',
               text: 'Změna profilového obrázku proběhla úspěšně',
-              timer: 5000
-            }).then(() => {object = (JSON.parse(localStorage.getItem("user")))
+              timer: 3000
+            }).then(() => {
+            object = (JSON.parse(localStorage.getItem("user")))
             object.pfp = avatar
             object.token = json.token
             localStorage.setItem("user", JSON.stringify(object))	
