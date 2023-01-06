@@ -1,0 +1,12 @@
+{
+  "test": {
+    "link": "https://google.com",
+    "author": "test",
+    "usage": {
+      "count": 2,
+      "max": 5,
+      "created": 1672790412,
+      "daysvalid": 7
+    }
+  }
+}
