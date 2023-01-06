@@ -1,26 +1,25 @@
 {
   "author": "Tomáš Setunský",
-  "username": "Noxyyk",
+  "username" : "Noxyyk",
   "age": "2004, 3, 31",
-  "page": "https://noxyyk.vercel.app/",
-  "class": "4. P",
-  "socials": {
-    "github": "https://github.com/noxyyk",
-    "twitter": "https://twitter.com/noxyyk",
-    "instagram": "https://www.instagram.com/noxyyk/",
-    "facebook": "https://www.facebook.com/noxyyk",
-    "linkedin": "https://www.linkedin.com/in/noxyyk/",
-    "youtube": "https://www.youtube.com/channel/UCtVmkvYCBsi2QpDP_43RxMg",
-    "email": "setunskyto@gmail.com"
+  "page"  : "https://noxyyk.vercel.app/",
+  "class" : "4. P",
+  "socials" : {
+    "github" : "https://github.com/noxyyk",
+    "twitter" : "https://twitter.com/noxyyk",
+    "instagram" : "https://www.instagram.com/noxyyk/",
+    "facebook" : "https://www.facebook.com/noxyyk",
+    "linkedin" : "https://www.linkedin.com/in/noxyyk/",
+    "youtube" : "https://www.youtube.com/channel/UCtVmkvYCBsi2QpDP_43RxMg",
+    "email" : "setunskyto@gmail.com"
   },
   "description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
   "name": "vizualizacni-portal",
   "version": "3.4.4",
   "lastUpdate": "2.1.2023",
-  "hosting": {
-    "text": "Railway",
-    "link": "https://railway.app/"
-  },
+  "hosting": { "text" :"Railway",
+                "link" : "https://railway.app/"
+              },
   "bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
   "homepage": "https://vizualizacni-portal.up.railway.app/",
   "keywords": [
@@ -34,7 +33,6 @@
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "easy-json-database": "^1.5.0",
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mongquick": "github:ahqsoftwares/quickmongo",

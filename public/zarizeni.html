@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="cz">
+
+
+<head>
+  <meta charset="utf-8"> <!--Define UTF-8 Characters-->
+  <meta name="viewport" content="width=device-width">
+  <title>Vizualizační Portál</title>
+  <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
+  <link rel="icon" type="image/x-icon" href="./images/logo.png">
+</head>
+
+<body> 
+ 
+<div class="header">
+  <div class="name_text"><h1>Vizualizační Portál</h1></div>
+  <div class="logo"><img src="./images/logo.png" width="80px";></div>
+  <h5><div class="welcome"><div id="login_welcome"></div></h5>
+  <div class="navigation">
+    <ul>
+      <li class="list">
+          <a href="./index.html">
+              <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
+              <span class="text">Domů</span>
+          </a>
+      </li>
+      <li class="list" onclick=ChangeLog()>
+          <a>
+              <span class="icon"><ion-icon name="code-slash-outline"></ion-icon></span>
+              <span class="text">Změny</span> 
+          </a>
+      </li>
+      <li class="list">
+          <a href="#setup">
+              <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+              <span class="text">Zařízení</span>
+          </a>
+      </li>
+      <li class="list">
+          <a href="#about">
+              <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
+              <span class="text">O projektu</span>
+          </a>
+      </li>
+  </ul>
+  </div>
+  <div id="login_list"></div>
+  <div class="dropdown">
+    <button class="dropbtn"><ion-icon name="menu-outline"></ion-icon></button>
+    <div class="dropdown-content">
+      <a href="./index.html">
+        <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
+        <span class="text">Domů</span>
+    </a>
+      <a onclick=ChangeLog()>
+        <span class="icon"><ion-icon name="code-slash-outline"></ion-icon></span>
+                <span class="text">Změny</span> 
+            </a>
+            <a href="#setup">
+              <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+              <span class="text">Zařízení</span>
+          </a>
+          <a href="#about">
+            <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
+            <span class="text">O projektu</span>
+        </a>
+    </div>
+  </div>
+</div>
+<div id="html">
+
+
+    <div class="articles">
+        <div class="article" id="about" style="position: relative;top: 140px;">
+          <h2>Zařízení</h2> 
+            <p>Zde si můžete přidat, spravovat a upravovat vaše zařízení, je potřeba se přihlásit!</p>
+        </div>
+      </div>
+
+</div>
+
+  <div class="footer">
+    <p>® 2022 T.S. 4. P</p>
+  </div>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
+  <script src="script.js"></script>
+  <!--<script src="zarizeni.js"></script>-->
+  <script src="./files/changelog.js"></script>
+  <link type="text/css" rel="stylesheet" href="./files/changelog.css">
+</body>
+
+</html>
