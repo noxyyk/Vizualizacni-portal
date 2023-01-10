@@ -28,11 +28,24 @@ Swal.fire({
     <div class="change-grid">
     <h2 id="leden">Leden</h2>
     <div id="leden_content">
+    <p><strong>10.1.2023</strong></p>
+    <ul>
+    <li>animace při načtení webu</li>
+    <li>načtení animací při změně loginu</li>
+    <li>animace pro dropdown</li>
+    <li>dropdown na mobilu jako checkbox</li>
+    </ul>
+    <p><strong>9.1.2023</strong></p>
+    <ul>
+    <li>načtení icon před body</li>
+    <li>změna registrace, nyní ukazuje jestli uživatel existuje ve stejném modalu</li>
+    <li>smazání changelog.md, bude se používat tento modal</li>
+    </ul>
     <p><strong>2.1.2023</strong></p>
     <ul>
     <li>přidání nových avatarů</li>
     <li>možnost zůstat přihlášený</li>
-    <li>nové animace</li>
+    <li>animace loga</li>
     </ul>
     <p><strong>1.1.2023</strong></p>
     <ul>

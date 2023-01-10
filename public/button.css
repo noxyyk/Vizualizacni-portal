@@ -1,4 +1,4 @@
-.swal2-show .btn {
+.swal2-show .btn, .swal2-hide .btn{
   font-size: large;
   background-color:#fff;
   border: 2px solid var(--button_clr);
@@ -8,25 +8,25 @@
   min-width: 100px;
   height: 25px;
 }
-.swal2-show .btn:hover {
+.swal2-show .btn:hover,.swal2-hide .btn:hover {
   background-color: var(--button_clr);
     color: #fff;
 }
-.swal2-show br{
+.swal2-show br, .swal2-hide br{
   display: block;
   content: "";
   margin-top: 6px;
 }
-.swal2-show .avatar{
+.swal2-show .avatar, .swal2-hide .avatar{
   border: 5px solid #fff;
   border-radius: 50%;
   width: 100px;
 }
-.swal2-show .selected{
+.swal2-show .selected, .swal2-hide .selected{
   transition: 1s;
   border: 5px solid #000;
 }
-.swal2-show .grid-container {
+.swal2-show .grid-container, .swal2-hide .grid-container{
   display: grid;
   grid-template-columns: auto auto auto;
   grid-gap: 10px;
