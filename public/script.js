@@ -36,7 +36,7 @@ var notif = Swal.mixin({
 async function login_btn(){
   var user = localStorage.getItem("user")
   try{user = JSON.parse(user)}catch{user = null}
-  var pfp = user?.pfp == null  || typeof user.pfp != "string" || (!user.pfp.includes("https://") && !user.pfp.includes("./images/avatar_"))? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer" src="'+  user.pfp  + '">' 
+  var pfp = user?.pfp == null  || typeof user.pfp != "string" || (!user.pfp.includes("https://") && !user.pfp.includes("./images/avatar_"))? '<ion-icon name="accessibility-outline"></ion-icon>' : '<img onclick="account()" class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer"alt="logo" src="'+  user.pfp  + '">' 
   if (user?.token == null) {
     document.getElementById("dropdown_account").style.display= "none";
     document.getElementById("login_list").style.display= "inline-block";
@@ -48,7 +48,8 @@ async function login_btn(){
   '<div class="dropdown-content animation"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text"> Odhlášení</span></a>'+ (user.admin? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a>' : '' )+'</div>'
   }
     document.getElementById('login_welcome').innerHTML = user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
-}
+    animations()
+  }
 // INIT
 verifyToken()
 login_btn()
@@ -251,52 +252,56 @@ async function logOut() {
 //registration
 
 async function register() {
-  const { value: register } = await Swal.fire({
+  const register = async () => {
+    Swal.showLoading()
+    const name = Swal.getPopup().querySelector('#name').value
+    const password = Swal.getPopup().querySelector('#password').value
+    var validationErrors = []
+    if (!name || !password)         { Swal.showValidationMessage('Vyplňte prosím všechna pole'); return undefined}
+    if(name.match(/[^a-zA-Z0-9]/g) || name.length < 4) validationErrors.push('nesmí obsahovat speciální znaky a musí mít alespoň 4 znaky')
+    if (validationErrors.length > 0)      return Swal.showValidationMessage("jméno: " + validationErrors.join(', '));
+    if (!password.match(/[a-z]/g))   validationErrors.push('alespoň jedno malé písmeno')
+    if (!password.match(/[A-Z]/g))   validationErrors.push('alespoň jedno velké písmeno')
+    if (!password.match(/\d/g))      validationErrors.push('alespoň jedno číslo')
+    if (password == name)  	       validationErrors.push('nesmí být stejné jako jméno')
+    if (!password.match(/^.{8,}$/g)) validationErrors.push('alespoň 8 znaků')
+    if (validationErrors.length > 0)      return Swal.showValidationMessage("heslo: " + validationErrors.join(', '));
+
+    const data = {"username": name, "password": password };
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+  }
+  try {
+    const response = await fetch('/register', options);
+    const json = await response.json();
+    if (!json.valid) {
+        Swal.hideLoading();
+        return Swal.showValidationMessage(json.response);
+    }
+    notif.fire({
+        icon: 'success',
+        text: `Úspěšně registrován jako ${name}. nyní se můžete přihlásit.`,
+        footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>'
+    });
+} catch (error) {
+    console.error(error);
+    Swal.hideLoading();
+    Swal.showValidationMessage('Nastala chyba');
+}
+  };
+  Swal.fire({
   title: 'Registrace',
   html:`<input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Jméno">
   <form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
   showCancelButton: true,
   confirmButtonText: 'Registrovat',
   footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
-    preConfirm: () => {
-      const login = Swal.getPopup().querySelector('#name').value
-      const password = Swal.getPopup().querySelector('#password').value
-    if (!password.match(/[a-z]/g))    Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
-    if (!password.match(/[A-Z]/g))    Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
-    if (!password.match(/\d/g))       Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
-    if (password == login)  	        Swal.showValidationMessage('Heslo se nesmí shodovat s jménem' )
-    if (!password.match(/^.{8,}$/g))  Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
-    if(login.match(/[^a-zA-Z0-9]/g))  Swal.showValidationMessage('Jméno nesmí obsahovat speciální znaky')
-    if(login.length < 4)              Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
-    if (!login || !password)          Swal.showValidationMessage(`Vyplňte prosím jméno a heslo`)
-
-    return { login: login, password: password }
-  },
+    preConfirm: register
 })
-if(register){
-  requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'username': register.login,
-      'password': register.password
-    })
-    };
-    fetch(`/register`, requestOptions) //fetch data from request
-    .then(result => result.json()
-      .then(json => { console.log("response: ", Status(result.status));
-      if (!json.valid) return swalError(json.response)
-      
-      notif.fire({ //match
-      icon: 'success',
-      text: 'Úspěšně registrován jako ' + register.login + ' nyní se můžete přihlásit',
-      footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-    }) 
-  }))
 }
-}
+
 async function account(type) {
   switch (type) {
     case "username":
@@ -332,7 +337,6 @@ async function account(type) {
                 localStorage.setItem("user", JSON.stringify(object))	
                 login_btn()
                 Swal.hideLoading()
-               // document.getElementById('login_welcome').innerHTML =  user == null || user?.user == undefined ? "" : user.user + " | " + (user.admin? "administrátor" : user.role)
                 notif.fire({ //match
                 icon: 'success',
                 text: 'Změna jména proběhla úspěšně',
