@@ -107,7 +107,7 @@ function verifyToken(){
       'token': token
     })
   };
-  fetch(page + `/verify`, requestOptions) //fetch data from request
+  fetch("api.vizualizacni-portal.noxyyk.com/verify", requestOptions) //fetch data from request
     .then(result => result.json()
       .then(json => { console.log("response: ", Status(result.status));
       if (json.valid){ validation = true;
@@ -224,7 +224,7 @@ async function logIn() {
         'stayLogged': formValues[2] 
       })
     };
-    fetch(page + `/login`, requestOptions) //fetch data from request
+    fetch("api.vizualizacni-portal.noxyyk.com/login", requestOptions) //fetch data from request
       .then(result => result.json()
         .then(json => { console.log("response: ", Status(result.status));
         if (!json.valid) return swalError(json.response)
@@ -275,7 +275,7 @@ async function register() {
       body: JSON.stringify(data)
   }
   try {
-    const response = await fetch(page + '/register', options);
+    const response = await fetch("api.vizualizacni-portal.noxyyk.com/register", options);
     const json = await response.json();
     if (!json.valid) {
         Swal.hideLoading();
@@ -328,7 +328,7 @@ async function account(type) {
                 'type': 'name'
               })
               };
-              fetch(page + `/change`, requestOptions) //fetch data from request
+              fetch("api.vizualizacni-portal.noxyyk.com/change", requestOptions) //fetch data from request
               .then(result => result.json()
                 .then(json => { console.log("response: ", Status(result.status));
                 if (!json.valid) return swalError(json.response)
@@ -381,7 +381,7 @@ async function account(type) {
             'type': 'password'
           })
           };
-          fetch(page + `/change`, requestOptions) //fetch data from request
+          fetch("api.vizualizacni-portal.noxyyk.com/change", requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
@@ -406,7 +406,7 @@ async function account(type) {
           'username': JSON.parse(localStorage.getItem("user")).user
         })
         };
-        fetch(page + `/delete`, requestOptions) //fetch data from request
+        fetch("api.vizualizacni-portal.noxyyk.com/delete", requestOptions) //fetch data from request
         .then(result => result.json()
           .then(json => { console.log("response: ", Status(result.status));
           if (!json.valid) return swalError(json.response)
@@ -489,7 +489,7 @@ avatar = await Swal.fire({
             'type': 'avatar'
           })
           };
-          fetch(page + `/change`, requestOptions) //fetch data from request
+          fetch("api.vizualizacni-portal.noxyyk.com/change", requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
@@ -590,7 +590,7 @@ async function userlist(){
                 'role': roles[userrole - 1]
               })
               };
-              fetch(page + `/role`, requestOptions) //fetch data from request
+              fetch("api.vizualizacni-portal.noxyyk.com/role", requestOptions) //fetch data from request
               .then(result => result.json()
                 .then(json => { console.log("response: ", Status(result.status));
                 if (!json.valid) return swalError(json.response)
