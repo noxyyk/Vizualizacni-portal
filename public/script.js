@@ -1,4 +1,5 @@
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const page = "api.vizualizacni-portal.noxyyk.com";
 //set custom swal fire
 var toast = Swal.mixin({
   toast: true,
@@ -106,7 +107,7 @@ function verifyToken(){
       'token': token
     })
   };
-  fetch(`/verify`, requestOptions) //fetch data from request
+  fetch(page + `/verify`, requestOptions) //fetch data from request
     .then(result => result.json()
       .then(json => { console.log("response: ", Status(result.status));
       if (json.valid){ validation = true;
@@ -223,7 +224,7 @@ async function logIn() {
         'stayLogged': formValues[2] 
       })
     };
-    fetch(`/login`, requestOptions) //fetch data from request
+    fetch(page + `/login`, requestOptions) //fetch data from request
       .then(result => result.json()
         .then(json => { console.log("response: ", Status(result.status));
         if (!json.valid) return swalError(json.response)
@@ -274,7 +275,7 @@ async function register() {
       body: JSON.stringify(data)
   }
   try {
-    const response = await fetch('/register', options);
+    const response = await fetch(page + '/register', options);
     const json = await response.json();
     if (!json.valid) {
         Swal.hideLoading();
@@ -327,7 +328,7 @@ async function account(type) {
                 'type': 'name'
               })
               };
-              fetch(`/change`, requestOptions) //fetch data from request
+              fetch(page + `/change`, requestOptions) //fetch data from request
               .then(result => result.json()
                 .then(json => { console.log("response: ", Status(result.status));
                 if (!json.valid) return swalError(json.response)
@@ -380,7 +381,7 @@ async function account(type) {
             'type': 'password'
           })
           };
-          fetch(`/change`, requestOptions) //fetch data from request
+          fetch(page + `/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
@@ -405,7 +406,7 @@ async function account(type) {
           'username': JSON.parse(localStorage.getItem("user")).user
         })
         };
-        fetch(`/delete`, requestOptions) //fetch data from request
+        fetch(page + `/delete`, requestOptions) //fetch data from request
         .then(result => result.json()
           .then(json => { console.log("response: ", Status(result.status));
           if (!json.valid) return swalError(json.response)
@@ -488,7 +489,7 @@ avatar = await Swal.fire({
             'type': 'avatar'
           })
           };
-          fetch(`/change`, requestOptions) //fetch data from request
+          fetch(page + `/change`, requestOptions) //fetch data from request
           .then(result => result.json()
             .then(json => { console.log("response: ", Status(result.status));
             if (!json.valid) return swalError(json.response)
@@ -524,7 +525,7 @@ if(localStorage.getItem("user") == null) return logIn()
 async function userlist(){
   //check if user is admin
   if(!JSON.parse(localStorage.getItem("user")).admin) return swalError("Nemáte dostatečná oprávnění")
-  var userlist = await fetch('/userlist')
+  var userlist = await fetch(page + '/userlist')
   .then(result => result.json()
     .then(json => { console.log("response: ", Status(result.status));
     if (!json.valid) return swalError(json.response)
@@ -589,7 +590,7 @@ async function userlist(){
                 'role': roles[userrole - 1]
               })
               };
-              fetch(`/role`, requestOptions) //fetch data from request
+              fetch(page + `/role`, requestOptions) //fetch data from request
               .then(result => result.json()
                 .then(json => { console.log("response: ", Status(result.status));
                 if (!json.valid) return swalError(json.response)
