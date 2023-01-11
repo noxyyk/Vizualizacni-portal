@@ -19,8 +19,8 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const originsAllowed = [
     "http://localhost:"+PORT,
     "https://vizualizacni-portal.up.railway.app",
-    "vizualizacni-portal.noxyyk.com",
-    "noxyyk.com",
+    "https://vizualizacni-portal.noxyyk.com",
+    "https://noxyyk.com",
   ];
 
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`);
