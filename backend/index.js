@@ -25,7 +25,7 @@ const originsAllowed = [
 
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`);
 
-let package= require('./package.json');
+let package= require('../package.json');
 let package_ignore = ["scripts", "devDependencies", "main", "restart"];
   Object.keys(package).forEach(async (key) => {
     if (package_ignore.includes(key)) {
