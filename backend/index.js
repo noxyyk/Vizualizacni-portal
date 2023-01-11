@@ -6,8 +6,6 @@ const app = express();
 const PORT = 5000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
-var jwt = require('jsonwebtoken');
-require('dotenv').config();
 const bcrypt = require("bcryptjs");
 let { DB } = require("mongquick");
 const db = new DB(process.env.MongoLogin);
