@@ -525,7 +525,7 @@ if(localStorage.getItem("user") == null) return logIn()
 async function userlist(){
   //check if user is admin
   if(!JSON.parse(localStorage.getItem("user")).admin) return swalError("Nemáte dostatečná oprávnění")
-  var userlist = await fetch(page + '/userlist')
+  var userlist = await fetch("api.vizualizacni-portal.noxyyk.com/userlist")
   .then(result => result.json()
     .then(json => { console.log("response: ", Status(result.status));
     if (!json.valid) return swalError(json.response)
