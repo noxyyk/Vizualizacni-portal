@@ -47,13 +47,13 @@ function createToken(username,user, stayLogged) {
     return jwt.sign({iss: username,avatar: user.user.avatar,email:user.user.email,verified: user.user.verified,admin: user.user.admin,role: user.user.role, ID: user.user.ID,createdTimestamp: user.user.createdTimestamp, exp: Math.floor(Date.now() / 1000) + ((stayLogged? 14 : 1 )* 86400) 
   }, process.env.JWTSECRET , { algorithm: 'HS256' })
 }
-app.use(function(req, res, next) { 
-    if (req.headers.host === 'api.vizualizacni-portal.noxyyk.com') {
-      res.redirect(301, 'https://vizualizacni-portal.noxyyk.com');
-    } else {
-      next();
-    }
-  });
+// app.use(function(req, res, next) { 
+//     if (req.headers.host === 'api.vizualizacni-portal.noxyyk.com') {
+//       res.redirect(301, 'https://vizualizacni-portal.noxyyk.com');
+//     } else {
+//       next();
+//     }
+//   });
 // Routes
 app.post('/login', async function(req, res) {
     res.header("Content-Type", 'application/json');
