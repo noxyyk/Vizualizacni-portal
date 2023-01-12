@@ -28,6 +28,10 @@ Swal.fire({
     <div class="change-grid">
     <h2 id="leden">Leden</h2>
     <div id="leden_content">
+    <p><strong>11.1.2023</strong></p>
+    <ul>
+    <li>hosting frontend na vercel a backend na railway</li>
+    </ul>
     <p><strong>10.1.2023</strong></p>
     <ul>
     <li>animace při načtení webu</li>

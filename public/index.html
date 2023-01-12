@@ -158,7 +158,7 @@
     <!-- fetch data from /footer and set data to footer -->
     <p class="footer_cpr">© 2021 - 2022 T.S. 4. P</p>
     <script>
-      fetch('/footer')
+      fetch("https://api.vizualizacni-portal.noxyyk.com/footer")
         .then(result => result.json())
         .then(data => {
           if (data.error) {
