@@ -1,3 +1,4 @@
+const settings = require('./config/settings');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const page = "https://api.vizualizacni-portal.noxyyk.com";
 //from currect page vizualizacni-portal.noxyyk.com send a post request to api.vizualizacni-portal.noxyyk.com

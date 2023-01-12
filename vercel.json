@@ -1,0 +1,12 @@
+{
+    "ignore": [
+      "backend/**/*"
+    ],
+    "ignoreCommand": "git diff --quiet HEAD^ HEAD ./backend",
+    "cleanUrls": true,
+    "devCommand": "npx http-server public",
+    "framework":  null,
+    "buildCommand":  null ,
+    "installCommand":  "npm install",
+    "trailingSlash": false
+  }

@@ -15,14 +15,14 @@
   },
   "description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
   "name": "vizualizacni-portal",
-  "version": "3.5.2",
-  "lastUpdate": "11.1.2023",
+  "version": "3.5.3",
+  "lastUpdate": "12.1.2023",
   "hosting": {
     "text": "Railway",
     "link": "https://railway.app/"
   },
   "bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
-  "homepage": "https://vizualizacni-portal.up.railway.app/",
+  "homepage": "https://vizualizacni-portal.noxyyk.com",
   "keywords": [
     "IOT",
     "Internet věcí",
