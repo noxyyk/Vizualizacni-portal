@@ -7,10 +7,10 @@ const PORT = 5000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require("bcryptjs");
-let { DB } = require("mongquick");
+let { DB } = require("mongquick")
+if (process.env.NODE_ENV !== 'development') require('dotenv').config();
 const db = new DB(process.env.MongoLogin);
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -25,7 +25,7 @@ const originsAllowed = [
 
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`);
 
-let package= require('../package.json');
+let package= require('./package.json');
 let package_ignore = ["scripts", "devDependencies", "main", "restart"];
   Object.keys(package).forEach(async (key) => {
     if (package_ignore.includes(key)) {
