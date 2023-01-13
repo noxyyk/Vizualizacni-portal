@@ -1,0 +1,35 @@
+{
+  "author": "Tomáš Setunský",
+  "username": "Noxyyk",
+  "class": "4. P",
+  "name": "vizualizacni-portal",
+  "bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongquick": "github:ahqsoftwares/quickmongo",
+    "node": "^19.3.0",
+    "npm": "^9.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=12.0.0",
+    "npm": ">=6.0.0"
+  },
+  "restart": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noxyyk/Vizualizacni-portal"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npx http-server ../frontend/public && nodemon index.js"
+  }
+}
