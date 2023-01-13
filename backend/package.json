@@ -29,7 +29,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "./index.js",
+    "start": "node index.js",
     "dev": "npx http-server ../frontend/public && nodemon index.js"
   }
 }
