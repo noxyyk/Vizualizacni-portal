@@ -175,5 +175,5 @@ app.get('/footer', async function(req, res) {
           res.status(200).send({valid: true, footer: package});
 })
 var server = app.listen(PORT, function() {  
-    process.stdout.write("\r" + ((process.env.isDev ? "Development mode" + ", hosted on " + originsAllowed[0] : "Production mode" + ", hosted on " + originsAllowed[1] )+ " version: " + package.version + " Port: " + PORT + " Adress: " + server.address().address + "Family: " + server.address().family + "\n"));
+    process.stdout.write("\r" + ((process.env.NODE_ENV == "development" ? "Development mode" + ", hosted on " + originsAllowed[0] : "Production mode" + ", hosted on " + originsAllowed[1] )+ " version: " + package.version + " Port: " + PORT + " Adress: " + server.address().address + "Family: " + server.address().family + "\n"));
   });
