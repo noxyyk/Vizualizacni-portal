@@ -159,7 +159,7 @@ app.get('/userlist', async function(req, res) {
 })
   
 app.post('/role', async function(req, res) {
-          res.header("Content-Type", 'application/json');
+          res.header("Content-Type", 'application/json')
           if (!originsAllowed.includes(req.get('origin'))) return res.status(401).send({valid: false, response: "pokus o spuštění z neautorizovaného zdroje"})
           if (!(await (db.has(req.body.username)))) return res.status(409).send({valid: false, response: "Uživatel nexistuje"});
           var object = (await (db.get(req.body.username))).user;
