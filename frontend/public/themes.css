@@ -312,10 +312,11 @@ html, body {
   .footer a{color:#fff}
   .footer_cpr{font-size: small;} 
   
- .socials ion-icon:hover{transform: scale(1.3);
+ .socials ion-icon:hover{transform: scale(1.8);
  }
  .socials ion-icon{
-      transform: scale(1);
+      transform: scale(1.5);
+      font-size:large;
       transition: 0.3s;
 }
 .grid_container {
