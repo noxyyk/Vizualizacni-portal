@@ -292,11 +292,18 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  height: fit-content;  
+  width: 100%; 
   background-color: var(--footer_bg);
   text-align: center;
   color: var(--footer_clr);
+  height: fit-content;
+  min-height: 60px;
+}
+.footer_content{
+  display:none
+}
+.footer:hover .footer_content{
+  display: block;
 }
 .footer_padding{
   padding-left: 80px;

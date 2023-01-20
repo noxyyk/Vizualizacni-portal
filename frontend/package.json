@@ -1,9 +1,0 @@
-{
-    "name": "vizualizacni-portal",
-    "author": "Tomáš Setunský",
-    "main": "public",
-    "scripts": {
-        "start": "npx http-server public"
-    }
-}
-  
