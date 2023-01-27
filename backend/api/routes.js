@@ -1,17 +1,16 @@
-import { Router } from 'express';
-const router = Router();
-
+const express = require('express');
+const router = express.Router();
 //auth
-import deleteUser from './auth/delete';
-import login from './auth/login';
-import register from './auth/register';
-import verify from './auth/verify';
+const deleteUser = require('./auth/delete');
+const login = require('./auth/login');
+const register = require('./auth/register');
+const verify = require('./auth/verify');
 //change
-import changeRole from './change/role';
-import change from './change/change';
+const changeRole = require('./change/role');
+const change = require('./change/change');
 //info
-import userList from './info/userlist';
-import footer from './info/footer';
+const userList = require('./info/userlist');
+const footer = require('./info/footer');
 //routes
 router.use('/delete', deleteUser);
 router.use('/login', login);
@@ -24,4 +23,4 @@ router.use('/change', change);
 router.use('/userlist', userList);
 router.use('/footer', footer);
 
-export default router;
+module.exports = router;
