@@ -1,6 +1,7 @@
 let { DB } = require("mongquick")
 const db = new DB(process.env.MongoLogin);
 const bcrypt = require('bcryptjs');
+const PORT = 5000;
 const originsAllowed = [
     "http://localhost:"+PORT,
     "https://vizualizacni-portal.up.railway.app",
