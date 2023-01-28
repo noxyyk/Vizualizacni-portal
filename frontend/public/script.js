@@ -1,6 +1,6 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-const page = "https://api.vizualizacni-portal.noxyyk.com";
+const page = "https://api.vizualizacni-portal.noxyyk.com/api";
 //from currect page vizualizacni-portal.noxyyk.com send a post request to api.vizualizacni-portal.noxyyk.com
 
 //set custom swal fire
