@@ -1,8 +1,8 @@
 async function ChangeLog() {
-Swal.fire({
-    position: 'center',
-    width: "900px",
-    html: `
+	Swal.fire({
+		position: 'center',
+		width: '900px',
+		html: `
     <style> 
     ul{
         list-style: none; 
@@ -28,6 +28,14 @@ Swal.fire({
     <div class="change-grid">
     <h2 id="leden">Leden</h2>
     <div id="leden_content">
+    <p><strong>28.1.2023</strong></p>
+    <ul>
+    <li>API routing</li>
+    </ul>
+    <p><strong>20.1.2023</strong></p>
+    <ul>
+    <li>vylepšen footer</li>
+    </ul>
     <p><strong>11.1.2023</strong></p>
     <ul>
     <li>hosting frontend na vercel a backend na railway</li>
@@ -208,19 +216,25 @@ Swal.fire({
     </ul></div>
     </div> </div>
     `,
-    confirmButtonText:'Super!',
-    didOpen: () => {
-        document.getElementById("leden").onclick = function() {showHide("leden")};
-        document.getElementById("prosinec").onclick = function() {showHide("prosinec")};
-        document.getElementById("listopad").onclick = function() {showHide("listopad")};
-        document.getElementById("rijen").onclick = function() {showHide("rijen")};
-        function showHide(id) {
-            var e = document.getElementById(id + "_content");
-            if(e.style.display == 'block')
-                e.style.display = 'none';
-            else
-                e.style.display = 'block';
-        }
-    }
-})
+		confirmButtonText: 'Super!',
+		didOpen: () => {
+			document.getElementById('leden').onclick = function () {
+				showHide('leden')
+			}
+			document.getElementById('prosinec').onclick = function () {
+				showHide('prosinec')
+			}
+			document.getElementById('listopad').onclick = function () {
+				showHide('listopad')
+			}
+			document.getElementById('rijen').onclick = function () {
+				showHide('rijen')
+			}
+			function showHide(id) {
+				var e = document.getElementById(id + '_content')
+				if (e.style.display == 'block') e.style.display = 'none'
+				else e.style.display = 'block'
+			}
+		},
+	})
 }

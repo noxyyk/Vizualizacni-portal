@@ -1,5 +1,5 @@
 const settings = {
-    usersPerPage: 10
+	usersPerPage: 10,
 }
 
-module.exports = settings;
+module.exports = settings

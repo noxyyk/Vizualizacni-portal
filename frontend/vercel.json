@@ -1,8 +1,8 @@
 {
-    "cleanUrls": true,
-    "devCommand": "npx http-server public",
-    "framework":  null,
-    "buildCommand":  null ,
-    "installCommand":  "npm install",
-    "trailingSlash": false
-  }
+	"cleanUrls": true,
+	"devCommand": "npx http-server public",
+	"framework": null,
+	"buildCommand": null,
+	"installCommand": "npm install",
+	"trailingSlash": false
+}

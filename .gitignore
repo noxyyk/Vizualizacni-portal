@@ -1,4 +1,8 @@
 # environment variable
 .env
-# local
+
+# development
 /local
+.vscode
+# modules
+node_modules

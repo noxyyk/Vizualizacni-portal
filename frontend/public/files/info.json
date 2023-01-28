@@ -1,35 +1,30 @@
 {
-    "author": "Tomáš Setunský",
-    "username": "Noxyyk",
-    "page": "https://noxyyk.com",
-    "class": "4. P",
-    "socials": {
-      "github": "https://github.com/noxyyk",
-      "twitter": "https://twitter.com/noxyyk",
-      "instagram": "https://www.instagram.com/noxyyk/",
-      "facebook": "https://www.facebook.com/noxyyk",
-      "discord": "https://discord.gg/rocketguis",
-      "youtube": "https://www.youtube.com/channel/UCtVmkvYCBsi2QpDP_43RxMg",
-      "email": "setunskyto@gmail.com"
-    },
-    "description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
-    "name": "vizualizacni-portal",
-    "version": "3.5.3",
-    "lastUpdate": "12.1.2023",
-    "hosting": {
-      "text": "Railway",
-      "link": "https://railway.app/"
-    },
-    "bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
-    "homepage": "https://vizualizacni-portal.noxyyk.com",
-    "keywords": [
-      "IOT",
-      "Internet věcí",
-      "chytrá zařízení",
-      "zobrazení hodnot"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/noxyyk/Vizualizacni-portal"
-      }
+	"author": "Tomáš Setunský",
+	"username": "Noxyyk",
+	"page": "https://noxyyk.com",
+	"class": "4. P",
+	"socials": {
+		"github": "https://github.com/noxyyk",
+		"twitter": "https://twitter.com/noxyyk",
+		"instagram": "https://www.instagram.com/noxyyk/",
+		"facebook": "https://www.facebook.com/noxyyk",
+		"discord": "https://discord.gg/rocketguis",
+		"youtube": "https://www.youtube.com/channel/UCtVmkvYCBsi2QpDP_43RxMg",
+		"email": "setunskyto@gmail.com"
+	},
+	"description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
+	"name": "vizualizacni-portal",
+	"version": "3.6.0",
+	"lastUpdate": "12.1.2023",
+	"hosting": {
+		"text": "Railway",
+		"link": "https://railway.app/"
+	},
+	"bugs": "https://github.com/noxyyk/Vizualizacni-portal/issues",
+	"homepage": "https://vizualizacni-portal.noxyyk.com",
+	"keywords": ["IOT", "Internet věcí", "chytrá zařízení", "zobrazení hodnot"],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/noxyyk/Vizualizacni-portal"
+	}
 }
