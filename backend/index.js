@@ -8,15 +8,18 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 if (process.env.NODE_ENV !== 'development') require('dotenv').config();
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (auth.originsAllowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Add Access-Control-Allow-Origin header
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.get('origin'));
-  next();
-});
 app.use('/api', require('./api/routes.js'));
 
 var server = app.listen(PORT, function() {  
