@@ -10,16 +10,6 @@ const auth = require('./modules/auth.js')
 
 if (process.env.NODE_ENV !== 'development') require('dotenv').config()
 
-app.use((req, res, next) => {
-	const origin = req.headers.origin
-	if (auth.isOriginAllowed(origin)) {
-		res.header('Access-Control-Allow-Origin', origin)
-		next()
-	} else {
-		res.status(401).send(`Not allowed by CORS ${origin}`)
-	}
-})
-
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))

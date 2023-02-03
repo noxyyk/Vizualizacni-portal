@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
-const lists = require('../../modules/array_sorting')
+const array = require('../../modules/array_sorting')
+let { DB } = require('mongquick')
+const db = new DB(process.env.MongoLogin)
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`)
 router.post('/', async (req, res) => {
 	res.header('Content-Type', 'application/json')
@@ -11,6 +13,7 @@ router.post('/', async (req, res) => {
 				valid: false,
 				response: 'pokus o spuštění z neautorizovaného zdroje',
 			})
+	res.header('Access-Control-Allow-Origin', req.get('origin'))
 	if (await auth.checkIfExists(req.body.username))
 		return res
 			.status(409)
@@ -19,7 +22,7 @@ router.post('/', async (req, res) => {
 	let object = {
 		user: {
 			password: auth.createPassword(req.body.password),
-			avatar: auth.GetRandomItem(avatars, false),
+			avatar: array.GetRandomItem(avatars, false),
 			verified: false,
 			email: null,
 			ID: await auth.getID(),
@@ -29,8 +32,8 @@ router.post('/', async (req, res) => {
 		},
 		devices: [],
 	}
-	auth.setDB(req.body.username, object)
-	auth.addID()
+	db.set(req.body.username, object)
+	db.add('ID', 1)
 	res.status(201).send({ valid: true })
 })
 module.exports = router

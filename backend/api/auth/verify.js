@@ -3,13 +3,14 @@ const auth = require('../../modules/auth')
 const jwt = require('jsonwebtoken')
 
 router.post('/', async (req, res) => {
+	try {
 	res.header('Content-Type', 'application/json')
 	if (!auth.isOriginAllowed(req.get('origin')))
 		return res.status(401).send({
 			valid: false,
 			response: 'pokus o spuštění z neautorizovaného zdroje',
 		})
-
+	res.header('Access-Control-Allow-Origin', req.get('origin'))
 	jwt.verify(
 		req.body.token,
 		process.env.JWTSECRET,
@@ -49,5 +50,13 @@ router.post('/', async (req, res) => {
 			})
 		}
 	)
+}
+catch (err) {
+	console.log(err)
+	res.status(500).send({
+		valid: false,
+		response: 'Nastala chyba, ${err}',
+	})
+}
 })
 module.exports = router
