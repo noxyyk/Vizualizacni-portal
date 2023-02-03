@@ -68,29 +68,35 @@
   transition: 1s;
 } 
 .content{
-  padding-top: 100px;
+  padding-top: 130px;
   padding-left: 5%;
   padding-right: 5%;	
 }
-.grid_item{
+.content .grid_container{
+	grid-template-columns: auto auto auto;
+}
+.content .grid_item{
+  height: 200px;
   background-color: rgb(99, 214, 243);
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   transition: 0.5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.grid_item:hover{
+.content .grid_item:hover{
   transform: scale(1.05);
   transition: 0.5s;
 }
-.grid_item h2{
+.content .grid_item h2{
   font-size: 20px;
-  text-align: center;
   margin: 0;
   padding: 0;
 }
-.grid_item p{
+.content .grid_item p{
   font-size: 15px;
   text-align: center;
   margin: 0;
@@ -165,6 +171,27 @@
       <h2>Domů</h2>
     </article>
   </div>
+  <div class="grid_item">
+    <article>
+      <h2>Domů</h2>
+    </article>
+  </div>
+  <div class="grid_item">
+    <article>
+      <h2>Domů</h2>
+    </article>
+  </div>
+  <div class="grid_item">
+    <article>
+      <h2>Domů</h2>
+    </article>
+  </div>
+  <div class="grid_item">
+    <article>
+      <h2>Domů</h2>
+    </article>
+  </div>
+
   <div class="grid_item">
     <article>
     <h2><ion-icon name="add-circle-outline"></ion-icon></h2> 

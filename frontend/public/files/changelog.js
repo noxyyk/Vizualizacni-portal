@@ -26,6 +26,16 @@ async function ChangeLog() {
     <div class="grid">
     
     <div class="change-grid">
+    <h2 id="unor">Únor</h2>
+    <div id="unor_content">
+    <p><strong>3.2.2023</strong></p>
+    <ul>
+    <li>404 stránka</li>
+    <li>úprava API routing</li>
+    </ul>
+    </div></div>
+
+    <div class="change-grid">
     <h2 id="leden">Leden</h2>
     <div id="leden_content">
     <p><strong>28.1.2023</strong></p>

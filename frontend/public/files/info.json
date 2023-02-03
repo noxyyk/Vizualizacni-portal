@@ -14,7 +14,7 @@
 	},
 	"description": "webová aplikace, která vám umožní zobrazit si data vašich IoT zařízení, a to včetně grafů, které vám ukáží, jak se vaše zařízení chová v průběhu času. Aplikace je určena pro všechny, kteří mají zařízení, která měří teplotu, vlhkost, tlak, atd. a chtějí si data z těchto zařízení zobrazit. ",
 	"name": "vizualizacni-portal",
-	"version": "3.6.0",
+	"version": "3.6.1",
 	"lastUpdate": "12.1.2023",
 	"hosting": {
 		"text": "Railway",
