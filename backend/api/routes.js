@@ -1,26 +1,15 @@
 const express = require('express')
 const router = express.Router()
-//auth
-const deleteUser = require('./auth/delete')
-const login = require('./auth/login')
-const register = require('./auth/register')
-const verify = require('./auth/verify')
-//change
-const changeRole = require('./change/role')
-const change = require('./change/change')
-//info
-const userList = require('./info/userlist')
-const footer = require('./info/footer')
 //routes
-router.use('/delete', deleteUser)
-router.use('/login', login)
-router.use('/register', register)
-router.use('/verify', verify)
+router.use('/delete', require('./auth/delete'))
+router.use('/login', require('./auth/login'))
+router.use('/register', require('./auth/register'))
+router.use('/verify', require('./auth/verify'))
 
-router.use('/role', changeRole)
-router.use('/change', change)
+router.use('/role', require('./change/role'))
+router.use('/change', require('./change/change'))
 
-router.use('/userlist', userList)
-router.use('/footer', footer)
+router.use('/userlist', require('./info/userlist'))
+router.use('/footer', require('./info/footer'))
 
 module.exports = router

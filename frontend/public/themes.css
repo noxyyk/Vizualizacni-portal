@@ -349,6 +349,7 @@ ion-icon {
 .socials ion-icon {
 	transform: scale(1.5);
 	font-size: large;
+	padding-right: 10px;
 	transition: 0.3s;
 }
 .grid_container {

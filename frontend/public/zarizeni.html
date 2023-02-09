@@ -77,7 +77,7 @@
 }
 .content .grid_item{
   height: 200px;
-  background-color: rgb(99, 214, 243);
+  background-color: hsla(192, 86%, 67%, 1);
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
@@ -101,6 +101,12 @@
   text-align: center;
   margin: 0;
   padding: 0;
+}
+.content .add_device{
+  background-color: hsla(192, 86%, 67%, 0.5);
+}
+.content .add_device:hover{
+  background-color: hsla(192, 86%, 67%, 1);
 }
   </style>
 <div class="loading-spinner"></div>
@@ -166,36 +172,20 @@
 </div>
 <div class="content">
 <div class="grid_container">
-  <div class="grid_item">
-    <article>
-      <h2>Domů</h2>
-    </article>
+  <!-- <div class="grid_item add_device" onclick='device("remove")'>
+    <h2><ion-icon name="remove-circle-outline"></ion-icon></h2> 
+  </div> -->
+  <div class="grid_item device" onclick='device()'>
+      <h2>aaa</h2>
   </div>
-  <div class="grid_item">
-    <article>
-      <h2>Domů</h2>
-    </article>
-  </div>
-  <div class="grid_item">
-    <article>
-      <h2>Domů</h2>
-    </article>
-  </div>
-  <div class="grid_item">
-    <article>
-      <h2>Domů</h2>
-    </article>
-  </div>
-  <div class="grid_item">
-    <article>
-      <h2>Domů</h2>
-    </article>
-  </div>
-
-  <div class="grid_item">
-    <article>
+  <div class="grid_item device" onclick='device()'>
+    <h2>bbb</h2>
+</div>
+<div class="grid_item device" onclick='device()'>
+  <h2>ccc</h2>
+</div>
+  <div class="grid_item add_device" onclick='device("add")'>
     <h2><ion-icon name="add-circle-outline"></ion-icon></h2> 
-    </article>
   </div>
 </div>
 </div>
@@ -245,6 +235,7 @@
   <script src="animations.js"></script>  
   <script src="script.js"></script>
   <script src="./files/changelog.js"></script>
+  <script src="./devices.js"></script>
 </body>
 
 </html>
