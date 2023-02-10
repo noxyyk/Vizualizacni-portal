@@ -279,63 +279,70 @@ function Status(status) {
 }
 /* LOGIN */
 async function logIn() {
-	const { value: formValues } = await Swal.fire({
-		title: 'Login',
+	const login = async () => {
+		Swal.showLoading()
+		const name = Swal.getPopup().querySelector('#login_name').value
+		const password = Swal.getPopup().querySelector('#login_pswrd').value
+		if (!name || !password) {
+			Swal.showValidationMessage('Vyplňte prosím všechna pole')
+			return undefined
+		}
+		const data = { username: name, password: password, stayLogged: result}
+		const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Origin: 'https://vizualizacni-portal.noxyyk.com',
+			},
+			body: JSON.stringify(data),
+		}
+		try {
+			const response = await fetch(page + '/login', options)
+			const json = await response.json()
+			if (!json.valid) {
+				Swal.hideLoading()
+				return Swal.showValidationMessage(json.response)
+			}
+
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          user: name,
+          pfp: json.pfp,
+          token: json.token,
+          createdTimestamp: json.createdTimestamp,
+          admin: json.admin,
+          ID: json.ID,
+          role: json.role,
+        })
+      )
+      login_btn()
+			notif.fire({
+				icon: 'success',
+				text: `přihlášen jako ${name}.`,
+			})
+		} catch (error) {
+			console.error(error)
+			Swal.hideLoading()
+			Swal.showValidationMessage('Nastala chyba')
+		}
+	}
+
+Swal.fire({
+		title: 'Přihlášení',
 		html:
-			'<form><input id="login_name" type="name" placeholder="Jméno" autocomplete="on" class="swal2-input"></form>' +
-			'<form><input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
+			'<form><input id="login_name" type="name" placeholder="Jméno" autocomplete="on" class="swal2-input">' +
+			'<input id="login_pswrd" type="password" autocomplete="on" placeholder="Heslo" class="swal2-input"></form>',
 		input: 'checkbox',
 		inputValue: 1,
 		inputPlaceholder: 'Zůstat přihlášen',
 		showCancelButton: true,
 		confirmButtonText: 'Přihlásit',
 		footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
-		preConfirm: (result) => {
-			return [
-				document.getElementById('login_name').value,
-				document.getElementById('login_pswrd').value,
-				result == 1 ? true : false,
-			]
+		preConfirm: (result) => {result == 1 ? true : false,
+      login
 		},
 	})
-	if (formValues) {
-		requestOptions = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Origin: 'https://vizualizacni-portal.noxyyk.com',
-			},
-			body: JSON.stringify({
-				username: formValues[0],
-				password: formValues[1],
-				stayLogged: formValues[2],
-			}),
-		}
-		fetch(page + '/login', requestOptions) //fetch data from request
-			.then((result) =>
-				result.json().then((json) => {
-					console.log('response: ', Status(result.status))
-					if (!json.valid) return swalError(json.response)
-					localStorage.setItem(
-						'user',
-						JSON.stringify({
-							user: formValues[0],
-							pfp: json.pfp,
-							token: json.token,
-							createdTimestamp: json.createdTimestamp,
-							admin: json.admin,
-							ID: json.ID,
-							role: json.role,
-						})
-					)
-					login_btn()
-					toast.fire({
-						icon: 'success',
-						title: 'logged in as ' + formValues[0],
-					})
-				})
-			)
-	}
 }
 
 /* LOGOUT*/
@@ -407,8 +414,8 @@ async function register() {
 	}
 	Swal.fire({
 		title: 'Registrace',
-		html: `<input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Jméno">
-  <form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
+		html: `<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Jméno">
+           <input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
 		showCancelButton: true,
 		confirmButtonText: 'Registrovat',
 		footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',

@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 		return res
 			.status(409)
 			.send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
-	if (await auth.authenticateUser(req.body.username, req.body.password))
+	if (!(await auth.authenticateUser(req.body.username, req.body.password)))
 		return res
 			.status(401)
 			.send({ valid: false, response: 'Heslo se neshhoduje' })

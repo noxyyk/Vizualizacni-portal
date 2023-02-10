@@ -18,7 +18,8 @@ module.exports = {
 	},
 	checkIfExists: async function (x) {
 		//auth.checkifExists('username');
-		return await db.has(x)
+		if(x == undefined) return false
+		return await db.has(x)	
 	},
 	isOriginAllowed: function (origin) {
 		//auth.isOriginAllowed('origin');

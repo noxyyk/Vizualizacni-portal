@@ -3,6 +3,7 @@ const auth = require('../../modules/auth')
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 router.post('/', async (req, res) => {
+	try {
 	res.header('Content-Type', 'application/json')
 	if (!auth.isOriginAllowed(req.get('origin')))
 		return res.status(401).send({
@@ -58,5 +59,13 @@ router.post('/', async (req, res) => {
 	res
 		.status(200)
 		.send({ valid: true, token: auth.createToken(req.body.username, object) })
+	}
+	catch (err) {
+		console.log(err)
+		res.status(500).send({
+			valid: false,
+			response: 'Nastala chyba, ' + err
+		})
+	}
 })
 module.exports = router

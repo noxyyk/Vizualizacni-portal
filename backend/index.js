@@ -6,14 +6,15 @@ const app = express()
 const PORT = 5000
 const bodyParser = require('body-parser')
 const cors = require('cors')
+if (process.env.NODE_ENV !== 'development') require('dotenv').config()
 const auth = require('./modules/auth.js')
 
-if (process.env.NODE_ENV !== 'development') require('dotenv').config()
 
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/api', require('./api/routes.js'))
+
 
 var server = app.listen(PORT, function () {
 	process.stdout.write(

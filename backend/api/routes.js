@@ -11,5 +11,6 @@ router.use('/change', require('./change/change'))
 
 router.use('/userlist', require('./info/userlist'))
 router.use('/footer', require('./info/footer'))
+router.use('/devices', require('./devices/device'))
 
-module.exports = router
+module.exports = router 

@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
 router.post('/', async (req, res) => {
+	try {
 	res.header('Content-Type', 'application/json')
 	if (!auth.isOriginAllowed(req.get('origin')))
 		return res.status(401).send({
@@ -25,5 +26,13 @@ router.post('/', async (req, res) => {
 		})
 	auth.setDB(req.body.username, { user: object })
 	res.status(200).send({ valid: true })
+}
+catch (err) {
+	console.log(err)
+	res.status(500).send({
+		valid: false,
+		response: 'Nastala chyba, ' + err
+	})
+}
 })
 module.exports = router
