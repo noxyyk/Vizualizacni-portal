@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="cz">
+
+
+<head>
+  <meta charset="utf-8"> <!--Define UTF-8 Characters-->
+  <meta name="viewport" content="width=device-width">
+  <title>Vizualizační Portál - ToS</title>
+  <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
+  <link type="text/css" rel="stylesheet" href="./button.css">
+  <link rel="icon" type="image/x-icon" href="./images/logo.png">
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.loading-spinner').style.display = 'flex';
+  });
+  window.onload = function() {
+    var i = 1;
+    var intervalId = setInterval(() => {
+        document.querySelector('.loading-spinner').style.backgroundColor = `rgba(255, 255, 255, ${i})`;
+        i -= 0.1;
+        if (i <= 0) {
+            clearInterval(intervalId);
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    }, 20);
+  }
+  </script>
+</head>
+
+<body> 
+  <style>
+    .loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: background-color 2s ease;
+  z-index: 9999;
+}
+.loading-spinner:before {
+  content: "";
+  border: solid 2px transparent;
+  border-top-color: #3498db;
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+.logo:hover{
+  transform: rotate(360deg);
+  transition: 1s;
+} 
+  </style>
+<div class="loading-spinner"></div>
+<div class="header" id="header"></div>
+</div>
+
+  <div class="articles">
+    <div class="article" id="podminky" style="position: relative;top: 140px;">
+      <h2>Podmínky služby</h2> 
+        <ul>
+            <li>
+                <h3>1. Účel</h3>
+                <p>Podmínky služby (dále jen „ToS“) stanovují práva a povinnosti uživatele a provozovatele služby Vizualizační Portál (dále jen „Portál“). Tato služba je dlouhodobou maturitní prací studenta Střední průmyslové školy elektrotechnické a je registrována pod názvem Vizualizační Portál, sídlem: Koterovská 828/85, 326 00 Plzeň, Česká republika (dále jen „Provozovatel“). Tato služba je poskytována uživateli (dále jen „Uživatel“) prostřednictvím webové stránky https://vizualizacni-portal.noxyyk.com (dále jen „Webová stránka“). Tato služba je poskytována zdarma.</p>
+            </li>
+            <li>
+                <h3>2. Definice</h3>
+                <div style="line-height: 90%;">
+                <p>Provozovatel: Střední průmyslové škola elektrotechnická, Koterovská 828/85, 326 00 Plzeň, Česká republika</p>
+                <p>Uživatel: Osoba, která se zaregistruje na webové stránce a využívá služby Portálu.</p>
+                <p>Portál: Webová stránka https://vizualizacni-portal.noxyyk.com</p>
+                <p>Účet: Účet, který je vytvořen na základě registrace na webové stránce.</p>
+                <p>Uživatelské jméno: Uživatelské jméno, které je vytvořeno při registraci na webové stránce.</p>
+                <p>Heslo: Heslo, které je vytvořeno při registraci na webové stránce.</p>
+                <p>Služba: Vizualizační Portál</p>
+                <p>Provozovatel služby: Střední průmyslové škola elektrotechnická, Koterovská 828/85, 326 00 Plzeň, Česká republika</p>
+            </div>
+            </li>
+            <li>
+                <h3>3. Registrace</h3>
+                <p>Pro registraci na webové stránce je nutné zadat uživatelské jméno, heslo a e-mailovou adresu. Uživatelské jméno a heslo je možné změnit v nastavení účtu. Uživatel je povinen zaregistrovat se na webové stránce, aby mohl využívat služby Portálu. Uživatel je povinen zaregistrovat se na webové stránce pouze jednou. Uživatel je povinen zaregistrovat se na webové stránce pouze pod svým jménem.</p>
+            </li>
+            <li>
+                <h3>4. Změna údajů</h3>
+                <p>Uživatel je povinen udržovat aktuální údaje v účtu. </p>
+            </li>
+            <li>
+                <h3>5. Zařízení</h3>
+                <p>Uživatel je povinen využívat služby Portálu pouze na zařízeních, které jsou vlastněny Uživatelem. A pouze pro nekomerční účely.</p>
+            </li>
+            <li>
+                <h3>6. Změna podmínek služby</h3>
+                <p>Provozovatel si vyhrazuje právo kdykoliv změnit podmínky služby. Změny se projeví na webové stránce. Uživatel je povinen se pravidelně podívat na změny podmínek služby.</p>
+            </li>
+            <li>
+                <h3>7. Zrušení účtu</h3>
+                <p>Uživatel je povinen zrušit účet, pokud již službu Portál nepotřebuje. Uživatel je povinen zrušit účet, pokud se nechová v souladu s podmínkami služby. Uživatel je povinen zrušit účet, pokud se nechová v souladu s platnými zákonem České republiky. Provozovatel je oprávněn smazat účet, pokud se nechová v souladu s podmínkami služby.</p>
+        </li>
+        </ul>
+    </div>
+    </div>
+    <div class="articles">
+        <div class="article" id="zasady" style="position: relative;top: 200px;">
+          <h2>Zásady ochrany osobních údajů</h2> 
+          <ul>
+            <li>
+                Webová aplikace bude shromažďovat a ukládat pouze nezbytné informace, jako jsou uživatelská jména a e-maily pro účely přihlašování.
+            </li>
+            <li>
+                Webová aplikace nebude sdílet žádné osobní údaje uživatelů s třetími stranami bez souhlasu uživatele, pokud nejsou k tomu zákonně povinni.
+            </li>
+            <li>
+                Webová aplikace použije adekvátní bezpečnostní opatření k ochraně osobních údajů uživatelů, včetně šifrování přenášených dat a bezpečnostních protokolů pro ukládání dat.
+            </li>
+            <li>
+                Uživatelé budou mít právo na přístup, úpravu nebo smazání svých osobních údajů v souladu s platnými zákony o ochraně osobních údajů.
+            </li>
+          </ul>
+        </div>
+        </div>
+        <div style="height: 50px;"></div>
+  </div>
+  <div class="footer" id="footer">
+    <p class="footer_cpr">© 2022 - 2023 T.S. 4. P</p>
+  </div>
+  <script src="animations.js"></script>  
+  <script src= ./website.js></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="script.js"></script>
+  <script src="./files/changelog.js"></script>
+</body>
+
+</html>

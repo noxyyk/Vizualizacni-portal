@@ -1,7 +1,6 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const page = 'https://api.vizualizacni-portal.noxyyk.com/api'
-//from currect page vizualizacni-portal.noxyyk.com send a post request to api.vizualizacni-portal.noxyyk.com
 
 //set custom swal fire
 var toast = Swal.mixin({
@@ -36,55 +35,7 @@ var notif = Swal.mixin({
 		toast.addEventListener('mouseleave', Swal.resumeTimer)
 	},
 })
-// HTML
-async function login_btn() {
-	var user = localStorage.getItem('user')
-	try {
-		user = JSON.parse(user)
-	} catch {
-		user = null
-	}
-	var pfp =
-		user?.pfp == null ||
-		typeof user.pfp != 'string' ||
-		(!user.pfp.includes('https://') && !user.pfp.includes('./images/avatar_'))
-			? '<ion-icon name="accessibility-outline"></ion-icon>'
-			: '<img onclick="account()" class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer"alt="logo" src="' +
-			  user.pfp +
-			  '">'
-	if (user?.token == null) {
-		document.getElementById('dropdown_account').style.display = 'none'
-		document.getElementById('login_list').style.display = 'inline-block'
-		document.getElementById('login_list').innerHTML =
-			'<div class="login">' +
-			'<ul>' +
-			'<li  id="login" onclick=logIn() class="list">' +
-			'<a>' +
-			'<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' +
-			'<span class="text">Přihlášení</span>' +
-			'</a>' +
-			'</li>' +
-			'</ul>' +
-			'</div>'
-	} else {
-		document.getElementById('dropdown_account').style.display = 'inline-block'
-		document.getElementById('login_list').style.display = 'none'
-		document.getElementById('dropdown_account').innerHTML =
-			'<button class="dropbtn dropbtn_animation"style="width:100%;height:100%;display:flex;padding:10px;align-items:center;justify-content:center;border-radius: 50%;">' +
-			pfp +
-			'</button>' +
-			'<div class="dropdown-content animation"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text"> Odhlášení</span></a>' +
-			(user.admin
-				? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a>'
-				: '') +
-			'</div>'
-	}
-	document.getElementById('login_welcome').innerHTML =
-		user == null || user?.user == undefined
-			? ''
-			: user.user + ' | ' + (user.admin ? 'administrátor' : user.role)
-	animations()
-}
+
 // INIT
 verifyToken()
 login_btn()
@@ -283,9 +234,9 @@ async function logIn() {
 		Swal.showLoading()
 		const name = Swal.getPopup().querySelector('#login_name').value
 		const password = Swal.getPopup().querySelector('#login_pswrd').value
+		const result = Swal.getPopup().querySelector('#swal2-checkbox').checked
 		if (!name || !password) {
-			Swal.showValidationMessage('Vyplňte prosím všechna pole')
-			return undefined
+			return Swal.showValidationMessage('Vyplňte prosím všechna pole')
 		}
 		const data = { username: name, password: password, stayLogged: result}
 		const options = {
@@ -320,6 +271,7 @@ async function logIn() {
 			notif.fire({
 				icon: 'success',
 				text: `přihlášen jako ${name}.`,
+				allowOutsideClick: true
 			})
 		} catch (error) {
 			console.error(error)
@@ -339,9 +291,7 @@ Swal.fire({
 		showCancelButton: true,
 		confirmButtonText: 'Přihlásit',
 		footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
-		preConfirm: (result) => {result == 1 ? true : false,
-      login
-		},
+		preConfirm: login
 	})
 }
 
@@ -479,77 +429,108 @@ async function account(type) {
 		})
 		break
 	case 'password':
-		const { value: value } = await Swal.fire({
-			title: 'Změna hesla',
-			html: `<form><input type="password" id="password" autocomplete="on" class="swal2-input" placeholder="Nové heslo" ></form>
-              <form><input type="password" id="password_again" autocomplete="on" class="swal2-input" placeholder="Nové heslo znovu" ></form>`,
-			showCancelButton: true,
-			confirmButtonText: 'Zněnit heslo',
-			preConfirm: () => {
-				const password_again =
-						Swal.getPopup().querySelector('#password_again').value
-				const password = Swal.getPopup().querySelector('#password').value
-
-				if (!password.match(/[a-z]/g))
-					Swal.showValidationMessage(
-						'Heslo musí obsahovat alespoň jedno malé písmeno'
-					)
-				if (!password.match(/[A-Z]/g))
-					Swal.showValidationMessage(
-						'Heslo musí obsahovat alespoň jedno velké písmeno'
-					)
-				if (!password.match(/\d/g))
-					Swal.showValidationMessage(
-						'Heslo musí obsahovat alespoň jedno číslo'
-					)
-				if (password != password_again)
-					Swal.showValidationMessage('Heslo se musí shodovat')
-				if (!password.match(/^.{8,}$/g))
-					Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
-				if (!password_again || !password)
-					Swal.showValidationMessage('Vyplňte prosím oboje pole')
-
-				return password
-			},
-		})
-		if (value) {
-			requestOptions = {
+		const password = async () => {
+			SwalshowLoading()
+			const password_again =	Swal.getPopup().querySelector('#password_again').value
+			const password = Swal.getPopup().querySelector('#password').value
+			const old_password = Swal.getPopup().querySelector('#old_password').value
+			if (password == old_password) return Swal.showValidationMessage('Nové heslo musí být jiné než staré')
+			if (!password.match(/[a-z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
+			if (!password.match(/[A-Z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
+			if (!password.match(/\d/g))	return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
+			if (password != password_again) return Swal.showValidationMessage('Heslo se musí shodovat')
+			if (!password.match(/^.{8,}$/g)) return Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
+			if (!password_again || !password || !old_password) return Swal.showValidationMessage('Vyplňte prosím všechna pole')
+			const data = { username: JSON.parse(localStorage.getItem('user')).user, password: password, old_password: old_password, type: 'password'}
+			const options = {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Origin: 'https://vizualizacni-portal.noxyyk.com',
 				},
-				body: JSON.stringify({
-					username: JSON.parse(localStorage.getItem('user')).user,
-					password: value,
-					type: 'password',
-				}),
+				body: JSON.stringify(data),
 			}
-			fetch(page + '/change', requestOptions) //fetch data from request
-				.then((result) =>
-					result.json().then((json) => {
-						console.log('response: ', Status(result.status))
-						if (!json.valid) return swalError(json.response)
-
-						notif
-							.fire({
+			try {
+				const response = await fetch(page + '/change', options)
+				const json = await response.json()
+				if (!json.valid) {
+					Swal.hideLoading()
+					return Swal.showValidationMessage(json.response)
+				}
+				notif.fire({
 								icon: 'success',
 								text: 'Změna hesla proběhla úspěšně',
 								timer: 5000,
 							})
-							.then(() => {
-								logOut()
-							})
-					})
-				)
+			} catch (error) {
+				console.error(error)
+				Swal.hideLoading()
+				Swal.showValidationMessage('Nastala chyba')
+			}
 		}
+
+
+		Swal.fire({
+			title: 'Změna hesla',
+			html: `<form><input type="password" id="old_password" autocomplete="on" class="swal2-input" placeholder="Staré heslo" >
+			<input type="password" id="password" autocomplete="off" class="swal2-input" placeholder="Nové heslo" >
+              <input type="password" id="password_again" autocomplete="off" class="swal2-input" placeholder="Nové heslo znovu" ></form>`,
+			showCancelButton: true,
+			confirmButtonText: 'Zněnit heslo',
+			preConfirm: () => password
+		})
 		break
 	case 'email': //not yet implemented
 		break
 	case 'delete':
+		const preConfirm = async () => {
+			Swal.showLoading()
+			const password = Swal.getPopup().querySelector('#password').value
+			if (!password) return Swal.showValidationMessage('Vyplňte prosím heslo')
+			const data = { username: JSON.parse(localStorage.getItem('user')).user, password: password, type: 'delete'}
+			const options = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Origin: 'https://vizualizacni-portal.noxyyk.com',
+				},
+				body: JSON.stringify(data),
+			}
+			try {
+				const response = await fetch(page + '/change', options)
+				const json = await response.json()
+				if (!json.valid) {
+					Swal.hideLoading()
+					return Swal.showValidationMessage(json.response)
+				}
+				localStorage.removeItem('user')
+				notif.fire({
+					icon: 'success',
+					text: 'Účet byl úspěšně smazán',
+					timer: 5000,
+				})
+				login_btn()
+			} catch (error) {
+				console.error(error)
+				Swal.hideLoading()
+				Swal.showValidationMessage('Nastala chyba')
+			}
+		}
+		Swal.fire({
+			title: 'Opravdu chcete smazat účet?',
+			text: 'Tato akce je nevratná',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			html: `<form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="off"></form>`,
+			confirmButtonText: 'Smazat',
+			preConfirm: () => preConfirm()
+		})
+
 		requestOptions = {
 			method: 'POST',
-			headers: {
+			headers: {	
 				'Content-Type': 'application/json',
 				Origin: 'https://vizualizacni-portal.noxyyk.com',
 			},
@@ -700,10 +681,6 @@ async function account(type) {
 		break
 	}
 }
-function start() {
-	if (localStorage.getItem('user') == null) return logIn()
-	window.open('./zarizeni.html', '_self')
-}
 
 async function userlist() {
 	//check if user is admin
@@ -726,27 +703,26 @@ async function userlist() {
 		type: 'DATE',
 	}
 	userlist.forEach((element) => {
-		if (
-			element.data.user.avatar == undefined ||
-			typeof element.data.user.avatar != 'string'
-		)
-			element.data.user.avatar = './images/0.png'
-		let img = new Image()
-		img.src = element.data.user.avatar
-		img.onerror = function () {
-			element.data.user.avatar = './images/0.png'
+		let avatar = element.data.user.avatar;
+		if (!avatar || typeof avatar !== 'string') {
+		  avatar = './images/0.png';
 		}
+		let img = new Image()
+		img.onerror = function() {
+			this.src = './images/0.png';
+		  };
+		img.src = avatar;
 
 		let userrole = element.data.user.admin
 			? 3
 			: element.data.user.role == 'advanced'
 				? 2
-				: 1 // (element.data.user.admin ? 'admin' : element.data.user.role)
+				: 1
 		html.push(
 			'<tr><td>' +
 				element.data.user.ID +
-				'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="' +
-				element.data.user.avatar +
+				'</td><td><img style="border-radius: 50%;width:50px;"referrerpolicy="no-referrer" src="' +
+				avatar +
 				'"></td><td>' +
 				element.ID +
 				'</td><td>' +
@@ -798,6 +774,12 @@ async function userlist() {
 	for (let currentPage = 1; currentPage < lastPage + 1; ) {
 		const result = await swalPage.fire({
 			title: 'Uživatelé' + ' (' + currentPage + '/' + lastPage + ')',
+			showClass: {
+				popup: 'animate__animated animate__fadeInDown'
+			  },
+			  hideClass: {
+				popup: 'animate__animated animate__fadeOutUp'
+			  },
 			html:
 				'<table style="width:100%;color:#000"><tr><th>ID</th><th>avatar</th><th id="TEXT">jméno ' +
 				(sorttype.type == 'TEXT' ? (sorttype.direction == 1 ? '↓' : '↑') : '') +
@@ -919,11 +901,15 @@ async function userlist() {
 			var sorted = 0
 			userlist.forEach((element) => {
 				//check if image is valid otherwise use default image
-				let img = new Image()
-				img.src = element.data.user.avatar
-				img.onerror = function () {
-					element.data.user.avatar = './images/0.png'
+				let avatar = element.data.user.avatar;
+				if (!avatar || typeof avatar !== 'string') {
+				  avatar = './images/0.png';
 				}
+				let img = new Image()
+				img.onerror = function() {
+					this.src = './images/0.png';
+				  };
+				img.src = avatar;
 				let userrole = element.data.user.admin
 					? 3
 					: element.data.user.role == 'advanced'

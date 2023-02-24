@@ -19,7 +19,7 @@ function init(){
           <div class="grid_item"><b>O mě</b>
             <p>Přezdívka: ${data.username}<br>Stránka: <a href="${data.page}">${data.page}</a><br>věk: ` +  ((new Date(Date.now() - (((new Date(data.age)).getTime()))).getUTCFullYear())-1970) + `<br>Třída: ${data.class}
               </p></div>
-          <div class="grid_item"><b>C</b></div>
+          <div class="grid_item"><b></b></div>
           <div class="grid_item"><b>Kontakt</b>
             <p>
             <button class="startbtn" style="  background-color: var(--button_clr);border:  none;;width:170px;height: 30px;border-radius: var(--article_border_radius);"><a style="color:#000;  text-decoration: none;" href="mailto:${data.socials.email}"><b>Napiš mi </b><ion-icon name="mail-outline"></ion-icon></a></button>
@@ -32,7 +32,7 @@ function init(){
           </div>
           <div class="separator_line"></div>
           </div>
-          <p>Copyright © 2023 ${data.author}, SPŠE Plzeň <a href="/podminky.html">Podmínky služby</a> | <a href="/zasady.html">zásady ochrany osobních údajů</a>
+          <p>Copyright © 2023 ${data.author}, SPŠE Plzeň <a href="/tos">Podmínky služby</a> | <a href="/tos#zasady">zásady ochrany osobních údajů</a>
             </p>
           </div>
         </p>
@@ -63,7 +63,7 @@ document.getElementById('header').innerHTML = `<div class="header" id="header">
         </a>
     </li>
     <li class="list">
-        <a href="#about">
+        <a href="./grafy.html">
             <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
             <span class="text">O projektu</span>
         </a>
@@ -95,4 +95,57 @@ document.getElementById('header').innerHTML = `<div class="header" id="header">
   </div>
 </div>
 </div>`
+}
+login_btn()
+async function login_btn() {
+	var user = localStorage.getItem('user')
+	try {
+		user = JSON.parse(user)
+	} catch {
+		user = null
+	}
+	var pfp =
+		user?.pfp == null ||
+		typeof user.pfp != 'string' ||
+		(!user.pfp.includes('https://') && !user.pfp.includes('./images/avatar_'))
+			? '<ion-icon name="accessibility-outline"></ion-icon>'
+			: '<img onclick="account()" class="pfp" style="border-radius: 50%;"  referrerpolicy="no-referrer"alt="logo" src="' +
+			  user.pfp +
+			  '">'
+	if (user?.token == null) {
+		document.getElementById('dropdown_account').style.display = 'none'
+		document.getElementById('login_list').style.display = 'inline-block'
+		document.getElementById('login_list').innerHTML =
+			'<div class="login">' +
+			'<ul>' +
+			'<li  id="login" onclick=logIn() class="list">' +
+			'<a>' +
+			'<span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>' +
+			'<span class="text">Přihlášení</span>' +
+			'</a>' +
+			'</li>' +
+			'</ul>' +
+			'</div>'
+	} else {
+		document.getElementById('dropdown_account').style.display = 'inline-block'
+		document.getElementById('login_list').style.display = 'none'
+		document.getElementById('dropdown_account').innerHTML =
+			'<button class="dropbtn dropbtn_animation"style="width:100%;height:100%;display:flex;padding:10px;align-items:center;justify-content:center;border-radius: 50%;">' +
+			pfp +
+			'</button>' +
+			'<div class="dropdown-content animation"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text"> Odhlášení</span></a>' +
+			(user.admin
+				? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a>'
+				: '') +
+			'</div>'
+	}
+	document.getElementById('login_welcome').innerHTML =
+		user == null || user?.user == undefined
+			? ''
+			: user.user + ' | ' + (user.admin ? 'administrátor' : user.role)
+	animations()
+}
+function start() {
+	if (localStorage.getItem('user') == null) return logIn()
+	window.open('./zarizeni.html', '_self')
 }
