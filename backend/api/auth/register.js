@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 
 	let object = {
 		user: {
-			password: auth.createPassword(req.body.password),
+			password: await auth.createPassword(req.body.password),
 			avatar: array.GetRandomItem(avatars, false),
 			verified: false,
 			email: null,

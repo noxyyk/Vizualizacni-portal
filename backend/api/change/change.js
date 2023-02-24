@@ -28,6 +28,7 @@ router.post('/', async (req, res) => {
 				valid: false,
 				response: 'zvolené heslo nesmí být stejné jako uživatelské jméno',
 			})
+		if (!auth.authenticatePassword(req.body.password_old, object.user.password)) return res.status(401).send({ valid: false, response: 'původní heslo není správné' })
 		object.user.password = auth.createPassword(req.body.password)
 		auth.setDB(req.body.username, object)
 		break
