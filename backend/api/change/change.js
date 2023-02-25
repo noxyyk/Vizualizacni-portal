@@ -3,6 +3,7 @@ const auth = require('../../modules/auth')
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 router.post('/', async (req, res) => {
+	try {
 	res.header('Content-Type', 'application/json')
 	if (!auth.isOriginAllowed(req.get('origin')))
 		return res.status(401).send({
@@ -27,6 +28,7 @@ router.post('/', async (req, res) => {
 				valid: false,
 				response: 'zvolené heslo nesmí být stejné jako uživatelské jméno',
 			})
+		if (!auth.authenticatePassword(req.body.password_old, object.user.password)) return res.status(401).send({ valid: false, response: 'původní heslo není správné' })
 		object.user.password = auth.createPassword(req.body.password)
 		auth.setDB(req.body.username, object)
 		break
@@ -58,5 +60,13 @@ router.post('/', async (req, res) => {
 	res
 		.status(200)
 		.send({ valid: true, token: auth.createToken(req.body.username, object) })
+	}
+	catch (err) {
+		console.log(err)
+		res.status(500).send({
+			valid: false,
+			response: 'Nastala chyba, ' + err
+		})
+	}
 })
 module.exports = router

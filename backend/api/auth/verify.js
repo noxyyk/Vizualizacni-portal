@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 		req.body.token,
 		process.env.JWTSECRET,
 		async function (err, decoded) {
-			if (err) return res.status(401).send({ valid: false, response: err })
+			if (err) return res.status(401).send({ valid: false, response: 'Nastala chyba, zkuste to znovu později'})
 			if (decoded == undefined)
 				return res.status(500).send({
 					valid: false,

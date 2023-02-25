@@ -1,5 +1,9 @@
+require('dotenv').config()
 let { DB } = require('mongquick')
 const db = new DB(process.env.MongoLogin)
+db.on("ready", () => {
+    console.log("Database connected!");
+});
 const bcrypt = require('bcryptjs')
 const PORT = 5000
 const jwt = require('jsonwebtoken')
@@ -10,6 +14,9 @@ const originsAllowed = [
 	'https://api.vizualizacni-portal.noxyyk.com',
 	'https://vizualizacni-portal-production.up.railway.app/',
 	'https://noxyyk.com',
+	'http://127.0.0.1:5500',
+	'http://127.0.0.1:8080',
+	'http://192.168.1.129:8081'
 ]
 module.exports = {
 	authenticateUser: async function (username, password) {
@@ -18,7 +25,8 @@ module.exports = {
 	},
 	checkIfExists: async function (x) {
 		//auth.checkifExists('username');
-		return await db.has(x)
+		if(x == undefined) return false
+		return await db.has(x)	
 	},
 	isOriginAllowed: function (origin) {
 		//auth.isOriginAllowed('origin');
@@ -51,6 +59,21 @@ module.exports = {
 			{ algorithm: 'HS256' }
 		)
 	},
+	verifyToken: function (token) {
+		return new Promise((resolve, reject) => {
+		  jwt.verify(
+			token,
+			process.env.JWTSECRET,
+			async function (err, decoded) {
+			  if (err || decoded == undefined || !(await db.has(decoded.iss))) {
+				reject(err);
+			  } else {
+				resolve(decoded);
+			  }
+			}
+		  );
+		});
+	  },
 	setUser: async function (username, object) {
 		//auth.setUser('username', 'object');
 		db.set(username, object)
@@ -69,10 +92,11 @@ module.exports = {
 	},
 	createPassword: async function (password) {
 		//auth.createPassword('password');
-		return bcrypt.hashSync(password, 10)
+		return bcrypt.hashSync(password, Number(process.env.SALT))
 	},
 	authenticatePassword: async function (password, hash) {
 		//auth.authenticatePassword('password', 'hash');
+		if (password == undefined || hash == undefined) return false
 		return bcrypt.compareSync(password, hash)
 	},
 	getDBall: async function () {
@@ -80,4 +104,5 @@ module.exports = {
 		return await db.all()
 	},
 	originsAllowed: originsAllowed,
+
 }
