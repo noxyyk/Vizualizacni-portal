@@ -7,7 +7,6 @@ let requestOptions = {
         'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-        username: user.user,
         token: user.token
     })
 }
@@ -53,7 +52,7 @@ async function device(x, target) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: JSON.parse(localStorage.getItem("user")).user,
+            token: JSON.parse(localStorage.getItem("user")).token,
             device: deviceName,
           }),
         };
@@ -92,11 +91,11 @@ async function device(x, target) {
               "Content-Type": "application/json",
           },
           body: JSON.stringify({
-              username: JSON.parse(localStorage.getItem("user")).user,
+              token: JSON.parse(localStorage.getItem("user")).token,
               name: target,
           }),
       };
-      const response = await fetch(page + "/remove", requestOptions)
+      const response = await fetch(page + "/delete", requestOptions)
       const data = await response.json();
       if (!data.valid) return Swal.showValidationMessage(data.response);
       Swal.hideLoading()
@@ -123,7 +122,7 @@ async function device(x, target) {
               "Content-Type": "application/json",
           },
           body: JSON.stringify({
-              username: JSON.parse(localStorage.getItem("user")).user,
+              token: JSON.parse(localStorage.getItem("user")).token,
               name: target,
               new_name: device,
               type: "name"

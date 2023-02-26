@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('../../modules/database')
 
 router.post('/', async (req, res) => {
     try {
@@ -12,15 +11,15 @@ router.post('/', async (req, res) => {
                 response: 'pokus o spuštění z neautorizovaného zdroje',
             })
         res.header('Access-Control-Allow-Origin', req.get('origin'))
-
-        if (!(await auth.checkIfExists(req.body.username)))
+        user = (await auth.verifyToken(req.body.token)).iss
+        if (!(await auth.checkIfExists(user)))
             return res
                 .status(409)
                 .send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
-let object = await db.get(req.body.username)
+let object = await db.get(user)
 var devices = object.devices
 var index = devices.findIndex(x => x.name == req.body.name)
-if (index == -1) return res.status(409).send({ valid: false, response: 'Tento zařízení neexistuje' })
+if (index == -1) return res.status(409).send({ valid: false, response: 'Toto zařízení neexistuje' })
 switch (req.body.type) {
     case 'name':
         devices[index].name = req.body.new_name
@@ -29,8 +28,7 @@ switch (req.body.type) {
         return res.status(409).send({ valid: false, response: 'Neplatný typ' })
 }
 object.devices = devices
-console.log(object)
-await db.set(req.body.username, object)
+await db.set(user, object)
 res.status(200).send({
     valid: true,
     devices: object.devices

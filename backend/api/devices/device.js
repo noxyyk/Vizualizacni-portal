@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('../../modules/database')
 
 router.get('/', async (req, res) => {
     try {

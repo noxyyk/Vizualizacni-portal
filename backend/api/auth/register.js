@@ -1,8 +1,7 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
 const array = require('../../modules/array_sorting')
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('../../modules/database')
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`)
 router.post('/', async (req, res) => {
 	try {
@@ -15,6 +14,7 @@ router.post('/', async (req, res) => {
 				response: 'pokus o spuštění z neautorizovaného zdroje',
 			})
 	res.header('Access-Control-Allow-Origin', req.get('origin'))
+	if (typeof req.body.username !== 'string' || typeof req.body.password !== 'string') return res.status(400).send({ valid: false, response: 'Nebylo zadáno jméno nebo heslo' })
 	if (await auth.checkIfExists(req.body.username))
 		return res
 			.status(409)

@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('../../modules/database')
 
 router.post('/', async (req, res) => {
     try {
@@ -12,18 +11,19 @@ router.post('/', async (req, res) => {
                 response: 'pokus o spuštění z neautorizovaného zdroje',
             })
         res.header('Access-Control-Allow-Origin', req.get('origin'))
-
-        if (!(await auth.checkIfExists(req.body.username)))
+        user = (await auth.verifyToken(req.body.token)).iss
+        if (!(await auth.checkIfExists(user)))
             return res
                 .status(409)
                 .send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
-let object = await db.get(req.body.username)
+        if (req.body.device == undefined || typeof req.body.device != 'string' ||req.body.device.match(/^[a-zA-Z0-9]+$/) == null) return res.status(401).send({ valid: false, response: 'Název zařízení je neplatný' })
+let object = await db.get(user)
 let role = object.user.role
-if (object.devices == undefined) devices = []
-let maxDevices = object.user.admin ? 10 : role == 'advanced' ? 5 : 3
+if (object.devices == undefined) object.devices = []
+const maxDevices = object.user.admin ? 10 : role == 'advanced' ? 5 : 3
 if (object.devices.length >= maxDevices) return res.status(401).send({ valid: false, response: 'Překročen limit zařízení, navyšte si plán' })
 object.devices.push({name: req.body.device, createdTimestamp: Math.floor(Date.now() / 1000), data: []})
-await db.set(req.body.username, object)
+await db.set(user, object)
 res.status(200).send({
     valid: true,
     devices: object.devices

@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 			.status(409)
 			.send({ valid: false, response: 'Uživatel nexistuje' })
 	var object = await auth.getUser(req.body.username)
-	object.admin = req.body.role == 'admin' ? true : alse
+	object.admin = req.body.role == 'admin' ? true : false
 	object.role = req.body.role
 	var result = (await auth.getDBall()).filter(
 		(key) => key.data.user?.admin == true

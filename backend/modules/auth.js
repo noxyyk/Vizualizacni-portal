@@ -1,6 +1,5 @@
 require('dotenv').config()
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('./database.js')
 db.on("ready", () => {
     console.log("Database connected!");
 });
@@ -9,10 +8,7 @@ const PORT = 5000
 const jwt = require('jsonwebtoken')
 const originsAllowed = [
 	'http://localhost:' + PORT,
-	'https://vizualizacni-portal.up.railway.app',
 	'https://vizualizacni-portal.noxyyk.com',
-	'https://api.vizualizacni-portal.noxyyk.com',
-	'https://vizualizacni-portal-production.up.railway.app/',
 	'https://noxyyk.com',
 	'http://127.0.0.1:5500',
 	'http://127.0.0.1:8080',
@@ -60,6 +56,7 @@ module.exports = {
 		)
 	},
 	verifyToken: function (token) {
+		if (token == undefined || typeof token != "string") return false
 		return new Promise((resolve, reject) => {
 		  jwt.verify(
 			token,

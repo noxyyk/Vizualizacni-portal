@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
-let { DB } = require('mongquick')
-const db = new DB(process.env.MongoLogin)
+const db = require('../../modules/database')
 router.post('/', async (req, res) => {
 	try {
 	res.header('Content-Type', 'application/json')
@@ -11,6 +10,7 @@ router.post('/', async (req, res) => {
 			response: 'pokus o spuštění z neautorizovaného zdroje',
 		})
 	res.header('Access-Control-Allow-Origin', req.get('origin'))
+	if (typeof req.body.username !== 'string' || typeof req.body.password !== 'string')
 	if (!(await auth.checkIfExists(req.body.username)))
 		return res
 			.status(409)
