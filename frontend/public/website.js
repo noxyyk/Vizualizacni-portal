@@ -113,6 +113,7 @@ async function login_btn() {
 			  user.pfp +
 			  '">'
 	if (user?.token == null) {
+    if(window.location.href.includes("zarizeni.html"))window.location.href = "./index.html"
 		document.getElementById('dropdown_account').style.display = 'none'
 		document.getElementById('login_list').style.display = 'inline-block'
 		document.getElementById('login_list').innerHTML =
@@ -146,6 +147,6 @@ async function login_btn() {
 	animations()
 }
 function start() {
-	if (localStorage.getItem('user') == null) return logIn()
+	if (localStorage.getItem('user') == null) return logIn("./zarizeni.html")
 	window.open('./zarizeni.html', '_self')
 }

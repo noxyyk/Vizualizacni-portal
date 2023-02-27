@@ -95,7 +95,7 @@ async function device(x, target) {
               name: target,
           }),
       };
-      const response = await fetch(page + "/delete", requestOptions)
+      const response = await fetch(page + "/remove", requestOptions)
       const data = await response.json();
       if (!data.valid) return Swal.showValidationMessage(data.response);
       Swal.hideLoading()

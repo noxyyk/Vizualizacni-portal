@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const auth = require('../../modules/auth')
+const db = require('../../modules/database')
 router.post('/', async (req, res) => {
 	try {
 	res.header('Content-Type', 'application/json')
@@ -13,9 +14,9 @@ router.post('/', async (req, res) => {
 		return res
 			.status(409)
 			.send({ valid: false, response: 'Uživatel nexistuje' })
-	var object = await auth.getUser(req.body.username)
-	object.admin = req.body.role == 'admin' ? true : false
-	object.role = req.body.role
+	var object = await db.get(req.body.username)
+	object.user.admin = req.body.role == 'admin' ? true : false
+	object.user.role = req.body.role
 	var result = (await auth.getDBall()).filter(
 		(key) => key.data.user?.admin == true
 	)
@@ -24,7 +25,7 @@ router.post('/', async (req, res) => {
 			valid: false,
 			response: 'Nelze odebrat admin práva poslednímu adminovi',
 		})
-	auth.setDB(req.body.username, { user: object })
+	await db.set(req.body.username, object)
 	res.status(200).send({ valid: true })
 }
 catch (err) {

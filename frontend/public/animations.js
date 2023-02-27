@@ -13,7 +13,7 @@ function animations() {
 			dropdown.classList.add('visible')
 			dropdownOpen = true
 			while (dropdownOpen) {
-				await new Promise((resolve) => setTimeout(resolve, 1000))
+				await new Promise((resolve) => setTimeout(resolve, 750))
 				if (!dropdownOpen) {
 					dropdown.classList.add('fadeout')
 					setTimeout(function () {

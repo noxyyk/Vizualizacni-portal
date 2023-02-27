@@ -11,7 +11,9 @@ router.post('/', async (req, res) => {
                 response: 'pokus o spuštění z neautorizovaného zdroje',
             })
         res.header('Access-Control-Allow-Origin', req.get('origin'))
-        user = (await auth.verifyToken(req.body.token)).iss
+        user = (await auth.verifyToken(req.body.token))
+        if (user == undefined) return res.status(401).send({ valid: false, response: 'Neplatný token' })
+        user = user.iss
         if (!(await auth.checkIfExists(user)))
             return res
                 .status(409)

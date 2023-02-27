@@ -10,16 +10,12 @@ router.post('/', async (req, res) => {
 			response: 'pokus o spuštění z neautorizovaného zdroje',
 		})
 	res.header('Access-Control-Allow-Origin', req.get('origin'))
-	if (typeof req.body.username !== 'string' || typeof req.body.password !== 'string')
-	if (!(await auth.checkIfExists(req.body.username)))
+	if (typeof req.body.username !== 'string' || typeof req.body.password !== 'string') return res.status(401).send({ valid: false, response: 'neplatné přihlášení' })
+	if (!(await auth.authenticateUser(req.body.username, req.body.password))) {
 		return res
 			.status(409)
-			.send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
-	if (!(await auth.authenticateUser(req.body.username, req.body.password)))
-		return res
-			.status(401)
-			.send({ valid: false, response: 'Heslo se neshhoduje' })
-
+			.send({ valid: false, response: 'Jméno nebo heslo je špatně'})
+	}
 	var object = await db.get(req.body.username)
 	var token = await auth.createToken(req.body.username, object, req.body.stayLogged)
 	if (token == undefined)

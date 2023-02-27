@@ -12,10 +12,7 @@ router.post('/', async (req, res) => {
             })
         res.header('Access-Control-Allow-Origin', req.get('origin'))
         user = (await auth.verifyToken(req.body.token)).iss
-        if (!(await auth.checkIfExists(user)))
-            return res
-                .status(409)
-                .send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
+        if (typeof req.body.new_name != 'string' ||req.body.new_name.match(/^[a-zA-Z0-9]+$/) == null) return res.status(401).send({ valid: false, response: 'Název zařízení je neplatný' })
 let object = await db.get(user)
 var devices = object.devices
 var index = devices.findIndex(x => x.name == req.body.name)

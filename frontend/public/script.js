@@ -1,7 +1,7 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const page = 'https://api.vizualizacni-portal.noxyyk.com/api'
-
+const page = 'http://localhost:5000/api'
+const roles = ['user', 'advanced', 'admin']
 //set custom swal fire
 var toast = Swal.mixin({
 	toast: true,
@@ -35,7 +35,6 @@ var notif = Swal.mixin({
 		toast.addEventListener('mouseleave', Swal.resumeTimer)
 	},
 })
-
 // INIT
 verifyToken()
 login_btn()
@@ -229,57 +228,7 @@ function Status(status) {
 	return Response_text
 }
 /* LOGIN */
-async function logIn() {
-	const login = async () => {
-		Swal.showLoading()
-		const name = Swal.getPopup().querySelector('#login_name').value
-		const password = Swal.getPopup().querySelector('#login_pswrd').value
-		const result = Swal.getPopup().querySelector('#swal2-checkbox').checked
-		if (!name || !password) {
-			return Swal.showValidationMessage('Vyplňte prosím všechna pole')
-		}
-		const data = { username: name, password: password, stayLogged: result}
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Origin: 'https://vizualizacni-portal.noxyyk.com',
-			},
-			body: JSON.stringify(data),
-		}
-		try {
-			const response = await fetch(page + '/login', options)
-			const json = await response.json()
-			if (!json.valid) {
-				Swal.hideLoading()
-				return Swal.showValidationMessage(json.response)
-			}
-
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          user: name,
-          pfp: json.pfp,
-          token: json.token,
-          createdTimestamp: json.createdTimestamp,
-          admin: json.admin,
-          ID: json.ID,
-          role: json.role,
-        })
-      )
-      login_btn()
-			notif.fire({
-				icon: 'success',
-				text: `přihlášen jako ${name}.`,
-				allowOutsideClick: true
-			})
-		} catch (error) {
-			console.error(error)
-			Swal.hideLoading()
-			Swal.showValidationMessage('Nastala chyba')
-		}
-	}
-
+async function logIn(redirect) {
 Swal.fire({
 		title: 'Přihlášení',
 		html:
@@ -291,7 +240,56 @@ Swal.fire({
 		showCancelButton: true,
 		confirmButtonText: 'Přihlásit',
 		footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
-		preConfirm: login
+		preConfirm: async () => {
+			Swal.showLoading()
+			const name = Swal.getPopup().querySelector('#login_name').value
+			const password = Swal.getPopup().querySelector('#login_pswrd').value
+			const result = Swal.getPopup().querySelector('#swal2-checkbox').checked
+			if (!name || !password) {
+				return Swal.showValidationMessage('Vyplňte prosím všechna pole')
+			}
+			const data = { username: name, password: password, stayLogged: result}
+			const options = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Origin: 'https://vizualizacni-portal.noxyyk.com',
+				},
+				body: JSON.stringify(data),
+			}
+			try {
+				const response = await fetch(page + '/login', options)
+				const json = await response.json()
+				if (!json.valid) {
+					Swal.hideLoading()
+					return Swal.showValidationMessage(json.response)
+				}
+	
+		  localStorage.setItem(
+			'user',
+			JSON.stringify({
+			  user: name,
+			  pfp: json.pfp,
+			  token: json.token,
+			  createdTimestamp: json.createdTimestamp,
+			  admin: json.admin,
+			  ID: json.ID,
+			  role: json.role,
+			})
+		  )
+		  if (redirect != null) return window.location.href = String(redirect)
+		  login_btn()
+				notif.fire({
+					icon: 'success',
+					text: `přihlášen jako ${name}.`,
+					allowOutsideClick: true
+				})
+			} catch (error) {
+				console.error(error)
+				Swal.hideLoading()
+				Swal.showValidationMessage('Nastala chyba')
+			}
+		}
 	})
 }
 
@@ -381,7 +379,7 @@ async function account(type) {
 			html: '<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Nové jméno" ></form>',
 			showCancelButton: true,
 			confirmButtonText: 'Zněnit jméno',
-			preConfirm: () => {
+			preConfirm: async () => {
 				let username = Swal.getPopup().querySelector('#name').value
 				if (username == JSON.parse(localStorage.getItem('user')).user)
 					return Swal.showValidationMessage(
@@ -394,82 +392,28 @@ async function account(type) {
 				if (username.length < 4)
 					return Swal.showValidationMessage('Jméno musí mít alespoň 4 znaky')
 				Swal.showLoading()
-				requestOptions = {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Origin: 'https://vizualizacni-portal.noxyyk.com',
-					},
-					body: JSON.stringify({
-						username: JSON.parse(localStorage.getItem('user')).user,
-						username_new: username,
-						type: 'name',
-					}),
-				}
-				fetch(page + '/change', requestOptions) //fetch data from request
-					.then((result) =>
-						result.json().then((json) => {
-							console.log('response: ', Status(result.status))
-							if (!json.valid) return swalError(json.response)
-							object = JSON.parse(localStorage.getItem('user'))
-							object.user = username
-							object.token = json.token
-							localStorage.setItem('user', JSON.stringify(object))
-							login_btn()
-							Swal.hideLoading()
-							notif.fire({
-								//match
-								icon: 'success',
-								text: 'Změna jména proběhla úspěšně',
-								position: 'center',
-							})
-						})
-					)
-			},
-		})
-		break
-	case 'password':
-		const password = async () => {
-			SwalshowLoading()
-			const password_again =	Swal.getPopup().querySelector('#password_again').value
-			const password = Swal.getPopup().querySelector('#password').value
-			const old_password = Swal.getPopup().querySelector('#old_password').value
-			if (password == old_password) return Swal.showValidationMessage('Nové heslo musí být jiné než staré')
-			if (!password.match(/[a-z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
-			if (!password.match(/[A-Z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
-			if (!password.match(/\d/g))	return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
-			if (password != password_again) return Swal.showValidationMessage('Heslo se musí shodovat')
-			if (!password.match(/^.{8,}$/g)) return Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
-			if (!password_again || !password || !old_password) return Swal.showValidationMessage('Vyplňte prosím všechna pole')
-			const data = { username: JSON.parse(localStorage.getItem('user')).user, password: password, old_password: old_password, type: 'password'}
-			const options = {
-				method: 'POST',
+				let response = await(await fetch(page + '/change', {method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Origin: 'https://vizualizacni-portal.noxyyk.com',
 				},
-				body: JSON.stringify(data),
-			}
-			try {
-				const response = await fetch(page + '/change', options)
-				const json = await response.json()
-				if (!json.valid) {
-					Swal.hideLoading()
-					return Swal.showValidationMessage(json.response)
-				}
-				notif.fire({
-								icon: 'success',
-								text: 'Změna hesla proběhla úspěšně',
-								timer: 5000,
-							})
-			} catch (error) {
-				console.error(error)
+				body: JSON.stringify({
+					username: JSON.parse(localStorage.getItem('user')).user,
+					username_new: username,
+					type: 'name',
+				}),})).json()
+				if (!response.valid) return Swal.showValidationMessage(response.response)
 				Swal.hideLoading()
-				Swal.showValidationMessage('Nastala chyba')
-			}
-		}
+				logOut()
+				notif.fire({
+					icon: 'success',
+					text: `Úspěšně změněno na ${username}, přihlašte se znovu`,
+				})
 
-
+			},
+		})
+		break
+	case 'password':
 		Swal.fire({
 			title: 'Změna hesla',
 			html: `<form><input type="password" id="old_password" autocomplete="on" class="swal2-input" placeholder="Staré heslo" >
@@ -477,45 +421,48 @@ async function account(type) {
               <input type="password" id="password_again" autocomplete="off" class="swal2-input" placeholder="Nové heslo znovu" ></form>`,
 			showCancelButton: true,
 			confirmButtonText: 'Zněnit heslo',
-			preConfirm: () => password
+			preConfirm: async () => {
+				Swal.showLoading()
+				const password_again =	Swal.getPopup().querySelector('#password_again').value
+				const password = Swal.getPopup().querySelector('#password').value
+				const old_password = Swal.getPopup().querySelector('#old_password').value
+				if (password == old_password) return Swal.showValidationMessage('Nové heslo musí být jiné než staré')
+				if (password != password_again) return Swal.showValidationMessage('Heslo se musí shodovat')
+				if (!password.match(/[a-z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno malé písmeno')
+				if (!password.match(/[A-Z]/g)) return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno velké písmeno')
+				if (!password.match(/\d/g))	return Swal.showValidationMessage('Heslo musí obsahovat alespoň jedno číslo')
+				if (!password.match(/^.{8,}$/g)) return Swal.showValidationMessage('Heslo musí mít alespoň 8 znaků')
+				if (!password_again || !password || !old_password) return Swal.showValidationMessage('Vyplňte prosím všechna pole')
+				try {
+					const json = await (await fetch(page + '/change', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({username: JSON.parse(localStorage.getItem('user')).user, password: password, password_old: old_password, type: 'password'})
+					})).json()
+					console.log (json)
+					if (!json.valid) {
+						Swal.hideLoading()
+						return Swal.showValidationMessage(json.response)
+					}
+					notif.fire({
+									icon: 'success',
+									text: 'Změna hesla proběhla úspěšně',
+									timer: 5000,
+								})
+				} catch (error) {
+					console.error(error)
+					Swal.hideLoading()
+					Swal.showValidationMessage('Nastala chyba')
+				}
+			}
+			
 		})
 		break
 	case 'email': //not yet implemented
 		break
 	case 'delete':
-		const preConfirm = async () => {
-			Swal.showLoading()
-			const password = Swal.getPopup().querySelector('#password').value
-			if (!password) return Swal.showValidationMessage('Vyplňte prosím heslo')
-			const data = { username: JSON.parse(localStorage.getItem('user')).user, password: password, type: 'delete'}
-			const options = {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Origin: 'https://vizualizacni-portal.noxyyk.com',
-				},
-				body: JSON.stringify(data),
-			}
-			try {
-				const response = await fetch(page + '/change', options)
-				const json = await response.json()
-				if (!json.valid) {
-					Swal.hideLoading()
-					return Swal.showValidationMessage(json.response)
-				}
-				localStorage.removeItem('user')
-				notif.fire({
-					icon: 'success',
-					text: 'Účet byl úspěšně smazán',
-					timer: 5000,
-				})
-				login_btn()
-			} catch (error) {
-				console.error(error)
-				Swal.hideLoading()
-				Swal.showValidationMessage('Nastala chyba')
-			}
-		}
 		Swal.fire({
 			title: 'Opravdu chcete smazat účet?',
 			text: 'Tato akce je nevratná',
@@ -525,36 +472,42 @@ async function account(type) {
 			cancelButtonColor: '#d33',
 			html: `<form><input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="off"></form>`,
 			confirmButtonText: 'Smazat',
-			preConfirm: () => preConfirm()
-		})
-
-		requestOptions = {
-			method: 'POST',
-			headers: {	
-				'Content-Type': 'application/json',
-				Origin: 'https://vizualizacni-portal.noxyyk.com',
-			},
-			body: JSON.stringify({
-				username: JSON.parse(localStorage.getItem('user')).user,
-			}),
-		}
-		fetch(page + '/delete', requestOptions) //fetch data from request
-			.then((result) =>
-				result.json().then((json) => {
-					console.log('response: ', Status(result.status))
-					if (!json.valid) return swalError(json.response)
+			preConfirm: async () => {			
+				Swal.showLoading()
+				const password = Swal.getPopup().querySelector('#password').value
+				if (!password) return Swal.showValidationMessage('Vyplňte prosím heslo')
+				const data = { username: JSON.parse(localStorage.getItem('user')).user, password: password, type: 'delete'}
+				const options = {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Origin: 'https://vizualizacni-portal.noxyyk.com',
+					},
+					body: JSON.stringify(data),
+				}
+				try {
+					const response = await fetch(page + '/delete', options)
+					const json = await response.json()
+					if (!json.valid) {
+						Swal.hideLoading()
+						return Swal.showValidationMessage(json.response)
+					}
 					localStorage.removeItem('user')
-					notif.fire({
-						//match
+					await notif.fire({
 						icon: 'success',
 						text: 'Účet byl úspěšně smazán',
 						timer: 5000,
+					}).then(() => {
+						logOut()
+						login_btn()
 					})
-				})
-			)
-		delay(5000).then(() => {
-			logOut()
+				} catch (error) {
+					console.error(error)
+					Swal.hideLoading()
+					Swal.showValidationMessage('Nastala chyba')
+				}}
 		})
+
 		break
 	case 'pfp':
 		var avatars = []
@@ -826,7 +779,6 @@ async function userlist() {
 								: event.target.value == 'advanced'
 									? 2
 									: 1
-						let roles = ['user', 'advanced', 'admin']
 						console.log(
 							userlist[currentPage * usersperpage - usersperpage + index].ID,
 							roles[userrole - 1]
@@ -834,8 +786,7 @@ async function userlist() {
 						let requestOptions = {
 							method: 'POST',
 							headers: {
-								'Content-Type': 'application/json',
-								Origin: 'https://vizualizacni-portal.noxyyk.com',
+								'Content-Type': 'application/json'
 							},
 							body: JSON.stringify({
 								username:

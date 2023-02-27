@@ -16,7 +16,8 @@ const originsAllowed = [
 ]
 module.exports = {
 	authenticateUser: async function (username, password) {
-		//auth.authenticateUser('username', 'password');
+		//auth.authenticateUser('username', 'password')
+		if (!(await db.has(username))) return false
 		return bcrypt.compareSync(password, (await db.get(username)).user.password)
 	},
 	checkIfExists: async function (x) {
@@ -65,6 +66,10 @@ module.exports = {
 			  if (err || decoded == undefined || !(await db.has(decoded.iss))) {
 				reject(err);
 			  } else {
+				if (decoded.exp < Math.floor(Date.now() / 1000)) {
+				  reject('Token expiroval');
+				}
+				if (! await db.has(decoded.iss)) reject('Token je neplatný');
 				resolve(decoded);
 			  }
 			}

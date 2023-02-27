@@ -67,6 +67,46 @@
   transform: rotate(360deg);
   transition: 1s;
 }
+.plan {
+  display: flex; /* Add flexbox to the parent container */
+  flex-direction: column; /* Make the flexbox a column */
+  text-align: center;
+  border: var(--article_border);
+  border-radius: 10px;
+  background-color: var(--button_clr);
+  padding: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: 0.5s;
+}
+
+.plan:hover {
+  transform: scale(1.025);
+  transition: 0.5s;
+}
+
+.plan h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.plan ul {
+  padding: 0;
+  list-style: none;
+}
+
+.plan ul li {
+  font-size: 14px;
+}
+
+.plan button {
+  margin: 0 auto;
+  margin-top: auto; /* Push the button to the bottom of the container */
+  cursor: pointer;
+}
+
+
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
@@ -87,18 +127,191 @@
             <input id="show" type=checkbox>
               <div id="content">
                 <label id="content_label" for="show"><b>Zobrazit méně</b></label>
-                <p id="content_text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos reprehenderit esse odit enim quibusdam doloremque fugiat, ut nihil tempore libero sapiente dicta earum veniam? Quas porro nobis, pariatur tempora quos corrupti consequuntur dignissimos minus quod optio accusantium ducimus saepe veritatis asperiores vel. Quisquam sed aspernatur optio dicta cum quos. Beatae quaerat itaque amet sint sunt, aut ex aliquid voluptas tempora ad labore quos adipisci. Adipisci tempora ut sit sapiente autem animi debitis eveniet harum aliquam obcaecati. Fuga non nisi fugit exercitationem, eos aperiam quas fugiat! Ex soluta sequi culpa iure, perspiciatis minus doloribus molestias consequatur quod iste quidem aliquam voluptates mollitia tempora incidunt autem praesentium accusamus quo ab saepe impedit. Quasi, eaque pariatur. Pariatur hic tempora quas autem, eius maxime! Numquam, voluptatum? Quidem excepturi quam unde quos esse consequatur eius ut incidunt, voluptatibus dolores nesciunt, ipsa commodi explicabo cupiditate assumenda? Qui architecto recusandae minus eius at, ea dignissimos in rerum?</p>  
+                <p id="content_text">Tato práce se zabývá a následně zpracovává data z IoT zařízení, které jsou možné nastavit ve Vizualizačním IoT portálu (dále jen portál), pro správný přenos dat. Data následně budou zpracovány pro zobrazení v grafech, maximální, minimální či průměrná hodnota, uživatel si může pomocí API tyto data následně zpracovat. Pro zabezpečení je možnost přihlášení kde je šifrované. Data s přihlášením jsou ukládána do NoSQL databáze MongoDB a klíč je uložen do souboru environmental variable. Jako uživatelská administrace je možno se přihlásit, registrovat, změnit profilový obrázek, změnit heslo nebo smazání účtu a všech dat. Aplikace komunikuje mezi frontend a backend pomocí protokolu HTTP. Je možno zobrazit historii změn, jak se na projektu pracovalo. K dispozici je také návod, jak web používat. Jako administrace zařízení je možno přidat, spravovat, odstranit zařízení, počet zařízení podle druhu plánu.</p>  
               </div>
        <label for="show" id="more"><b>Zobrazit více</b></label>
     </div>
     <div class="article scroll" id="setup" style="position: relative;top: 140px;">
       <h2>Zařízení</h2> 
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus commodi voluptas ut repellendus ea quod id, excepturi debitis fugit temporibus ab vero, consequuntur nemo recusandae molestiae earum nulla, maiores facilis libero blanditiis! Beatae voluptatum cupiditate, hic aliquam asperiores quia labore rerum explicabo non soluta a fugit incidunt reiciendis sequi minus repudiandae obcaecati id dolore odit eos laborum dolorum eligendi, deleniti alias! A praesentium soluta maxime veritatis, libero aut reprehenderit fugiat, dolorem id, similique expedita. Incidunt nesciunt adipisci tenetur, quidem atque laudantium rerum excepturi iusto exercitationem impedit in numquam molestiae nostrum laborum minima nisi provident necessitatibus qui nemo voluptate delectus temporibus?</p>
+      <p>Na portálu si můžete přidávat vlastní IoT zařízení a následně zobrazit jejich data pomocí grafů, nebo získat zpracované data pomocí API, které můžete použít pro další zpracování, například do vlastní aplikace nebo webové stránky. Každé zařízení má svůj vlastní klíč, který je potřeba pro přístup k datům. Klíč je uložen v databázi a je možné jej získat pomocí API. 
+      Pro každého je možné si přidat až 3 zařízení zdarma, pokud chcete přidat další, musíte si zakoupit plán.
+<div class="grid_container">
+    <div class="grid_item plan">
+          <h3>Osobní</h3>
+          <b>Navždy zdarma</b>
+          <ul>
+            <li>
+              Pro uživatele, kteří chtějí základní funkce pro škálování veřejných projektů.
+            </li>
+            <li>
+              <b>3 zařízení</b>
+            </li>
+            <li>
+              10 API dotazů za den
+            </li>
+          </ul>
+          <button type="button" onclick="plan(1)" class="btn">Začít s osobním</button>
+        </div>
+        <div class="grid_item plan">
+          <h3>Pokročilý</h3>
+          <b>49,9 kč/měsíc</b>
+          <ul>
+            <li>
+              Možnost přidat spolupracovníky
+            </li>
+            <li>
+              <b>5 zařízení</b>
+            </li>
+            <li>
+              100 API dotazů za den
+            </li>
+          </ul>
+          <button type="button" onclick="plan(2)" class="btn">Začít s pokročilým</button>
+      </div>
+      <div class="grid_item plan">
+        <h3>Profesionální</h3>
+        <b>Pro vlastní ceny</b>
+        <ul>
+          <li>
+            Pro týmy s vyššími nároky
+          </li>
+        </ul>
+        <button type="button" onclick="plan(3)" class="btn">Kontaktujte nás</button>
+      </div>
+</div>
+      </p>
     </div>
   </div>
   <div class="footer" id="footer">
     <p class="footer_cpr">© 2021 - 2022 T.S. 4. P</p>
   </div>
+  <script>
+    function plan(id) {
+      if (localStorage.getItem("user") == null && id != 3) return register()
+      if (id == 3){
+        Swal.fire({
+                    title: 'Kontaktujte nás',  
+                    html: `<form><input id="name" class="swal2-input" placeholder="Jméno">
+                      <form><input id="surname" class="swal2-input" placeholder="Příjmení">
+                    <input id="email" class="swal2-input" placeholder="Email">
+                    <input id="company" class="swal2-input" placeholder="Firma"></form>
+                    <select id="company_size" class="swal2-input" placeholder="Velikost firmy"
+                    <option value="1">1-10 zaměstnanců</option>
+                    <option value="2">11-50 zaměstnanců</option>
+                    <option value="3">51-250 zaměstnanců</option>
+                    <option value="4">251-1k zaměstnanců</option>
+                    <option value="5">1k+ zaměstnanců</option>
+                    </select>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Odeslat',
+                    cancelButtonText: 'Zrušit',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                      fetch(page + '/contact',{method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          name: Swal.getPopup().querySelector('#name').value,
+                          surname: Swal.getPopup().querySelector('#surname').value,
+                          email: Swal.getPopup().querySelector('#email').value,
+                          company: Swal.getPopup().querySelector('#company').value,
+                          company_size: Swal.getPopup().querySelector('#company_size').value,
+                        }),})
+                            .then(response => response.json())              
+                            .then(data => {
+                              if (data.error) {
+                                Swal.fire("Chyba", data.error, "error")
+                              } else {
+                                Swal.fire("Zpráva odeslána", "Zpráva byla odeslána", "success")
+                              }
+                            })
+                            .catch((error) => {
+                              Swal.fire("Chyba", "Nastala chyba při odesílání zprávy", "error")
+                            });
+                    }
+                  })
+                  return
+      }
+      let user = JSON.parse(localStorage.getItem("user"))
+      if (user.admin) return Swal.fire("Chyba", "Nemůžete si zakoupit plán, protože jste administrátor", "error")
+      switch (id) {
+        case 2:
+          if (user.role == "advanced") return window.location.href = "./zarizeni.html";
+          if (user.role == "user") {
+            Swal.fire({
+    title: 'Zvýšení plánu',
+    input: 'checkbox',
+    inputValue: 0,
+    inputPlaceholder: 'Opravdu chcete zvýšit plán?',
+    showCancelButton: true,
+    preConfirm: async () => {
+      if (!Swal.getPopup().querySelector('#swal2-checkbox').checked) return Swal.showValidationMessage(`Musíte zaškrtnout políčko`)
+      if (user.payment == null) return Swal.fire("Chyba", "Nemáte zaplacený plán", "error")
+      fetch(page + '/role',{method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: user.user,
+          role: "advanced",
+        }),})
+            .then(response => response.json())              
+            .then(data => {
+              if (data.error) {
+                Swal.fire("Chyba", data.error, "error")
+              } else {
+                localStorage.setItem("role", "advanced")
+                localStorage.setItem("plan", 2)
+                Swal.fire("Plán byl zvýšen", "Plán byl zvýšen na pokročilý", "success")
+              }
+            })
+            .catch((error) => {
+              Swal.fire("Chyba", "Nastala chyba při zvyšování plánu", "error")
+            });
+                                }
+})
+          }
+          if (user.role != "admin") break
+        case 1:
+          if (user.role == "user") return window.location.href = "./zarizeni.html";
+          Swal.fire({
+		title: 'Snížení plánu',
+		input: 'checkbox',
+		inputValue: 0,
+		inputPlaceholder: 'Opravdu chcete snížit plán?',
+		showCancelButton: true,
+		confirmButtonText: 'Snížit',
+		preConfirm: async () => {
+      if (!Swal.getPopup().querySelector('#swal2-checkbox').checked) return Swal.showValidationMessage(`Musíte zaškrtnout políčko`)
+						fetch(page + '/role',{method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								username: user.user,
+								role: id == 1 ? "user" : "advanced",
+							}),})
+                                  .then(response => response.json())              
+                                  .then(data => {
+                                    if (data.error) {
+                                      Swal.fire("Chyba", data.error, "error")
+                                    } else {
+                                      localStorage.setItem("role", "user")
+                                      localStorage.setItem("plan", 1)
+                                      Swal.fire("Plán byl snížen", "Plán byl snížen na osobní", "success")
+                                    }
+                                  })
+                                  .catch((error) => {
+                                    Swal.fire("Chyba", "Nastala chyba při snižování plánu", "error")
+                                  });
+                                                      }
+	})
+          break;
+      }
+    }
+  </script>
   <script src="animations.js"></script>  
   <script src= ./website.js></script>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
