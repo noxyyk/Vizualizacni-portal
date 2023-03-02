@@ -50,9 +50,9 @@ async function device(x, target) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            token: JSON.parse(localStorage.getItem("user")).token
           },
           body: JSON.stringify({
-            token: JSON.parse(localStorage.getItem("user")).token,
             device: deviceName,
           }),
         };
@@ -89,9 +89,9 @@ async function device(x, target) {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
+              token: JSON.parse(localStorage.getItem("user")).token,
           },
           body: JSON.stringify({
-              token: JSON.parse(localStorage.getItem("user")).token,
               name: target,
           }),
       };
@@ -120,9 +120,9 @@ async function device(x, target) {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
+              token: JSON.parse(localStorage.getItem("user")).token,
           },
           body: JSON.stringify({
-              token: JSON.parse(localStorage.getItem("user")).token,
               name: target,
               new_name: device,
               type: "name"
@@ -165,7 +165,13 @@ async function device(x, target) {
     </div>`  
       break;
     case "get":
-      fetch(`${page}/getall`, requestOptions)
+      fetch(`${page}/getall`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            token: JSON.parse(localStorage.getItem("user")).token,
+        }
+    })
     .then(response => response.json())
     .then(result => { 
         if (!result.valid) return

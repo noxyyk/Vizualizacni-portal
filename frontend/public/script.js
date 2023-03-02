@@ -1,6 +1,6 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const page = "https://api.vizualizacni-portal.noxyyk.com/api"
+const page = "http://localhost:5000/api"
 const roles = ['user', 'advanced', 'admin']
 //set custom swal fire
 var toast = Swal.mixin({
@@ -9,6 +9,7 @@ var toast = Swal.mixin({
 	showConfirmButton: false,
 	timer: 3000,
 	timerProgressBar: true,
+	allowOutsideClick: true,
 	didOpen: (toast) => {
 		toast.addEventListener('mouseenter', Swal.stopTimer)
 		toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -21,7 +22,7 @@ Swal = Swal.mixin({
 	confirmButtonText: 'Potvrdit',
 	denyButtonText: 'Zrušit',
 	cancelButtonText: 'Zrušit',
-	allowOutsideClick: false,
+	allowOutsideClick: true,
 	focusConfirm: false,
 })
 var notif = Swal.mixin({
@@ -113,11 +114,8 @@ function verifyToken() {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			Origin: 'https://vizualizacni-portal.noxyyk.com',
-		},
-		body: JSON.stringify({
-			token: token,
-		}),
+			token: JSON.parse(localStorage.getItem("user")).token,
+		}
 	}
 	fetch(page + '/verify', requestOptions) //fetch data from request
 		.then((result) =>
@@ -253,7 +251,6 @@ Swal.fire({
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Origin: 'https://vizualizacni-portal.noxyyk.com',
 				},
 				body: JSON.stringify(data),
 			}
@@ -338,7 +335,6 @@ async function register() {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Origin: 'https://vizualizacni-portal.noxyyk.com',
 			},
 			body: JSON.stringify(data),
 		}
@@ -395,10 +391,9 @@ async function account(type) {
 				let response = await(await fetch(page + '/change', {method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Origin: 'https://vizualizacni-portal.noxyyk.com',
+					token: JSON.parse(localStorage.getItem("user")).token,
 				},
 				body: JSON.stringify({
-					username: JSON.parse(localStorage.getItem('user')).user,
 					username_new: username,
 					type: 'name',
 				}),})).json()
@@ -437,9 +432,10 @@ async function account(type) {
 					const json = await (await fetch(page + '/change', {
 						method: 'POST',
 						headers: {
-							'Content-Type': 'application/json'
+							'Content-Type': 'application/json',
+							token: JSON.parse(localStorage.getItem("user")).token,
 						},
-						body: JSON.stringify({username: JSON.parse(localStorage.getItem('user')).user, password: password, password_old: old_password, type: 'password'})
+						body: JSON.stringify({password: password, password_old: old_password, type: 'password'})
 					})).json()
 					console.log (json)
 					if (!json.valid) {
@@ -481,7 +477,7 @@ async function account(type) {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						Origin: 'https://vizualizacni-portal.noxyyk.com',
+						token: JSON.parse(localStorage.getItem("user")).token,
 					},
 					body: JSON.stringify(data),
 				}
@@ -582,10 +578,9 @@ async function account(type) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Origin: 'https://vizualizacni-portal.noxyyk.com',
+					token: JSON.parse(localStorage.getItem("user")).token,
 				},
 				body: JSON.stringify({
-					username: JSON.parse(localStorage.getItem('user')).user,
 					avatar: avatar,
 					type: 'avatar',
 				}),
@@ -639,8 +634,9 @@ async function userlist() {
 	//check if user is admin
 	if (!JSON.parse(localStorage.getItem('user')).admin)
 		return swalError('Nemáte dostatečná oprávnění')
-	var userlist = await fetch(page + '/userlist', {
-		Origin: 'https://vizualizacni-portal.noxyyk.com',
+	var userlist = await fetch(page + '/userlist', { headers: {
+		token: JSON.parse(localStorage.getItem('user')).token
+	}
 	}).then((result) =>
 		result.json().then((json) => {
 			console.log('response: ', Status(result.status))
@@ -786,7 +782,8 @@ async function userlist() {
 						let requestOptions = {
 							method: 'POST',
 							headers: {
-								'Content-Type': 'application/json'
+								'Content-Type': 'application/json',
+								token: JSON.parse(localStorage.getItem("user")).token,
 							},
 							body: JSON.stringify({
 								username:

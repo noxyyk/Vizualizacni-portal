@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
 		})
 	res.header('Access-Control-Allow-Origin', req.get('origin'))
 	jwt.verify(
-		req.body.token,
+		req.headers.token,
 		process.env.JWTSECRET,
 		async function (err, decoded) {
 			if (err) return res.status(401).send({ valid: false, response: 'Nastala chyba, zkuste to znovu později'})

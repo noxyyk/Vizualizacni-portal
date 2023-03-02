@@ -251,11 +251,12 @@
       if (user.payment == null) return Swal.fire("Chyba", "Nemáte zaplacený plán", "error")
       fetch(page + '/role',{method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          token: JSON.parse(localStorage.getItem("user")).token,
         },
         body: JSON.stringify({
-          username: user.user,
           role: "advanced",
+          type: "buy"
         }),})
             .then(response => response.json())              
             .then(data => {
@@ -287,11 +288,12 @@
       if (!Swal.getPopup().querySelector('#swal2-checkbox').checked) return Swal.showValidationMessage(`Musíte zaškrtnout políčko`)
 						fetch(page + '/role',{method: 'POST',
 							headers: {
-								'Content-Type': 'application/json'
+								'Content-Type': 'application/json',
+                token: JSON.parse(localStorage.getItem("user")).token,
 							},
 							body: JSON.stringify({
-								username: user.user,
 								role: id == 1 ? "user" : "advanced",
+                type: "buy"
 							}),})
                                   .then(response => response.json())              
                                   .then(data => {
