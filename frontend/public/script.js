@@ -1,6 +1,6 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const page = "https://vizualizacni-portal.noxyyk.com/api"
+const page = "https://api.vizualizacni-portal.noxyyk.com/api"
 const roles = ['user', 'advanced', 'admin']
 //set custom swal fire
 var toast = Swal.mixin({
