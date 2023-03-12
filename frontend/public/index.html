@@ -110,7 +110,6 @@
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
-</div>
 <div class="articles">
   <div class="article">
     <h2>Vizualizace pro vaše data</h2>
@@ -252,7 +251,7 @@
       fetch(page + '/role',{method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          token: JSON.parse(localStorage.getItem("user")).token,
+          "Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
         },
         body: JSON.stringify({
           role: "advanced",
@@ -289,7 +288,7 @@
 						fetch(page + '/role',{method: 'POST',
 							headers: {
 								'Content-Type': 'application/json',
-                token: JSON.parse(localStorage.getItem("user")).token,
+                "Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 							},
 							body: JSON.stringify({
 								role: id == 1 ? "user" : "advanced",

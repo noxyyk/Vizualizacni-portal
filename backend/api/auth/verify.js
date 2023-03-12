@@ -1,18 +1,13 @@
 const router = require('express').Router()
-const auth = require('../../modules/auth')
+const  {setResponseHeaders, checkIfExists} = require('../../modules/auth')
 const jwt = require('jsonwebtoken')
+const db = require('../../modules/database')
 
 router.post('/', async (req, res) => {
 	try {
-	res.header('Content-Type', 'application/json')
-	if (!auth.isOriginAllowed(req.get('origin')))
-		return res.status(401).send({
-			valid: false,
-			response: 'pokus o spuštění z neautorizovaného zdroje',
-		})
-	res.header('Access-Control-Allow-Origin', req.get('origin'))
+	setResponseHeaders(req, res)
 	jwt.verify(
-		req.headers.token,
+		req.headers.authorization?.split(' ')[1],
 		process.env.JWTSECRET,
 		async function (err, decoded) {
 			if (err) return res.status(401).send({ valid: false, response: 'Nastala chyba, zkuste to znovu později'})
@@ -21,11 +16,11 @@ router.post('/', async (req, res) => {
 					valid: false,
 					response: 'Nastala chyba, zkuste to znovu později',
 				})
-			if (!(await auth.checkIfExists(decoded.iss)))
+			if (!(await checkIfExists(decoded.iss)))
 				return res
 					.status(409)
 					.send({ valid: false, response: 'uživatel neexistuje' })
-			var object = (await auth.getUser(decoded.iss)).user
+			var object = (await db.get(decoded.iss)).user
 			for (var j in object) {
 				d = decoded[String(j)]
 				o = object[String(j)]
@@ -51,12 +46,6 @@ router.post('/', async (req, res) => {
 		}
 	)
 }
-catch (err) {
-	console.log(err)
-	res.status(500).send({
-		valid: false,
-		response: 'Nastala chyba, ${err}',
-	})
-}
+catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
 })
 module.exports = router

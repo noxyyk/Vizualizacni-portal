@@ -4,25 +4,28 @@ db.on("ready", () => {
     console.log("Database connected!");
 });
 const bcrypt = require('bcryptjs')
-const PORT = 5000
+const PORT = 5001
 const jwt = require('jsonwebtoken')
 const originsAllowed = [
-	'http://localhost:' + PORT,
+	'http://localhost:5000',
 	'https://vizualizacni-portal.noxyyk.com',
 	'https://noxyyk.com',
 	'http://127.0.0.1:5500',
 	'http://127.0.0.1:8080',
 	'http://192.168.1.129:8081'
 ]
+const fs = require('fs');
+const maxLogs = 20;
 module.exports = {
 	authenticateUser: async function (username, password) {
 		//auth.authenticateUser('username', 'password')
-		if (!(await db.has(username))) return false
-		return bcrypt.compareSync(password, (await db.get(username)).user.password)
+		const isString = (value) => typeof value === 'string'
+		if (!isString(username) || !isString(password) || !(await db.has(username))) throw { statusCode: 409, message: 'Jméno nebo heslo je špatně' }
+		if (!(bcrypt.compareSync(password, (await db.get(username)).user.password))) throw { statusCode: 401, message: 'jméno nebo heslo je špatně' }
 	},
 	checkIfExists: async function (x) {
 		//auth.checkifExists('username');
-		if(x == undefined) return false
+		if(x == undefined ) return false
 		return await db.has(x)	
 	},
 	isOriginAllowed: function (origin) {
@@ -33,14 +36,29 @@ module.exports = {
 		//auth.deleteUser('username');
 		db.delete(username)
 	},
-	getUser: async function (username) {
-		//auth.getUser('username');
-		return await db.get(username)
+	verifyUser: async function (req) {
+		let token = req.headers.authorization?.split(" ")[1]
+		if (!token || typeof token != "string") throw { statusCode: 409, message: 'Uživatel nexistuje' }
+		const user = (await new Promise((resolve, reject) => {
+			jwt.verify(
+			  token,
+			  process.env.JWTSECRET,
+			  async function (err, decoded) {
+				if (err || decoded == undefined || !(await db.has(decoded.iss))) {
+				  reject(err);
+				}
+				  if (decoded.exp < Math.floor(Date.now() / 1000)) {reject('Token expiroval');}
+				  resolve(decoded);
+			  }
+			);
+		  })).iss;
+		if (!user) throw { statusCode: 409, message: 'Uživatel nexistuje' }
+		return user
 	},
 	createToken: function (username, user, stayLogged) {
 		//auth.createToken('username', 'user', 'stayLogged');
 		stayLogged = stayLogged == undefined ? true : stayLogged
-		return jwt.sign(
+		let token = jwt.sign(
 			{
 				iss: username,
 				avatar: user.user.avatar,
@@ -55,27 +73,9 @@ module.exports = {
 			process.env.JWTSECRET,
 			{ algorithm: 'HS256' }
 		)
+		if (token == undefined) throw { statusCode: 500, message: 'Nastala chyba, zkuste to znovu později' }
+		return token
 	},
-	verifyToken: function (token) {
-		if (token == undefined || typeof token != "string") return false
-		return new Promise((resolve, reject) => {
-		  jwt.verify(
-			token,
-			process.env.JWTSECRET,
-			async function (err, decoded) {
-			  if (err || decoded == undefined || !(await db.has(decoded.iss))) {
-				reject(err);
-			  } else {
-				if (decoded.exp < Math.floor(Date.now() / 1000)) {
-				  reject('Token expiroval');
-				}
-				if (! await db.has(decoded.iss)) reject('Token je neplatný');
-				resolve(decoded);
-			  }
-			}
-		  );
-		});
-	  },
 	setUser: async function (username, object) {
 		//auth.setUser('username', 'object');
 		db.set(username, object)
@@ -106,5 +106,35 @@ module.exports = {
 		return await db.all()
 	},
 	originsAllowed: originsAllowed,
-
+	addlog: async function (user,id,avatar, type, icon, data) {
+		//check if file 
+		if (!fs.existsSync('logs.json')) {
+		fs.writeFileSync('logs.json', '[]');								
+		}
+		let logs = JSON.parse(fs.readFileSync('logs.json'));
+		//add a new log at FIRST position
+		logs.unshift({ user: user, id: id,avatar:avatar, type: type, icon: icon, data: data, timestamp: Date.now()});
+		if (logs.length > maxLogs) {
+		  logs.pop();
+		}
+		fs.writeFileSync('logs.json', JSON.stringify(logs));
+	  },
+	getLogs: async function () {
+		return JSON.parse(fs.readFileSync('logs.json'));
+		},
+	setResponseHeaders: function (req, res) {
+			res.header('Content-Type', 'application/json')
+			if (!originsAllowed.includes(req.get('origin'))) {
+				throw {
+				  statusCode: 401,
+				  message: 'pokus o spuštění z neautorizovaného zdroje',
+				  valid: false,
+				  response: 'pokus o spuštění z neautorizovaného zdroje',
+				}
+			}
+			res.header('Access-Control-Allow-Origin', req.get('origin'))
+		  },
+	handleError: function(res, err) {
+		throw { statusCode: 500, message: 'Nastala chyba, zkuste to znovu', valid: false, response: 'Nastala chyba'}
+		  },								
 }

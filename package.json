@@ -7,5 +7,9 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongquick": "github:ahqsoftwares/quickmongo"
+  },
+  "scripts": {
+    "frontend": "start http://localhost:5000 && cd frontend && npx http-server -p 5000 -c-1 -a localhost",
+    "backend": "cd backend && nodemon index.js"
   }
 }

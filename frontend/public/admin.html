@@ -1,0 +1,220 @@
+<!-- page for admin -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="themes.css">
+    <link type="text/css" rel="stylesheet" href="./button.css">
+    <link rel="icon" type="image/x-icon" href="./images/logo.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vizualizační portál - Správce</title>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  </head>
+  <body>
+    <style>
+
+
+.logs {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.log {
+  border: #212325 1px solid;
+  width: 550px;
+  background-color: #36393F;
+  border-radius: 5px;
+  margin: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  font-size: 14px;
+}
+.log-icon {
+  margin-right: 10px;
+  color: #B9BBBE;
+}
+.log-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  flex-grow: 1;
+  color: #FFFFFF;
+}
+.log-content-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.log-content-header-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 10px;
+}
+.log-content-data {
+  top: 50px;
+  display: none;  /* initially hidden */
+  flex-direction: row;
+  align-items: center;
+}
+
+.log-content-data-target {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.log-content-data-new {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 10px;
+  color: #43B581;
+}
+
+.log-content-data-old {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 10px;
+  color: #F04747;
+}
+.log-arrow {
+color: #B9BBBE;
+margin-left: auto;
+cursor: pointer;
+font-size: 16px;
+transform: rotate(0deg);
+}
+.arrow-icon-right {
+  transform: rotate(-90deg);
+}
+    </style>
+    <div class="header" id="header"></div>
+    
+    <div class="logs" id="logs"></div>
+    <div class="footer" id="footer">
+  </body>
+    <script src="animations.js"></script>
+    <script src= ./website.js></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+    <script src="./files/changelog.js"></script>
+    <script>
+        getLogs()
+        async function getLogs(){
+          const icons = {
+            "change role": "person-circle-outline",
+          }
+       let response = await ( await fetch(`${page}/logs`,{
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',}
+        })).json()
+         if(response.valid){
+            let logs = response.logs
+            let logsHTML = `<h1 style="text-align: center; margin-top: 20px;">Audit</h1>`
+
+            for(let i = 0; i < logs.length; i++){
+const f = new Intl.RelativeTimeFormat("cz", {
+  style: "long",
+  numeric: "auto"
+});
+
+const time = new Date(logs[i].timestamp);
+const now = new Date();
+const diff = now - time;
+const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+let result = "";
+
+if (days < 3) {
+result = (f.format(-days, "day") + " v " + time.toLocaleTimeString());
+}else if (days < 7) {
+  const weekday = time.toLocaleDateString("cs-CZ", {weekday: "long"});
+  let declension = "minul";
+  let koncovka = ["é","á","ý"]
+  if ((["pondělí","úterý"]).includes(weekday)) declension += koncovka[0];
+  else if ((["středa","sobota","neděle"]).includes(weekday)) declension += koncovka[1];
+  else declension += koncovka[2];
+  result = declension + " " + weekday + " v " + time.toLocaleTimeString();
+} else {
+  result = time.toLocaleDateString()
+}
+let roles = {
+  "admin": "Admin",
+  "user": "Osobní",
+  "advanced": "Pokročilý"}
+              logsHTML += `
+              <div class="log">
+                <div class="log-icon">
+                  <img src="${logs[i].avatar}" style="width: 50px;height: 50px;border-radius: 50%;">
+                </div>
+                <div class="log-content">
+                  <div class="log-content-header">
+                    <div class="log-content-header-content">
+                      <span>
+                        <span style="color: #fff">${logs[i].user}</span>
+                        <span style="color: gray;font-size:0.8em;">#${logs[i].id}</span>
+                        <span style="color: rgba(255, 255, 255, 0.8)">${logs[i].type}</span>
+                        <span style="color: #fff">${logs[i].data.target}</span>
+                        <span style="color: gray;font-size:0.8em;">#${logs[i].data.targetid}</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="log-content-header-timestamp">
+                      <span style="color: #C9C9C9;font-size:0.8em">${result}</span>
+                    </div>
+                </div>
+                 <div class="log-content-data">
+                    <div class="log-content-data-new">
+                      <ion-icon name="add-circle-outline"></ion-icon>
+                      <span>${roles[logs[i].data.new] || logs[i].data.new}</span>
+                    </div>
+                    <div class="log-content-data-old">
+                      <ion-icon name="remove-circle-outline"></ion-icon>
+                      <span>${roles[logs[i].data.old] || logs[i].data.old}</span>
+                    </div>
+                  </div>
+                  <div class="log-arrow">
+                      <ion-icon class="arrow-icon arrow-icon-right" name="chevron-down-outline"></ion-icon>
+                 </div>
+              </div>
+              `
+            }
+            document.getElementById('logs').innerHTML = logsHTML
+         }
+        }
+function toggleLogContent(event) {
+// get the log content element
+
+const logContent = event.target.closest('.log').querySelector('.log-content-data');
+const arrowIcon =  event.target.closest('.log').querySelector('.arrow-icon');
+
+if (arrowIcon.classList.contains('arrow-icon-right')) {
+logContent.style.display = 'flex';
+arrowIcon.classList.remove('arrow-icon-right');
+} else {
+logContent.style.display = 'none';
+arrowIcon.classList.add('arrow-icon-right');
+}
+}
+
+const logsContainer = document.getElementById('logs');
+logsContainer.addEventListener('click', function(event) {
+if (!event.target.closest('.log')) return;
+toggleLogContent(event);
+
+});
+    </script>
+</html>

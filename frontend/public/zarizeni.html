@@ -30,7 +30,16 @@
 </head>
 
 <body> 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /*           <!-- make the button at the right side of the div --> */
+    .settings{
+      position: absolute;
+      right: 0;
+      top: 0;
+      margin: 14px;
+      font-size: larger
+    }
     .loading-spinner {
   display: flex;
   justify-content: center;
@@ -111,12 +120,38 @@
 .content .grid_item h2{
   pointer-events: none;
 }
+		
+		#back-button {
+			background-color: #2d692a;
+			color: #fff;
+			padding: 10px 20px;
+			border-radius: 5px;
+			border: none;
+			cursor: pointer;
+			margin-top: 20px;
+		}
+        #chart-container{
+            background-color: aliceblue;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            height: 300px;
+        }
+        .controls, #device {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+        }
+  .disabled{
+    display: none;
+  }
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
 </div>
 <div class="content">
-  <div class="device"></div>
 <div class="grid_container">
   <div class="grid_item add_device" onclick='device("add")'>
     <h2><ion-icon name="add-circle-outline"></ion-icon></h2> 
@@ -124,6 +159,23 @@
 </div>
 </div>
 
+<div id="device_content" class="device_content disabled">
+  <div id="device">
+    <div style="height: 100px;"></div>
+    <button id="back-button" class="controls" onclick='device("back")'>Zpět na všechny zařízení</button>
+  </div>
+      <div id="chart-container">
+          <canvas id="my-chart"></canvas>
+      </div>
+      <div class="articles">
+        <div class="article">
+          <div class="settings"><ion-icon name="settings-sharp" onclick='device("set")'></ion-icon></div>
+      <div class="deviceinfo"></div>
+        <div class="controls">
+          <button class="button-icon" onclick='device("remove")'>Odstranit</button>
+          <button class="button-icon" onclick='device("rename")'>Přejmenovat</button>
+      </div></div></div>
+  </div>
 <div class="footer" id="footer">
   <p class="footer_cpr">© 2021 - 2022 T.S. 4. P</p>
 </div>

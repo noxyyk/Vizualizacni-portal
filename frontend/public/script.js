@@ -1,6 +1,6 @@
 //const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const page = "http://localhost:5000/api"
+const page = "https://api.vizualizacni-portal.noxyyk.com/api"
 const roles = ['user', 'advanced', 'admin']
 //set custom swal fire
 var toast = Swal.mixin({
@@ -9,7 +9,6 @@ var toast = Swal.mixin({
 	showConfirmButton: false,
 	timer: 3000,
 	timerProgressBar: true,
-	allowOutsideClick: true,
 	didOpen: (toast) => {
 		toast.addEventListener('mouseenter', Swal.stopTimer)
 		toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -106,18 +105,15 @@ function verifyToken() {
 	var token = localStorage.getItem('user')
 	try {
 		token = JSON.parse(token).token
-	} catch {
-		token = null
-	}
+	
 	if (token == null) return false
-	requestOptions = {
+	fetch(page + '/verify', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			token: JSON.parse(localStorage.getItem("user")).token,
+			"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 		}
-	}
-	fetch(page + '/verify', requestOptions) //fetch data from request
+	})
 		.then((result) =>
 			result.json().then((json) => {
 				console.log('response: ', Status(result.status))
@@ -159,6 +155,11 @@ function verifyToken() {
 				})
 			})
 		)
+	} catch {
+		localStorage.removeItem('user')
+		login_btn()
+		validation = false
+	}
 	return validation
 }
 function swalError(response) {
@@ -391,7 +392,7 @@ async function account(type) {
 				let response = await(await fetch(page + '/change', {method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					token: JSON.parse(localStorage.getItem("user")).token,
+					"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 				},
 				body: JSON.stringify({
 					username_new: username,
@@ -433,7 +434,7 @@ async function account(type) {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
-							token: JSON.parse(localStorage.getItem("user")).token,
+							"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 						},
 						body: JSON.stringify({password: password, password_old: old_password, type: 'password'})
 					})).json()
@@ -477,7 +478,7 @@ async function account(type) {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						token: JSON.parse(localStorage.getItem("user")).token,
+						"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 					},
 					body: JSON.stringify(data),
 				}
@@ -578,7 +579,7 @@ async function account(type) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					token: JSON.parse(localStorage.getItem("user")).token,
+					"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 				},
 				body: JSON.stringify({
 					avatar: avatar,
@@ -634,11 +635,15 @@ async function userlist() {
 	//check if user is admin
 	if (!JSON.parse(localStorage.getItem('user')).admin)
 		return swalError('Nemáte dostatečná oprávnění')
-	var userlist = await fetch(page + '/userlist', { headers: {
-		token: JSON.parse(localStorage.getItem('user')).token
+	var userlist = await fetch(page + '/userlist', { 
+	method: 'GET',
+	headers: {
+		'Content-Type': 'application/json',
+		"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 	}
 	}).then((result) =>
 		result.json().then((json) => {
+			console.log(json)
 			console.log('response: ', Status(result.status))
 			if (!json.valid) return swalError(json.response)
 			return json.users
@@ -783,7 +788,7 @@ async function userlist() {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json',
-								token: JSON.parse(localStorage.getItem("user")).token,
+								"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 							},
 							body: JSON.stringify({
 								username:

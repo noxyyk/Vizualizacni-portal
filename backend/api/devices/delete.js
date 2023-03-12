@@ -1,21 +1,11 @@
 const router = require('express').Router()
-const auth = require('../../modules/auth')
+const {setResponseHeaders, verifyUser} = require('../../modules/auth')
 const db = require('../../modules/database')
 
 router.post('/', async (req, res) => {
     try {
-        res.header('Content-Type', 'application/json')
-        if (!auth.isOriginAllowed(req.get('origin')))
-            return res.status(401).send({
-                valid: false,
-                response: 'pokus o spuštění z neautorizovaného zdroje',
-            })
-        res.header('Access-Control-Allow-Origin', req.get('origin'))
-        user = (await auth.verifyToken(req.headers.token)).iss
-        if (!(await auth.checkIfExists(user)))
-            return res
-                .status(409)
-                .send({ valid: false, response: 'Uživatel s tímto jménem nexistuje' })
+        setResponseHeaders(req, res)
+		const user = await verifyUser(req)
 let object = await db.get(user)
 var devices = object.devices
 var index = devices.findIndex(x => x.name == req.body.name)
@@ -28,12 +18,6 @@ res.status(200).send({
     devices: object.devices
 })
     }
-    catch (err) {
-        console.log(err)
-        res.status(500).send({
-            valid: false,
-            response: 'Nastala chyba, ' + err
-        })
-    }
+    catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
 })
 module.exports = router
