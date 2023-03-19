@@ -139,14 +139,30 @@
         }
         .controls, #device {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
             margin: 20px;
         }
+        .button-icon{
+            margin: 10px;
+            cursor: pointer;
+        }
   .disabled{
     display: none;
   }
+
+  @media only screen and (max-width: 720px) {
+    .content .grid_container{
+      grid-template-columns: auto auto;
+    }
+  }
+  @media only screen and (max-width: 440px) {
+    .content .grid_container{
+      grid-template-columns: auto;
+    }
+  }
+
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
@@ -160,8 +176,9 @@
 </div>
 
 <div id="device_content" class="device_content disabled">
+  <div style="height: 100px;width: 100%;"></div>
   <div id="device">
-    <div style="height: 100px;"></div>
+   
     <button id="back-button" class="controls" onclick='device("back")'>Zpět na všechny zařízení</button>
   </div>
       <div id="chart-container">
@@ -172,8 +189,8 @@
           <div class="settings"><ion-icon name="settings-sharp" onclick='device("set")'></ion-icon></div>
       <div class="deviceinfo"></div>
         <div class="controls">
-          <button class="button-icon" onclick='device("remove")'>Odstranit</button>
           <button class="button-icon" onclick='device("rename")'>Přejmenovat</button>
+          <button class="button-icon" onclick='device("remove")'>Odstranit</button>
       </div></div></div>
   </div>
 <div class="footer" id="footer">

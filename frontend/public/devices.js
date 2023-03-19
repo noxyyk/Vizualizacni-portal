@@ -11,6 +11,7 @@ device("view",device_name)
 
 device("get")
 async function device(x, target) {
+  console.log(x)
   var devices = Array.from(
     document.getElementsByClassName("grid_container")[0].children
   );
@@ -23,7 +24,6 @@ async function device(x, target) {
   if (target == undefined && ["remove","rename"].includes(x) ) {
    target = document.getElementsByClassName("deviceinfo")[0].getElementsByTagName("h2")[0].innerHTML
   }
-  console.log(devices)
   switch (x) {
     case "add":
      Swal.fire({
@@ -32,7 +32,6 @@ async function device(x, target) {
         focusConfirm: false,
         showCloseButton: true,
         preConfirm: async () => {
-          console.log("add")
           Swal.showLoading()
           const deviceName = document.getElementById("swal-input1").value;
           if (deviceName.length > 20)  return swal.showValidationMessage(`Device name is too long`);
@@ -67,10 +66,11 @@ async function device(x, target) {
 
       break;
     case "remove":
-      swal.fire({
+      Swal.fire({
             title: `Smazat ${target}`,
             html: `<p>pro smazání napište <mark>smazat ${target}</p></mark><br><input id="swal-input1" class="swal2-input" placeholder="Device Name">`,
-            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Potvrdit',
             preConfirm:  async () => {
               Swal.showLoading()
               const device = document.getElementById("swal-input1").value;
@@ -97,10 +97,11 @@ async function device(x, target) {
         })
       break;
     case "rename":
-        swal.fire({
+        Swal.fire({
             title: `Přejmenování ${target}`,
             html: '<input id="swal-input1" class="swal2-input" placeholder="Nový název">',
-            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Přejmenovat',
             preConfirm: async () => {
               Swal.showLoading()
               const device = document.getElementById("swal-input1").value;
@@ -136,7 +137,6 @@ async function device(x, target) {
     case "view":
       Swal.close()
       let device = data.find(device => device.name == target)
-      console.log(device)
       let date = new Date(device.createdTimestamp * 1000)
       let day = date.getDate()
       let month = date.getMonth() + 1
@@ -195,15 +195,31 @@ if (!result.valid) return Swal.fire({
   title: 'Oops...',
   text: result.response
 })
+console.log(result.response)
 Swal.fire({
   title: 'Data',
-  html: `<div class="grid_container">
-  ${result.response.length == 0 ? "zatím nic" : result.response.map(data => `<div class="grid_item data"><h2>${data}</h2></div>`).join("")
-}
-  </div>`,
+  html: `
+  <div class="grid_container">
+  ${
+    Object.entries(result.response).map(([measurement, data]) => `
+      <div class="grid_item data">
+        <h2>${measurement}</h2>
+        <p>${
+          data.map(([datetime, value]) => {
+            const date = new Date(datetime);
+            const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()} - ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}:${date.getMilliseconds().toString().padStart(2, "0")}: ${value}`;
+            return formattedDate;
+          }).join("<br>")
+        }</p>
+      </div>
+    `).join("")
+  }
+</div>
+
+
+  `,
   showCloseButton: true,
   showCancelButton: false,
-  //full screen
   width: '100%',
   focusConfirm: false,
   confirmButtonText: 'Zavřít',
@@ -211,6 +227,9 @@ Swal.fire({
   cancelButtonText: 'Zavřít',
   cancelButtonAriaLabel: 'Zavřít',
 })
+
+
+
       break;
     case "back":
       document.getElementsByClassName("device_content")[0].classList.add("disabled")
@@ -229,6 +248,8 @@ Swal.fire({
         if (!result.valid) return
         if (result.devices.length == 0) return
         data = result.devices
+        localStorage.setItem("devices", JSON.stringify(data))
+
             result.devices.forEach(device => {
                 devices.splice(
                     devices.length - 1,
@@ -240,13 +261,28 @@ Swal.fire({
     })
     break
     case "set":
+  target = target ? target : document.getElementsByClassName("deviceinfo")[0].getElementsByTagName("h2")[0].innerHTML
+  const device_content = data.findIndex(x => x.name == target);
+  var {bucket, org, token, url} = data[device_content]
+  if (data[device_content].bucket == undefined) {
+    bucket = ""
+    org = ""
+    token = ""
+    url = ""
+  }
     Swal.fire({
       title: 'InfluxDB Query',
+      width: '50%',
       html:
-        '<form><input id="bucket" type="name" placeholder="Bucket" class="swal2-input">' +
-        '<input id="org" type="name" placeholder="Organizace" class="swal2-input">' +
-        '<input id="token" type="password" placeholder="Token" class="swal2-input">' +
-        '<input id="url" type="name" placeholder="Url adresa" class="swal2-input"></form>',
+      `<form><input id="bucket" type="name" value="${bucket}" placeholder="Bucket" class="swal2-input">
+        <input id="org" type="name" value="${org}" placeholder="Organizace" class="swal2-input">
+        <input id="token" type="name" value="${token}" placeholder="Token" class="swal2-input">
+        <input id="url" type="name" value="${url}" placeholder="Url adresa" class="swal2-input"></form>
+        <style>
+        .swal2-input {
+          min-width: 60%;
+          }
+          </style>`,
       showCancelButton: true,
       confirmButtonText: 'Odeslat',
       preConfirm: async () => {

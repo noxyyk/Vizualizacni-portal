@@ -1,9 +1,9 @@
 const { InfluxDB, Point } = require('@influxdata/influxdb-client');
+const { table } = require('console');
 const router = require('express').Router()
 const {setResponseHeaders, verifyUser} = require('../../modules/auth')
 const db = require('../../modules/database')
-
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     setResponseHeaders(req, res)
 		const user = await verifyUser(req)
@@ -23,23 +23,40 @@ router.get('/', async (req, res) => {
     //|> range(start: -12h)
     //|> filter(fn: (r) => r._measurement == "my-measurement")
     //|> limit(n: 10)
-    const rows = [];
-    await queryClient.queryRows(query, {
-      next(row, tableMeta) {
-        const o = tableMeta.toObject(row)
-        const values = Object.values(o)
-        console.log("values:", values, "tableMeta:", tableMeta, "o:", o);
-        rows.push(values);
-      },
-      error(error) {
-        console.error(error);
-        res.status(500).send('Internal server error');
-      },
-      complete() {
-        console.log("complete", rows);
-        res.status(200).send({response: rows, valid: true});
-      },
-    });
+    const fluxTables = []
+    await new Promise((resolve, reject) => {
+      queryClient.queryRows(query, {
+        next(row, tableMeta) {
+          const table = fluxTables[tableMeta.id] || (fluxTables[tableMeta.id] = [])
+          table.push(row)
+        },
+        error(error) {
+          reject(error)
+        },
+        complete() {
+          resolve()
+        },
+      })
+    }
+    )
+    //make array of measurements and filter only to send measurement name, time and value measurement:  [
+      const measurements = {};
+if (fluxTables.length == 0) return res.status(401).send({ valid: false, response: 'Nebyla nalezena žádná data' })
+fluxTables[undefined].forEach(row => {
+  const measurement = row[7];
+  const date = row[4];
+  const value = row[5];
+
+  if (!measurements[measurement]) {
+    measurements[measurement] = [];
+  }
+
+  measurements[measurement].push([date, value]);
+});
+    res.status(200).send({
+      valid: true,
+      response  : measurements
+    })
   } catch (error) {
     console.error(error);
     res.status(400).send('Invalid token');

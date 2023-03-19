@@ -136,7 +136,7 @@ async function login_btn() {
 			'</button>' +
 			'<div class="dropdown-content animation"><a onclick=account()><span class="icon"><ion-icon name="settings-outline"></ion-icon></span><span class="text"> Účet</span></a><a onclick=logOut()><span class="icon"><ion-icon name="log-out-outline"></ion-icon></span><span class="text"> Odhlášení</span></a>' +
 			(user.admin
-				? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a>'
+				? '<a onclick=userlist()><span class="icon"><ion-icon name="people-outline"></ion-icon></span><span class="text"> Uživatelé</span></a><a onclick=audit()><span class="icon"><ion-icon name="megaphone-outline"></ion-icon></span><span class="text"> Audit</span></a>'
 				: '') +
 			'</div>'
 	}

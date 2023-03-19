@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 			})
 		if (! await authenticatePassword(password_old, password)) return res.status(401).send({ valid: false, response: 'původní heslo není správné' })
 		object.user.password = await createPassword(password)
-		db.set(user, object)
+		await db.set(user, object)
 		break
 	case 'name':
 		if (!(await db.has(user)))
@@ -35,8 +35,8 @@ router.post('/', async (req, res) => {
 				valid: false,
 				response: 'Uživatel s tímto jménem již existuje',
 			})
-			db.set(username_new, object)
-			db.delete(user)
+			await db.set(username_new, object)
+			await db.delete(user)
 		user = username_new
 		break
 	case 'check':
@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
 		break
 	case 'avatar':
 		object.user.avatar = req.body.avatar
-		db.set(user, object)
+		await db.set(user, object)
 		break
 	default:
 		res.status(400).send({ valid: false, response: 'neznámý typ' })

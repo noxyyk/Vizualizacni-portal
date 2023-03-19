@@ -7,7 +7,7 @@ router.post('/', async (req, res) => {
 		setResponseHeaders(req, res)
 		const user = await verifyUser(req)
 		await authenticateUser(user, req.body.password)
-		db.delete(user)
+		await db.delete(user)
 		res.status(200).send({ valid: true })
 }
 catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}

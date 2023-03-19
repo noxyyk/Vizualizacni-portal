@@ -931,7 +931,221 @@ async function userlist() {
 			break
 		}
 	}
+}async function audit(){
+	let response = await ( await fetch(`${page}/logs`,{
+	 method: 'GET',
+	 headers: {
+		 'Content-Type': 'application/json',}
+	 })).json()
+	  if(response.valid){
+		 let logs = response.logs
+		 let logsHTML = ``
+
+		 for(let i = 0; i < logs.length; i++){
+const f = new Intl.RelativeTimeFormat("cz", {
+style: "long",
+numeric: "auto"
+});
+
+const time = new Date(logs[i].timestamp);
+const now = new Date();
+const diff = now - time;
+const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+let result = "";
+
+if (days < 3) {
+result = (f.format(-days, "day") + " v " + time.toLocaleTimeString());
+}else if (days < 7) {
+const weekday = time.toLocaleDateString("cs-CZ", {weekday: "long"});
+let declension = "minul";
+let koncovka = ["é","á","ý"]
+if ((["pondělí","úterý"]).includes(weekday)) declension += koncovka[0];
+else if ((["středa","sobota","neděle"]).includes(weekday)) declension += koncovka[1];
+else declension += koncovka[2];
+result = declension + " " + weekday + " v " + time.toLocaleTimeString();
+} else {
+result = time.toLocaleDateString()
 }
+let roles = {
+"admin": "Admin",
+"user": "Osobní",
+"advanced": "Pokročilý"}
+		   logsHTML += `
+		   <div class="log">
+			 <div class="log-icon">
+			   <img src="${logs[i].avatar}" style="width: 50px;height: 50px;border-radius: 50%;">
+			 </div>
+			 <div class="log-content">
+			   <div class="log-content-header">
+				 <div class="log-content-header-content">
+				   <span>
+					 <span style="color: #fff">${logs[i].user}</span>
+					 <span style="color: gray;font-size:0.8em;">#${logs[i].id}</span>
+					 <span style="color: rgba(255, 255, 255, 0.8)">${logs[i].type}</span>
+					 <span style="color: #fff">${logs[i].data.target}</span>
+					 <span style="color: gray;font-size:0.8em;">#${logs[i].data.targetid}</span>
+				   </span>
+				 </div>
+			   </div>
+			   <div class="log-content-header-timestamp">
+				   <span style="color: #C9C9C9;font-size:0.8em">${result}</span>
+				 </div>
+			 </div>
+			  <div class="log-content-data">
+				 <div class="log-content-data-new">
+				   <ion-icon name="add-circle-outline"></ion-icon>
+				   <span>${roles[logs[i].data.new] || logs[i].data.new}</span>
+				 </div>
+				 <div class="log-content-data-old">
+				   <ion-icon name="remove-circle-outline"></ion-icon>
+				   <span>${roles[logs[i].data.old] || logs[i].data.old}</span>
+				 </div>
+			   </div>
+			   <div class="log-arrow">
+				   <ion-icon class="arrow-icon arrow-icon-right" name="chevron-down-outline"></ion-icon>
+			  </div>
+		   </div>
+		   <style>
+		   
+.logs {
+	margin-top: 80px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+  }
+  .log {
+	border: #212325 1px solid;
+	width: 550px;
+	background-color: #2b2d31;
+	border-radius: 5px;
+	margin: 5px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 10px;
+	font-size: 14px;
+  }
+  .log-active {
+	background-color: #26272a;
+ }
+
+a .log-icon {
+	margin-right: 10px;
+	color: #B9BBBE;
+  }
+  .log-content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	flex-grow: 1;
+	color: #FFFFFF;
+	padding-left: 5px;
+  }
+  .log-content-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 5px;
+  }
+  .log-content-header-content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-right: 10px;
+  }
+  .log-content-data {
+	top: 50px;
+	display: none;  /* initially hidden */
+	flex-direction: row;
+	align-items: center;
+  }
+  
+  .log-content-data-target {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-right: 10px;
+  }
+  
+  .log-content-data-new,.log-content-data-old {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-right: 10px;
+  }
+  .log-content-data-new{
+	color: #43B581;
+  }
+  .log-content-data-old {
+	color: #F04747;
+  }
+  .log-arrow {
+  color: #B9BBBE;
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 16px;
+  transform: rotate(0deg);
+  }
+  .arrow-icon-right {
+	transform: rotate(-90deg);
+  }
+.log-content-data {
+	flex-direction: column;
+  }
+  .text-white {
+	color: #fff;
+  }
+  </style>
+		   `
+		 }
+		 Swal.fire({
+			title: 'Audit logy',
+			 html: logsHTML,
+			 width: 'fit-content',
+			 padding: '0',
+			 background: '#313338',
+			customClass: {
+				title: 'text-white',
+			},
+			 didOpen: () => {
+				const logsContainer = document.querySelector('.swal2-container');
+				logsContainer.addEventListener('click', function(event) {
+					console.log(event.target);
+				if (!event.target.closest('.log')) return;
+				toggleLogContent(event);
+				});
+				function toggleLogContent(event) {
+					const logContent = event.target.closest('.log').querySelector('.log-content-data');
+					const arrowIcon =  event.target.closest('.log').querySelector('.arrow-icon');
+					
+					if (arrowIcon.classList.contains('arrow-icon-right')) {
+					logContent.style.display = 'flex';
+					arrowIcon.classList.remove('arrow-icon-right');
+					logContent.closest('.log').classList.add('log-active');
+					const logs = document.querySelectorAll('.log');
+						for (let i = 0; i < logs.length; i++) {
+							if (logs[i] == event.target.closest('.log')) continue
+							logs[i].querySelector('.log-content-data').style.display = 'none';
+							logs[i].querySelector('.arrow-icon').classList.add('arrow-icon-right')
+							logs[i].classList.remove('log-active');
+						}
+					} else {
+					logContent.closest('.log').classList.remove('log-active');	
+					logContent.style.display = 'none';
+					arrowIcon.classList.add('arrow-icon-right');
+					}
+					}
+		 }		
+})		
+
+}
+
+}		
 
 onstorage = (event) => {
 	// console.log("storage change");

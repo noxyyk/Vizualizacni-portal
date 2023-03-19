@@ -21,6 +21,11 @@ async function ChangeLog() {
         #prosinec_content,  #listopad_content, #rijen_content,  #zari_content, #srpen_content, #cervenec_content, #cerven_content, #kveten_content, #duben_content, #brezen_content, #unor_content, #leden_content {
             display: none;
         }
+        @media only screen and (max-width: 600px) {
+            .grid {
+                display: grid;
+                grid-template-columns: auto;
+              }
     </style> 
     <h1 id="change-log">Seznam Změn</h1>
     <div class="grid">

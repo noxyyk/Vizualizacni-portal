@@ -122,12 +122,6 @@ body {
 #dropdown-toggle:checked ~ .dropdown-content {
 	display: block;
 }
-ion-icon {
-	transition: transform 0.3s;
-}
-#dropdown-toggle:checked + label > ion-icon {
-	transform: rotate(90deg);
-}
 .dropdown {
 	z-index: 1;
 	opacity: 1;
@@ -373,7 +367,7 @@ ion-icon {
 	display: none;
 }
 @media only screen and (max-width: 1280px) {
-	.scroll:last-child {
+	.scroll {
 		max-height: 400px;
 		overflow-y: auto;
 	}
@@ -407,6 +401,9 @@ ion-icon {
 			width: 100%;
 		}
 		@media only screen and (max-width: 720px) {
+			.grid_container {
+				grid-template-columns: auto;
+			}
 			.dropdown {
 				top: 12px;
 			}
