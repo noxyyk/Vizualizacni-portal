@@ -1,7 +1,11 @@
 const router = require('express').Router()
 const { setResponseHeaders,verifyUser,authenticatePassword,createPassword, createToken} = require('../../modules/auth')
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const db = require('../../modules/database')
+let db;
+( async () => {
+const dbInstance = await require('../../modules/database');
+db = dbInstance
+})()
 
 router.post('/', async (req, res) => {
 	try {

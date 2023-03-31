@@ -1,7 +1,10 @@
 const router = require('express').Router()
-const {setResponseHeaders, authenticateUser, handleError, verifyUser} = require('../../modules/auth')
-const db = require('../../modules/database')
-
+const {setResponseHeaders, authenticateUser, verifyUser} = require('../../modules/auth')
+let db;
+( async () => {
+const dbInstance = await require('../../modules/database');
+db = dbInstance
+})()
 router.post('/', async (req, res) => {
 	try {
 		setResponseHeaders(req, res)

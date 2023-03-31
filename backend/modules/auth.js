@@ -1,18 +1,18 @@
 require('dotenv').config()
-const db = require('./database.js')
-db.on("ready", () => {
-    console.log("Database connected!");
-});
 const bcrypt = require('bcryptjs')
-const PORT = 5001
+const PORT = 5001;
+let db;
+( async () => {
+const dbInstance = await require('./database.js');
+db = dbInstance
+console.log("database connected")
+})()
 const jwt = require('jsonwebtoken')
 const originsAllowed = [
 	'http://localhost:5000',
 	'https://vizualizacni-portal.noxyyk.com',
-	'https://noxyyk.com',
-	'http://127.0.0.1:5500',
-	'http://127.0.0.1:8080',
-	'http://192.168.1.129:8081'
+	'https://noxyyk.com',	
+	'http://localhost:5002',
 ]
 const fs = require('fs');
 const maxLogs = 20;
@@ -93,17 +93,14 @@ module.exports = {
 		db.set(x, y)
 	},
 	createPassword: async function (password) {
-		//auth.createPassword('password');
 		return bcrypt.hashSync(password, Number(process.env.SALT))
 	},
 	authenticatePassword: async function (password, hash) {
-		//auth.authenticatePassword('password', 'hash');
 		if (password == undefined || hash == undefined) return false
 		return bcrypt.compareSync(password, hash)
 	},
 	getDBall: async function () {
-		//auth.getDBall();
-		return await db.all()
+			return await db.all()	
 	},
 	originsAllowed: originsAllowed,
 	addlog: async function (user,id,avatar, type, icon, data) {

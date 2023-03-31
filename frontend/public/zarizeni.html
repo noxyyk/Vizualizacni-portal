@@ -31,6 +31,8 @@
 
 <body> 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <style>
     /*           <!-- make the button at the right side of the div --> */
     .settings{
@@ -135,7 +137,17 @@
             border-radius: 10px;
             padding: 20px;
             margin: 20px;
-            height: 300px;
+            min-height: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            height: fit-content;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-gap: 10px;
+        }
+        canvas{
+            height: 70%;
+            border: 1px solid rgba(0, 0, 0, 0.193);
+            border-radius: 10px;
         }
         .controls, #device {
             display: flex;
@@ -162,7 +174,6 @@
       grid-template-columns: auto;
     }
   }
-
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
@@ -181,8 +192,7 @@
    
     <button id="back-button" class="controls" onclick='device("back")'>Zpět na všechny zařízení</button>
   </div>
-      <div id="chart-container">
-          <canvas id="my-chart"></canvas>
+      <div id="chart-container" class="grid_container">
       </div>
       <div class="articles">
         <div class="article">

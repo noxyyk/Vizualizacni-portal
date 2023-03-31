@@ -1,7 +1,11 @@
 const router = require('express').Router()
 const  {setResponseHeaders, checkIfExists} = require('../../modules/auth')
 const jwt = require('jsonwebtoken')
-const db = require('../../modules/database')
+let db;
+( async () => {
+const dbInstance = await require('../../modules/database');
+db = dbInstance
+})()
 
 router.post('/', async (req, res) => {
 	try {

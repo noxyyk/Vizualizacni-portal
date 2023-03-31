@@ -1,4 +1,8 @@
-const db = require('./database.js')
+let db;
+( async () => {
+const dbInstance = await require('./database');
+db = dbInstance
+})()
 module.exports = {
     removewrongdevices: async function () {//delete all devices with wrong name
         return

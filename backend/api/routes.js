@@ -18,5 +18,6 @@ router.use('/remove', require('./devices/delete'))
 router.use('/edit', require('./devices/edit'))
 router.use('/data', require('./devices/data'))
 router.use('/set', require('./devices/set'))
+router.use('/write', require('./devices/write'))
 
 module.exports = router 

@@ -1,5 +1,9 @@
 const router = require('express').Router()
-const db = require('../../modules/database')
+let db;
+( async () => {
+const dbInstance = await require('../../modules/database');
+db = dbInstance
+})()
 const { checkIfExists, setResponseHeaders, createPassword, getID } = require('../../modules/auth')
 const { GetRandomItem } = require('../../modules/array_sorting')
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`)

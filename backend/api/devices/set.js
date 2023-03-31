@@ -1,6 +1,10 @@
 const router = require('express').Router()
 const {setResponseHeaders, verifyUser} = require('../../modules/auth')
-const db = require('../../modules/database')
+let db;
+( async () => {
+const dbInstance = await require('../../modules/database');
+db = dbInstance
+})()
 const {InfluxDB, FluxTableMetaData} = require('@influxdata/influxdb-client')
 
 async function validateInfluxDBVariables(token, url, org, bucket) {
@@ -38,16 +42,18 @@ router.post('/', async (req, res) => {
     const object = await db.get(user);
     const index = object.devices.findIndex(x => x.name == req.body.device);
     if (index == -1) return res.status(401).send({ valid: false, response: 'Zařízení nenalezeno' })
-    const { token, url, org, bucket } = req.body;
+    const { token, url, org, bucket, tag, tagvalue} = req.body;
     await validateInfluxDBVariables(token, url, org, bucket)
     let device = {
         name: req.body.device,
         createdTimestamp: object.devices[index].createdTimestamp,
-        data: object.devices[index].data,
+        data: object.devices[index].data  ,
         token: token,
         url: url,
         org: org,
-        bucket: bucket
+        bucket: bucket,
+        tag: tag,
+        tagvalue: tagvalue
     }
     object.devices[index] = device;
     await db.set(user, object)

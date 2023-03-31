@@ -1,4 +1,3 @@
-//const settings = require('./config/settings'); not implemented yet
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const page = "https://api.vizualizacni-portal.noxyyk.com/api"
 const roles = ['user', 'advanced', 'admin']
@@ -69,27 +68,27 @@ function listsGetSortCompare(type, direction) {
 			return Number(a) - Number(b)
 		},
 		TEXT: function (a, b) {
-			return a.ID.toString() > b.ID.toString() ? 1 : -1
+			return a.id.toString() > b.id.toString() ? 1 : -1
 		},
 		TEXT_NOCASE: function (a, b) {
-			return a.ID.toString().toLowerCase() > b.ID.toString().toLowerCase()
+			return a.id.toString().toLowerCase() > b.id.toString().toLowerCase()
 				? 1
 				: -1
 		},
 		DATE: function (a, b) {
-			return b.data.user.createdTimestamp > a.data.user.createdTimestamp
+			return b.value.user.createdTimestamp > a.value.user.createdTimestamp
 				? 1
 				: -1
 		},
 		DATE2: function (a, b) {
-			if (a.data.user.loggedTimestamp == undefined) return 1
-			return b.data.user.loggedTimestamp > a.data.user.loggedTimestamp ? 1 : -1
+			if (a.value.user.loggedTimestamp == undefined) return 1
+			return b.value.user.loggedTimestamp > a.value.user.loggedTimestamp ? 1 : -1
 		},
 		ROLE: function (a, b) {
-			let arole = a.data.user.admin ? 3 : a.data.user.role == 'advanced' ? 2 : 1
-			let brole = b.data.user.admin ? 3 : b.data.user.role == 'advanced' ? 2 : 1
+			let arole = a.value.user.admin ? 3 : a.value.user.role == 'advanced' ? 2 : 1
+			let brole = b.value.user.admin ? 3 : b.value.user.role == 'advanced' ? 2 : 1
 			if (arole == brole)
-				return a.data.user.loggedTimestamp > b.data.user.loggedTimestamp
+				return a.value.user.loggedTimestamp > b.value.user.loggedTimestamp
 					? 1
 					: -1
 			return arole > brole ? 1 : -1
@@ -643,7 +642,6 @@ async function userlist() {
 	}
 	}).then((result) =>
 		result.json().then((json) => {
-			console.log(json)
 			console.log('response: ', Status(result.status))
 			if (!json.valid) return swalError(json.response)
 			return json.users
@@ -657,7 +655,7 @@ async function userlist() {
 		type: 'DATE',
 	}
 	userlist.forEach((element) => {
-		let avatar = element.data.user.avatar;
+		let avatar = element.value.user.avatar;
 		if (!avatar || typeof avatar !== 'string') {
 		  avatar = './images/0.png';
 		}
@@ -667,33 +665,33 @@ async function userlist() {
 		  };
 		img.src = avatar;
 
-		let userrole = element.data.user.admin
+		let userrole = element.value.user.admin
 			? 3
-			: element.data.user.role == 'advanced'
+			: element.value.user.role == 'advanced'
 				? 2
 				: 1
 		html.push(
 			'<tr><td>' +
-				element.data.user.ID +
+				element.value.user.ID +
 				'</td><td><img style="border-radius: 50%;width:50px;"referrerpolicy="no-referrer" src="' +
 				avatar +
 				'"></td><td>' +
-				element.ID +
+				element.id +
 				'</td><td>' +
-				time(new Date().getTime() / 1000 - element.data.user.createdTimestamp) +
+				time(new Date().getTime() / 1000 - element.value.user.createdTimestamp) +
 				'</td><td>' +
-				(element.data.user.loggedTimestamp
-					? new Date().getTime() / 1000 - element.data.user.loggedTimestamp <=
+				(element.value.user.loggedTimestamp
+					? new Date().getTime() / 1000 - element.value.user.loggedTimestamp <=
 							3600 ||
-					  JSON.parse(localStorage.getItem('user')).user == element.ID
+					  JSON.parse(localStorage.getItem('user')).user == element.id
 						? '<span style="color:#00ff00">aktivní</span>'
 						: time(
-							new Date().getTime() / 1000 - element.data.user.loggedTimestamp
+							new Date().getTime() / 1000 - element.value.user.loggedTimestamp
 						  )
 					: '<span style="color:#ff0a0a">nikdy</span>') +
 				'</td><td>' +
 				'<select id="role"' +
-				(JSON.parse(localStorage.getItem('user')).user == element.ID
+				(JSON.parse(localStorage.getItem('user')).user == element.id
 					? 'disabled'
 					: '') +
 				'>' +
@@ -854,7 +852,7 @@ async function userlist() {
 			var sorted = 0
 			userlist.forEach((element) => {
 				//check if image is valid otherwise use default image
-				let avatar = element.data.user.avatar;
+				let avatar = element.value.user.avatar;
 				if (!avatar || typeof avatar !== 'string') {
 				  avatar = './images/0.png';
 				}
@@ -863,37 +861,37 @@ async function userlist() {
 					this.src = './images/0.png';
 				  };
 				img.src = avatar;
-				let userrole = element.data.user.admin
+				let userrole = element.value.user.admin
 					? 3
-					: element.data.user.role == 'advanced'
+					: element.value.user.role == 'advanced'
 						? 2
-						: 1 // (element.data.user.admin ? 'admin' : element.data.user.role)
+						: 1 // (element.value.user.admin ? 'admin' : element.value.user.role)
 				html.push(
 					'<tr><td>' +
-						element.data.user.ID +
+						element.value.user.ID +
 						'</td><td><img style="border-radius: 50%;width:50px"referrerpolicy="no-referrer" src="' +
-						element.data.user.avatar +
+						element.value.user.avatar +
 						'"></td><td>' +
-						element.ID +
+						element.id +
 						'</td><td>' +
 						time(
-							new Date().getTime() / 1000 - element.data.user.createdTimestamp
+							new Date().getTime() / 1000 - element.value.user.createdTimestamp
 						) +
 						'</td><td>' +
-						(element.data.user.loggedTimestamp
+						(element.value.user.loggedTimestamp
 							? new Date().getTime() / 1000 -
-									element.data.user.loggedTimestamp <=
+									element.value.user.loggedTimestamp <=
 									3600 ||
-							  JSON.parse(localStorage.getItem('user')).user == element.ID
+							  JSON.parse(localStorage.getItem('user')).user == element.id
 								? '<span style="color:#00ff00">aktivní</span>'
 								: time(
 									new Date().getTime() / 1000 -
-											element.data.user.loggedTimestamp
+											element.value.user.loggedTimestamp
 								  )
 							: '<span style="color:#ff0a0a">nikdy</span>') +
 						'</td><td>' +
 						'<select id="role"' +
-						(JSON.parse(localStorage.getItem('user')).user == element.ID
+						(JSON.parse(localStorage.getItem('user')).user == element.id
 							? 'disabled'
 							: '') +
 						'>' +
