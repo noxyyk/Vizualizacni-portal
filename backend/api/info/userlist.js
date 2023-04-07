@@ -5,7 +5,7 @@ let db;
 const dbInstance = await require('../../modules/database');
 db = dbInstance
 })()
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
 	try {
         setResponseHeaders(req, res)
 		const user = await verifyUser(req)
@@ -21,6 +21,6 @@ result.forEach((key) => {
 })
 
 	res.status(200).send({ valid: true, users: result })
-} catch (err) {return res.status(err.statusCode||500).send({ valid: false, response: err.message||"chyba serveru" })}
-})
+} catch (err) {next(err)}
+})	
 module.exports = router

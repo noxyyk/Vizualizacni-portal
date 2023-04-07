@@ -1,0 +1,15 @@
+{
+    "server": {
+      "port": 5000,
+      "originsAllowed": [
+        "http://localhost:5000",
+        "https://vizualizacni-portal.noxyyk.com",
+        "https://noxyyk.com",	
+        "http://localhost:5002"
+    ] 
+    },
+    "modules":{
+        "maxLogs": 20
+    }
+  }
+  

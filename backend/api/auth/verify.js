@@ -1,13 +1,14 @@
 const router = require('express').Router()
 const  {setResponseHeaders, checkIfExists} = require('../../modules/auth')
 const jwt = require('jsonwebtoken')
+const logger = require('../../logs/logger')
 let db;
 ( async () => {
 const dbInstance = await require('../../modules/database');
 db = dbInstance
 })()
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	try {
 	setResponseHeaders(req, res)
 	jwt.verify(
@@ -29,7 +30,7 @@ router.post('/', async (req, res) => {
 				d = decoded[String(j)]
 				o = object[String(j)]
 				if (o == undefined || d == undefined || o == d) continue
-				console.log(decoded.iss, j, '( database: ', o, ', ', 'token: ', d, ')')
+				logger.error(`User ${decoded.iss} has invalid token. (database: ${o}, token: ${d})`)
 				return res
 					.status(401)
 					.send({ valid: false, response: 'Nastala chyba, přihlašte se znovu' })
@@ -50,6 +51,6 @@ router.post('/', async (req, res) => {
 		}
 	)
 }
-catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
+catch (err) {next(err)}
 })
 module.exports = router

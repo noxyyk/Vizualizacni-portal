@@ -1,5 +1,6 @@
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const page = "https://api.vizualizacni-portal.noxyyk.com/api"
+const page = "http://localhost:5002/api"
+// const page = "https://api.vizualizacni-portal.noxyyk.com/api"
 const roles = ['user', 'advanced', 'admin']
 //set custom swal fire
 var toast = Swal.mixin({
@@ -293,6 +294,7 @@ Swal.fire({
 /* LOGOUT*/
 async function logOut() {
 	localStorage.removeItem('user')
+	localStorage.removeItem('devices')
 	login_btn()
 
 	toast.fire({
@@ -512,7 +514,6 @@ async function account(type) {
 			avatars.push(`./images/avatar_${i}.png`)
 			avatars_html += `<img id="avatar_${i}" class="avatar" src="/images/avatar_${i}.png" alt="avatar_${i}">`
 		}
-
 		var { value: avatar } = await Swal.fire({
 			title: 'Změna profilového obrázku',
 			html: '<div class="grid-container">' + avatars_html + '</div>',
@@ -624,7 +625,12 @@ async function account(type) {
 					'Odhlásit se' +
 					'</button><br> <button onclick=account("delete") id="delete" class="btn btn-danger" style="color: red">' +
 					'Smazat účet' +
-					'</button><br>',
+					'</button><br>' +
+					(JSON.parse(localStorage.getItem('user')).admin? (`
+					<div class="mobile">
+						<button onclick=userlist() id="userlist" class="btn btn-warning">Seznam uživatelů</button>
+						<button onclick=audit() class="btn btn-warning">Audit</button>
+					</div>`) : ''),
 		})
 		break
 	}
@@ -779,9 +785,10 @@ async function userlist() {
 									? 2
 									: 1
 						console.log(
-							userlist[currentPage * usersperpage - usersperpage + index].ID,
+							userlist[currentPage * usersperpage - usersperpage + index].id,
 							roles[userrole - 1]
 						)
+						console.log()
 						let requestOptions = {
 							method: 'POST',
 							headers: {
@@ -789,9 +796,7 @@ async function userlist() {
 								"Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
 							},
 							body: JSON.stringify({
-								username:
-									userlist[currentPage * usersperpage - usersperpage + index]
-										.ID,
+								username: userlist[currentPage * usersperpage - usersperpage + index].id,
 								role: roles[userrole - 1],
 							}),
 						}
@@ -828,7 +833,7 @@ async function userlist() {
 										return html
 									})
 									if (
-										userlist[index].ID ==
+										userlist[index].id ==
 										JSON.parse(localStorage.getItem('user')).user
 									)
 										return delay(1000).then(() => {
@@ -933,7 +938,8 @@ async function userlist() {
 	let response = await ( await fetch(`${page}/logs`,{
 	 method: 'GET',
 	 headers: {
-		 'Content-Type': 'application/json',}
+		 'Content-Type': 'application/json',
+		 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')).token}`}
 	 })).json()
 	  if(response.valid){
 		 let logs = response.logs
@@ -968,6 +974,49 @@ let roles = {
 "admin": "Admin",
 "user": "Osobní",
 "advanced": "Pokročilý"}
+let user_, arrow_
+switch(logs[i].icon){
+case "ROLE_CHANGE":
+ user_ = `<span style="color: #fff">${logs[i].user}</span>
+<span style="color: gray;font-size:0.8em;">#${logs[i].id}</span>
+<span style="color: rgba(255, 255, 255, 0.8)">${logs[i].type}</span>
+<span style="color: #fff">${logs[i].data.target}</span>
+<span style="color: gray;font-size:0.8em;">#${logs[i].data.targetid}</span>`
+arrow_ = `<div class="log-content-data-new">
+<ion-icon name="add-circle-outline"></ion-icon>
+<span>${roles[logs[i].data.new] || logs[i].data.new}</span>
+</div>
+<div class="log-content-data-old">
+<ion-icon name="remove-circle-outline"></ion-icon>
+<span>${roles[logs[i].data.old] || logs[i].data.old}</span>
+</div>`
+break
+case "ROLE_REQUEST":
+	let company_size = ["1-10","11-50","51-250","251-1k","1k+"]
+	 user_ = `<span style="color: #fff">${logs[i].user}</span>
+<span style="color: gray;font-size:0.8em;">#${logs[i].id}</span>
+<span style="color: rgba(255, 255, 255, 0.8)">${logs[i].type}</span>`
+arrow_ = `<div class="log-content-data-request">
+<table style="color:rgba(255, 255, 255, 0.8">
+<tr>
+<th>Jméno</th>
+<th>Příjmení</th>
+<th>Email</th>
+<th>Firma</th>
+<th>Zaměstnanců</th>
+</tr>
+<tr>
+<td>${logs[i].data.name}</td>
+<td>${logs[i].data.surname}</td>
+<td>${logs[i].data.email}</td>
+<td>${logs[i].data.company}</td>
+<td>${company_size[logs[i].data.company_size - 1]}</td>
+</tr>
+</table>
+</div>`
+break
+}
+
 		   logsHTML += `
 		   <div class="log">
 			 <div class="log-icon">
@@ -977,11 +1026,7 @@ let roles = {
 			   <div class="log-content-header">
 				 <div class="log-content-header-content">
 				   <span>
-					 <span style="color: #fff">${logs[i].user}</span>
-					 <span style="color: gray;font-size:0.8em;">#${logs[i].id}</span>
-					 <span style="color: rgba(255, 255, 255, 0.8)">${logs[i].type}</span>
-					 <span style="color: #fff">${logs[i].data.target}</span>
-					 <span style="color: gray;font-size:0.8em;">#${logs[i].data.targetid}</span>
+				   ${user_}
 				   </span>
 				 </div>
 			   </div>
@@ -990,117 +1035,116 @@ let roles = {
 				 </div>
 			 </div>
 			  <div class="log-content-data">
-				 <div class="log-content-data-new">
-				   <ion-icon name="add-circle-outline"></ion-icon>
-				   <span>${roles[logs[i].data.new] || logs[i].data.new}</span>
-				 </div>
-				 <div class="log-content-data-old">
-				   <ion-icon name="remove-circle-outline"></ion-icon>
-				   <span>${roles[logs[i].data.old] || logs[i].data.old}</span>
-				 </div>
+				${arrow_}
 			   </div>
 			   <div class="log-arrow">
 				   <ion-icon class="arrow-icon arrow-icon-right" name="chevron-down-outline"></ion-icon>
 			  </div>
 		   </div>
-		   <style>
-		   
-.logs {
-	margin-top: 80px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-  }
-  .log {
-	border: #212325 1px solid;
-	width: 550px;
-	background-color: #2b2d31;
-	border-radius: 5px;
-	margin: 5px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	padding: 10px;
-	font-size: 14px;
-  }
-  .log-active {
-	background-color: #26272a;
- }
-
-a .log-icon {
-	margin-right: 10px;
-	color: #B9BBBE;
-  }
-  .log-content {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: center;
-	flex-grow: 1;
-	color: #FFFFFF;
-	padding-left: 5px;
-  }
-  .log-content-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-bottom: 5px;
-  }
-  .log-content-header-content {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-right: 10px;
-  }
-  .log-content-data {
-	top: 50px;
-	display: none;  /* initially hidden */
-	flex-direction: row;
-	align-items: center;
-  }
-  
-  .log-content-data-target {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-right: 10px;
-  }
-  
-  .log-content-data-new,.log-content-data-old {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-right: 10px;
-  }
-  .log-content-data-new{
-	color: #43B581;
-  }
-  .log-content-data-old {
-	color: #F04747;
-  }
-  .log-arrow {
-  color: #B9BBBE;
-  margin-left: auto;
-  cursor: pointer;
-  font-size: 16px;
-  transform: rotate(0deg);
-  }
-  .arrow-icon-right {
-	transform: rotate(-90deg);
-  }
-.log-content-data {
-	flex-direction: column;
-  }
-  .text-white {
-	color: #fff;
-  }
-  </style>
 		   `
 		 }
+		 logsHTML += `
+		 <style>
+		   
+		 .logs {
+			 margin-top: 80px;
+			 display: flex;
+			 flex-direction: column;
+			 align-items: center;
+			 justify-content: center;
+			 width: 100%;
+			 height: 100%;
+			 overflow: auto;
+		   }
+		   .log-content-data-request table {
+			   width: 100%;
+			   border-collapse: collapse;
+			 
+				 }
+		   .log {
+			 border: #212325 1px solid;
+			 min-width: 700px;
+			 background-color: #2b2d31;
+			 border-radius: 5px;
+			 margin: 5px;
+			 display: flex;
+			 flex-direction: row;
+			 align-items: center;
+			 padding: 10px;
+			 font-size: 14px;
+		   }
+		   .log-active {
+			 background-color: #26272a;
+		  }
+		 
+		 a .log-icon {
+			 margin-right: 10px;
+			 color: #B9BBBE;
+		   }
+		   .log-content {
+			 display: flex;
+			 flex-direction: column;
+			 align-items: flex-start;
+			 justify-content: center;
+			 flex-grow: 1;
+			 color: #FFFFFF;
+			 padding-left: 5px;
+		   }
+		   .log-content-header {
+			 display: flex;
+			 flex-direction: row;
+			 align-items: center;
+			 margin-bottom: 5px;
+		   }
+		   .log-content-header-content {
+			 display: flex;
+			 flex-direction: row;
+			 align-items: center;
+			 margin-right: 10px;
+		   }
+		   .log-content-data {
+			 top: 50px;
+			 display: none;  /* initially hidden */
+			 flex-direction: row;
+			 align-items: center;
+		   }
+		   
+		   .log-content-data-target {
+			 display: flex;
+			 flex-direction: row;
+			 align-items: center;
+			 margin-right: 10px;
+		   }
+		   
+		   .log-content-data-new,.log-content-data-old {
+			 display: flex;
+			 flex-direction: row;
+			 align-items: center;
+			 margin-right: 10px;
+		   }
+		   .log-content-data-new{
+			 color: #43B581;
+		   }
+		   .log-content-data-old {
+			 color: #F04747;
+		   }
+		   .log-arrow {
+		   color: #B9BBBE;
+		   margin-left: auto;
+		   cursor: pointer;
+		   font-size: 16px;
+		   transform: rotate(0deg);
+		   }
+		   .arrow-icon-right {
+			 transform: rotate(-90deg);
+		   }
+		 .log-content-data {
+			 flex-direction: column;
+		   }
+		   .text-white {
+			 color: #fff;
+		   }
+		   </style> `
 		 Swal.fire({
 			title: 'Audit logy',
 			 html: logsHTML,
@@ -1153,3 +1197,42 @@ onstorage = (event) => {
 		login_btn()
 	})
 }
+// listen for popstate events
+window.addEventListener("popstate", function(event) {
+  if (Swal.isVisible()) {
+    event.preventDefault();
+    Swal.close();
+  }
+  if(this.window.location.pathname == '/zarizeni.html') {  
+	if(document.getElementsByClassName("content")[0].classList.contains("disabled")) {
+	device("back")
+  }
+}
+});
+const footer = document.querySelector("#footer");
+const footerPadding = document.querySelector(".footer_padding");
+
+footer.addEventListener("click", () => {
+  footerPadding.classList.toggle("expanded");
+});
+
+window.addEventListener('load', function() {
+	var images = document.getElementsByTagName('img');
+	for (var i = 0; i < images.length; i++) {
+	  if (images[i].complete) {
+		images[i].classList.add('loaded');
+	  } else {
+		images[i].addEventListener('load', function() {
+		  this.classList.add('loaded');
+		});
+	  }
+	}
+  });
+  document.addEventListener('DOMNodeInserted', function(e) {
+	if (e.target.tagName == 'IMG') {
+	  e.target.addEventListener('load', function() {
+		this.classList.add('loaded');
+	  }
+	  );
+	}
+	  });

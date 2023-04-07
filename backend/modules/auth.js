@@ -1,31 +1,35 @@
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
-const PORT = 5001;
+const { originsAllowed } = require('../config').server
+const logger = require('../logs/logger.js')
+const jwt = require('jsonwebtoken')
+const fs = require('fs');
+const { maxLogs } = require('../config').modules
 let db;
 ( async () => {
 const dbInstance = await require('./database.js');
 db = dbInstance
-console.log("database connected")
+logger.log('info', 'Database connected')
 })()
-const jwt = require('jsonwebtoken')
-const originsAllowed = [
-	'http://localhost:5000',
-	'https://vizualizacni-portal.noxyyk.com',
-	'https://noxyyk.com',	
-	'http://localhost:5002',
-]
-const fs = require('fs');
-const maxLogs = 20;
+
 module.exports = {
 	authenticateUser: async function (username, password) {
-		//auth.authenticateUser('username', 'password')
-		const isString = (value) => typeof value === 'string'
-		if (!isString(username) || !isString(password) || !(await db.has(username))) throw { statusCode: 409, message: 'Jméno nebo heslo je špatně' }
-		if (!(bcrypt.compareSync(password, (await db.get(username)).user.password))) throw { statusCode: 401, message: 'jméno nebo heslo je špatně' }
-	},
+		const isString = (value) => typeof value === 'string';
+		if (!isString(username) || !isString(password) || !(await db.has(username))) {
+		  throw { statusCode: 409, message: 'Jméno nebo heslo je špatně' };
+		}
+		if (
+		  !bcrypt.compareSync(
+			password,
+			(await db.get(username)).user.password
+		  )
+		) {
+		  throw { statusCode: 401, message: 'jméno nebo heslo je špatně' };
+		}
+	  },
 	checkIfExists: async function (x) {
 		//auth.checkifExists('username');
-		if(x == undefined ) return false
+		if(typeof x != "string" ) return false
 		return await db.has(x)	
 	},
 	isOriginAllowed: function (origin) {
@@ -37,14 +41,15 @@ module.exports = {
 		db.delete(username)
 	},
 	verifyUser: async function (req) {
-		let token = req.headers.authorization?.split(" ")[1]
+		//if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ') || !req.headers.authorization.split(' ').length === 2) throw { statusCode: 409, message: 'Uživatel nexistuje' }
+		let token = req.headers.authorization?.split(" ")[1]	
 		if (!token || typeof token != "string") throw { statusCode: 409, message: 'Uživatel nexistuje' }
 		const user = (await new Promise((resolve, reject) => {
 			jwt.verify(
 			  token,
 			  process.env.JWTSECRET,
 			  async function (err, decoded) {
-				if (err || decoded == undefined || !(await db.has(decoded.iss))) {
+				if (err || !decoded || !(await db.has(decoded.iss))) {
 				  reject(err);
 				}
 				  if (decoded.exp < Math.floor(Date.now() / 1000)) {reject('Token expiroval');}

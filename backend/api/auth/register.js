@@ -7,7 +7,7 @@ db = dbInstance
 const { checkIfExists, setResponseHeaders, createPassword, getID } = require('../../modules/auth')
 const { GetRandomItem } = require('../../modules/array_sorting')
 const avatars = Array.from({ length: 9 }, (_, i) => `./images/avatar_${i}.png`)
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	try {
 		setResponseHeaders(req, res)
 		const { username, password} = req.body
@@ -38,6 +38,6 @@ router.post('/', async (req, res) => {
 	await db.add('ID', 1)
 	res.status(201).send({ valid: true })
 }
-catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
+catch (err) {next(err)}
 })
 module.exports = router

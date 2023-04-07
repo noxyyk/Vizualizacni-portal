@@ -7,11 +7,11 @@ const dbInstance = await require('../../modules/database');
 db = dbInstance
 })()
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	try {
-		const {type, password_old, password, username_new} = req.body
+	const {type, password_old, password, username_new} = req.body
 	setResponseHeaders(req, res)
-	const user = await verifyUser(req)
+	let user = await verifyUser(req)
 	var object = await db.get(user)
 	switch (type) {
 	case 'password':
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
 				valid: false,
 				response: 'zvolené heslo nesmí být stejné jako uživatelské jméno',
 			})
-		if (! await authenticatePassword(password_old, password)) return res.status(401).send({ valid: false, response: 'původní heslo není správné' })
+		if (! await authenticatePassword(password_old, object.user.password)) return res.status(401).send({ valid: false, response: 'původní heslo není správné' })
 		object.user.password = await createPassword(password)
 		await db.set(user, object)
 		break
@@ -58,6 +58,6 @@ router.post('/', async (req, res) => {
 		.status(200)
 		.send({ valid: true, token: createToken(user, object)})
 	}
-	catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
+	catch (err) {next(err)}
 })
 module.exports = router

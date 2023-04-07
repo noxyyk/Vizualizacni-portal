@@ -9,24 +9,86 @@
   <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
   <link type="text/css" rel="stylesheet" href="./button.css">
   <link rel="icon" type="image/x-icon" href="./images/logo.png">
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelector('.loading-spinner').style.display = 'flex';
-  });
-  window.onload = function() {
-    var i = 1;
-    var intervalId = setInterval(() => {
-        document.querySelector('.loading-spinner').style.backgroundColor = `rgba(255, 255, 255, ${i})`;
-        i -= 0.1;
-        if (i <= 0) {
-            clearInterval(intervalId);
-            document.querySelector('.loading-spinner').style.display = 'none';
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+      .error {
+        color: red;
+        display: flex;
+        justify-content: center;
+      }
+     #buttons-container {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
         }
-    }, 20);
+        #buttons-container button {
+            border: var(--article_border);
+            border-radius: var(--article_border_radius);
+            margin: auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            border: #fff solid 1px;
+        }
+        #buttons-container button:hover {
+           border: #000 solid 1px;
+        }
+       /* <button data-unit="0 live">živě</button>  set this button unit background color*/
+        #buttons-container button[data-unit="0 live"] {
+            background-color: #00ff00;
+        }
+        .article {
+  width: auto;
+  min-width: 500px;
+}
+.articles{
+margin: 0px;
+}
+.data-table{
+  width: 100%;
+}
+.table {
+  border-spacing: 0;
+}
+.data-table td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: normal;
+  color: #444;
+}
+@media screen and (max-width: 600px) {
+  .article{
+    max-width: 100%;
   }
-  </script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  .data-table{
+   font-size: 10px;
+   margin: 0px;
+  }
+  .data-table td {
+    font-size: 9.5px;
+  }
+
+}
+@media screen and (max-width: 420px) {
+  .article{
+    max-width: 100%;
+  }
+  .data-table{
+   font-size: 9px;
+   margin: 0px;
+  }
+  .data-table td {
+    font-size: 8.5px;
+  }
+
+}
+    </style>
 </head>
 
 <body> 
@@ -42,38 +104,6 @@
       margin: 14px;
       font-size: larger
     }
-    .loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: background-color 2s ease;
-  z-index: 9999;
-}
-.loading-spinner:before {
-  content: "";
-  border: solid 2px transparent;
-  border-top-color: #3498db;
-  border-left-color: #3498db;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-      transform: rotate(0deg);
-  }
-  100% {
-      transform: rotate(360deg);
-  }
-}
 .logo:hover{
   transform: rotate(360deg);
   transition: 1s;
@@ -163,10 +193,35 @@
   .disabled{
     display: none;
   }
+.apikeys td{
+  padding: 8px;
+  border-top: 1px solid #000000;
+}
+.apikeys th{
+  padding: 8px;
+}
+.apikeys{
+  width: auto;
+}
+.apikeys  th:first-child {
+  text-align: left;
+}
+/* for each first td */
+.apikeys td:first-child {
+  padding-right: 150px;
+}
 
   @media only screen and (max-width: 720px) {
     .content .grid_container{
       grid-template-columns: auto auto;
+    }
+    #chart-container{
+      margin: 0px;
+      padding: 0px;
+    }
+    #chart-container button {
+      padding: 0.3em 0.5em;
+      font-size: 10px;
     }
   }
   @media only screen and (max-width: 440px) {
@@ -174,15 +229,17 @@
       grid-template-columns: auto;
     }
   }
+  /* if #chart-container has no content,animation: skeleton-loading 1s linear infinite alternate; */
+  #chart-container:empty{
+    animation: skeleton-loading 1s linear infinite alternate;
+    height: 800px;
+  }
   </style>
 <div class="loading-spinner"></div>
 <div class="header" id="header"></div>
 </div>
 <div class="content">
 <div class="grid_container">
-  <div class="grid_item add_device" onclick='device("add")'>
-    <h2><ion-icon name="add-circle-outline"></ion-icon></h2> 
-  </div>
 </div>
 </div>
 
@@ -203,9 +260,7 @@
           <button class="button-icon" onclick='device("remove")'>Odstranit</button>
       </div></div></div>
   </div>
-<div class="footer" id="footer">
-  <p class="footer_cpr">© 2021 - 2022 T.S. 4. P</p>
-</div>
+<div class="footer" id="footer"><div class="footer_default"><p>Copyright © 2023 Tomáš Setunský, SPŠE Plzeň <a href="/tos">Podmínky služby</a> | <a href="/tos#zasady">zásady ochrany osobních údajů</a></p></div></div>
 <script src="animations.js"></script> 
   <script src= ./website.js></script>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script> 

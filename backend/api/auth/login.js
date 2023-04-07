@@ -5,7 +5,7 @@ let db;
 const dbInstance = await require('../../modules/database');
 db = dbInstance
 })()
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	const { username, password, stayLogged } = req.body
 	try {
 	setResponseHeaders(req, res)
@@ -24,6 +24,6 @@ router.post('/', async (req, res) => {
 		createdTimestamp: object.user.createdTimestamp,
 	})
 }
-catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
+catch (err) {next(err)}
 })
 module.exports = router

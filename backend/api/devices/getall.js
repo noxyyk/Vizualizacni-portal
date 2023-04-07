@@ -6,18 +6,19 @@ const dbInstance = await require('../../modules/database');
 db = dbInstance
 })()
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         setResponseHeaders(req, res)
 		const user = await verifyUser(req)
 let object = await db.get(user)
 var devices = object.devices
 if (devices == undefined) devices = []
+devices.secrets == undefined
 res.status(200).send({
     valid: true,
     devices: devices
 })
     }
-    catch (err) {return res.status(err.statusCode).send({ valid: false, response: err.message })}
+    catch (err) {next(err)}
 })
 module.exports = router

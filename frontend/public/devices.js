@@ -1,7 +1,20 @@
 var data
-let user = JSON.parse(localStorage.getItem('user'))
+let user = localStorage.getItem('user')
 if (user == null)  window.location.href = '/'
-
+let deviceLoad = JSON.parse(localStorage.getItem('devices'))
+let addDevice = `<div class="grid_item add_device" onclick='device("add")'>
+<h2><ion-icon name="add-circle-outline"></ion-icon></h2> 
+</div>`
+if (deviceLoad != null && deviceLoad.length > 0) {
+  let devices = []
+ deviceLoad.forEach(device => {
+  devices.push(`<div class="grid_item device"><h2>${device.name}</h2></div>`);
+});
+devices.push(addDevice)
+document.querySelector(".grid_container").innerHTML = devices.join("")
+} else {
+  document.querySelector(".grid_container").innerHTML =  `<div class="grid_item skeleton"></div><div class="grid_item skeleton"></div><div class="grid_item skeleton"></div><div class="grid_item skeleton"></div><div class="grid_item skeleton"></div><div class="grid_item skeleton"></div>`
+}
 
 addEventListener('click', function (x) {
 if (!x.target.classList.contains('device'))  return
@@ -10,11 +23,14 @@ device("view",device_name)
 })
 
 device("get")
-async function device(x, target) {
+async function device(x, target) {  
   ;(x)
   var devices = Array.from(
     document.getElementsByClassName("grid_container")[0].children
   );
+  devices = devices.filter(function (device) { 
+    return !device.classList.contains("skeleton");
+  });
   devices = devices.map(function (device) {
     return device.outerHTML;
   });
@@ -135,6 +151,8 @@ async function device(x, target) {
         
       break;
     case "view":
+      if (screen.width < 550 && screen.width < screen.height) return rotateScreen()
+      window.history.pushState(null, null, window.location.href);
       document.getElementById("chart-container").innerHTML = ""
       Swal.close()
       let device = data.find(device => device.name == target)
@@ -168,14 +186,19 @@ const response = await fetch(`${page}/data`, {
 })
 const result = await response.json()
 if (!result.valid) {
-
+  document.getElementById("chart-container").innerHTML = `<div class="error">${result.response}</div>`
+  document.getElementById("chart-container").classList.add("error")
+  document.getElementById("chart-container").style.minHeight = "fit-content"
   return
 }
 document.getElementById("chart-container").style.display = "block"
+document.getElementById("chart-container").classList.remove("error")
 const units = ['day', 'hour', 'minute'];
 const buttons = document.querySelectorAll('.time-range-button');
 const chartConfigs = {};
 const dataSummary = {};
+let dataSection = "";
+let secrets = result.secrets;
 for (var key in result.response) {
   if (result.response.hasOwnProperty(key)) {
     const value = result.response[key]
@@ -251,6 +274,12 @@ for (var key in result.response) {
         const button = document.createElement('button');
         button.innerText = label;
         button.setAttribute('data-unit', `${value} ${unit}`);
+        if (unit === "live"){
+          const live = result.response[key]
+          button.setAttribute("data-measurement", key);
+          button.setAttribute("data-tag", live.tag);
+          button.setAttribute("data-tagvalue", live.value);
+        }
         buttonsContainer.appendChild(button);
         return button;
       });
@@ -286,13 +315,31 @@ for (var key in result.response) {
           lastTimeValue: moment(value.lastTimestamp).format("HH:mm:ss DD.MM.YYYY")
         };
 
-    const dataSection = document.getElementById("data-section");
-    dataSection.innerHTML += `<b> ${dataSummary[key].key}</b><br>
-    Maximální: ${dataSummary[key].maxValue}<br>
-    Minimální: ${dataSummary[key].minValue}<br>
-    Součet: ${dataSummary[key].sumValue}<br>
-    Průměrná: ${dataSummary[key].averageValue}<br>
-    Poslední: ${dataSummary[key].lastValue}, ${dataSummary[key].lastTimeValue}<br><br>`;
+        //check if dataSection has table
+        if (dataSection === "") {
+        dataSection += `
+        <table class="data-table">
+        <tr>
+          <th>Measurement</th>
+          <th>Maximální hodnota</th>
+          <th>Minimální hodnota</th>
+          <th>Součet</th>
+          <th>Průměrná hodnota</th>
+          <th>Poslední hodnota</th>
+        </tr>`
+        }
+        dataSection += `
+          <tr>
+            <td><b>${dataSummary[key].key}</b></td>
+            <td>${Math.round(dataSummary[key].maxValue)}</td>
+            <td>${Math.round(dataSummary[key].minValue)}</td>
+            <td>${Math.round(dataSummary[key].sumValue)}</td>
+            <td>${Math.round(dataSummary[key].averageValue)}</td>
+            <td>${Math.round(dataSummary[key].lastValue)}, ${dataSummary[key].lastTimeValue}</td>
+          </tr>`;
+      if (value.secret) {
+        secrets.push(value.secret);
+      }
     // Store chart configuration
     chartConfigs[key] = chartOptions;
     // Add event listeners to buttons
@@ -301,9 +348,29 @@ for (var key in result.response) {
         const unit = button.getAttribute('data-unit');
         const [time, timeUnit] = unit.split(' ');
         if (timeUnit === 'live') {
- window.location.href = `/live?device=${target}&tag=${key}`
-          return;
-        } 
+          const measurement = button.getAttribute('data-measurement');
+          const tag = button.getAttribute('data-tag');
+          const tagvalue = button.getAttribute('data-tagvalue');
+          Swal.fire({
+            title: 'Zadejte token',
+            input: 'text',
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Zobrazit',
+            showLoaderOnConfirm: true,
+            preConfirm: (token) => {
+              if (token === "" || token == null) {
+                return Swal.showValidationMessage(
+                  `Token musí být vyplněn`
+                )
+              }
+              window.location.href = `/live?measurement=${measurement}&tag=${tag}&tagvalue=${tagvalue}&token=${token}`
+            },
+          })
+          return
+        }
         const lastTime = moment(value.values[value.values.length - 1][0]).unix()
         const firstTime = moment(value.values[0][0]).unix()
         let time_per_unit = {"all":9999999,"second": 60, "minute": 3600, "hour":86400, "day":604800, "week":2629743}
@@ -335,8 +402,23 @@ for (var key in result.response) {
       
   }
 }
+dataSection += `</table><br>` 
+  dataSection += `<div class="apikeys"><h3>API Klíče</h3><p> 
+  Vaše tajné klíče rozhraní API jsou uvedené níže. Vezměte prosím na vědomí, že po vygenerování znovu nezobrazujeme vaše tajné klíče rozhraní API.
+  Nesdílejte klíč rozhraní API s ostatními ani ho nezveřejňujte v prohlížeči nebo jiném kódu na straně klienta.</p> <table id="secrets" class="table table-striped table-bordered table-hover table-sm"><tr><th>Klíč</th><th>Vytvořen</th><th>Použitý</th><th></th></tr>`
+  if (secrets?.tokens?.length > 0) {
+  for (let i = 0; i < secrets.tokens.length; i++) {
+    dataSection += `<tr id="secret${i}"><td>${secrets.tokens[i]}</td><td>${moment(secrets.info[i].created).format("DD.MM.YYYY")}</td><td>${secrets.info[i].lastUsed == "nikdy" ? "nikdy" : moment(secrets.info[i].lastUsed).format("DD.MM.YYYY")}</td><td><a type="button"onclick="deleteSecret('${secrets.tokens[i]}')"><ion-icon name="trash-outline"></ion-icon></a></td></tr>`
+  }
+} 
+  dataSection += `</table></div><br>
+  <button type="button" style="width:fit-content" class="btn btn-primary" onclick="generateSecret()">Generovat nový klíč</button>`
+document.getElementById("data-section").innerHTML = dataSection
       break;
     case "back":
+      if (screen.orientation.lock) {
+   screen.orientation.unlock();
+}
       document.getElementsByClassName("device_content")[0].classList.add("disabled")
       document.getElementsByClassName("content")[0].classList.remove("disabled")
       let chartContainer = document.getElementById("chart-container")
@@ -357,23 +439,34 @@ try {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
         }
-    })
-    .then(response => response.json())
-    .then(result => { 
-        if (!result.valid) return
-        if (result.devices.length == 0) return
-        data = result.devices
-        localStorage.setItem("devices", JSON.stringify(data))
-
-            result.devices.forEach(device => {
-                devices.splice(
-                    devices.length - 1,
-                    0,
-                    `<div class="grid_item device"><h2>${device.name}</h2></div>`
-                  );
-            })
-            document.getElementsByClassName("grid_container")[0].innerHTML = devices.join("")
-    })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(result => {
+        if (!result.valid || result.devices.length == 0) {
+          document.querySelectorAll('.skeleton').forEach(e => e.remove());
+          return;
+        }
+        
+        data = result.devices;
+        localStorage.setItem("devices", JSON.stringify(data));
+        devices = [];
+        result.devices.forEach(device => {
+          devices.push(`<div class="grid_item device"><h2>${device.name}</h2></div>`);
+        });
+        devices.push(addDevice)
+        document.querySelector(".grid_container").innerHTML = devices.join("");
+        document.querySelectorAll('.skeleton').forEach(e => e.remove());
+      })
+      .catch(error => {
+        document.querySelectorAll('.skeleton').forEach(e => e.remove());
+        console.error('Error:', error);
+      });
+      
     break
     case "set":
   target = target ? target : document.getElementsByClassName("deviceinfo")[0].getElementsByTagName("h2")[0].innerHTML
@@ -453,3 +546,155 @@ console.log("error")
       break;
   }
 }
+async function generateSecret() {
+const response = await fetch(`${page}/secret?type=create`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
+  },
+  body: JSON.stringify({
+    'device': document.getElementsByClassName("deviceinfo")[0].getElementsByTagName("h2")[0].innerHTML,
+  })
+});
+const json = await response.json();
+if (!json.valid) {
+  return Swal.showValidationMessage(json.response);
+}
+Swal.fire({
+  title: 'Nový token',
+  html: JSON.stringify(json.token),
+  confirmButtonText: 'OK',
+  text: "Token můžete zkopírovat pouze jednou, po zavření okna se již nezobrazí."
+});
+//add to table
+var table = document.getElementById("secrets");
+//insert row at the end of the table
+var row = table.insertRow(-1);
+var cell1 = row.insertCell(0);
+var cell2 = row.insertCell(1);
+var cell3 = row.insertCell(2);
+var cell4 = row.insertCell(3);
+cell1.innerHTML = json.hidden
+cell2.innerHTML = moment().format('DD.MM.YYYY')
+cell3.innerHTML = "nikdy"
+cell4.innerHTML = `<a type="button"onclick="deleteSecret('${json.hidden}')"><ion-icon name="trash-outline"></ion-icon></a>`
+}
+async function deleteSecret(desiredKey) {
+  //get index from key
+  var index = -1;
+  var table = document.getElementById("secrets");
+  var rows = table.getElementsByTagName("tr");
+  
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName("td");
+    var key = cells[0];
+    if (key === undefined) continue
+    key = key.innerHTML;
+    if (key === desiredKey) {
+      index = i;
+      break;
+    }
+  }
+  if (index === -1) return;
+  console.log(index)
+  const response = await fetch(`${page}/secret?type=delete`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
+    },
+    body: JSON.stringify({
+      'device': document.getElementsByClassName("deviceinfo")[0].getElementsByTagName("h2")[0].innerHTML,
+      'token': index - 1
+    })
+  });
+  const json = await response.json();
+  if (!json.valid) {
+    return Swal.showValidationMessage(json.response);
+  }
+  table.deleteRow(index);
+  }
+  async function rotateScreen() {
+    screen.orientation.lock('landscape').catch((error) => {
+      const animationDiv= `<div class="center">
+        <div class="phone"></div>
+        <div class="message">
+          Otočte telefon do širokého režimu
+        </div></div>
+      `;
+      
+      let style = document.createElement("style");
+      style.innerHTML = `
+      .center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 175px !important;
+      }
+      .phone {
+        height: 50px;
+        width: 100px;
+        border: 3px solid black;
+        border-radius: 10px;
+        animation: rotate 1.5s ease-in-out infinite alternate;
+      }
+      
+      .message {
+        color: black;
+        font-size: 1em;
+        margin-top: 40px;
+      }
+      
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg)
+        }
+        50% {
+          transform: rotate(-90deg)
+        }
+        100% {
+          transform: rotate(-90deg)
+        }
+      }
+      `;
+      Swal.fire({
+        title: "Otočte telefon",
+        html: animationDiv,
+        showConfirmButton: false,
+        showCloseButton: true,
+        heightAuto: false,
+        customClass: {
+          htmlContainer: "swal2-html-container",
+        },
+        didOpen: () => {
+          document.head.appendChild(style);
+        },
+      });
+
+      
+
+      
+      //wait till user rotates the screen
+
+    });
+  }
+  function handleOrientationChange() {
+    console.log(screen.orientation.type);
+    if (screen.orientation.type === "landscape-primary") {
+      Swal.close();
+    } else {
+      if (document.getElementsByClassName("device_content")[0].classList.contains("disabled")) return;
+      rotateScreen();
+    }
+  }
+  
+  // Add event listener
+  screen.orientation.addEventListener("change", handleOrientationChange);
+  
+  // Remove event listener when the page is unloaded
+  window.addEventListener("beforeunload", () => {
+    screen.orientation.removeEventListener("change", handleOrientationChange);
+  });
+  

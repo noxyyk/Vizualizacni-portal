@@ -9,8 +9,8 @@
   <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
   <link type="text/css" rel="stylesheet" href="./button.css">
   <link rel="icon" type="image/x-icon" href="./images/logo.png">
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelector('.loading-spinner').style.display = 'flex';
@@ -181,10 +181,38 @@
       </p>
     </div>
   </div>
-  <div class="footer" id="footer">
-    <p class="footer_cpr">© 2021 - 2022 T.S. 4. P</p>
-  </div>
-  <script>
+  <div class="footer" id="footer"><div class="footer_default"><p>Copyright © 2023 Tomáš Setunský, SPŠE Plzeň <a href="/tos">Podmínky služby</a> | <a href="/tos#zasady">zásady ochrany osobních údajů</a></p></div></div>
+  <script>  
+    if (!localStorage.getItem('user')) {
+      isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+if (isMobile) {
+  var downloadLink = "./files/Vizualizacni portal.apk";
+var message = "Pro lepší zobrazení stránky si stáhněte aplikaci.";
+var appDownloadHTML = '<div id="app-download-message" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #f2f2f2; padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">' + 
+                      '<p style="margin: 0; width: 100%; text-align: center;">' + message +'</p>' +
+                      '<div style="display: flex; justify-content: center; align-items: center;">' +
+                        '<a href="' + downloadLink + '" style="background-color: var(--background_clr); color: black; padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; border-radius: 5px; margin-left: 10px;"> <ion-icon name="download-outline" style="margin-right: 10px;"></ion-icon>Stáhnout</a>' + 
+                        '<button onclick="dismissAppDownload()" style="background-color: transparent; border: none; padding: 0; margin-left: 10px; display: inline-flex; align-items: center;"><ion-icon name="close-outline" style="margin-right: 5px;"></ion-icon>Zavřít</button>' +
+                      '</div>' +
+                    '</div>';
+
+// Add a media query for smaller screens
+var appDownloadCSS = '<style>@media only screen and (max-width: 600px) {#app-download-message {flex-direction: column; align-items: center;} #app-download-message a, #app-download-message button {margin-top: 10px;}}</style>';
+document.head.insertAdjacentHTML('beforeend', appDownloadCSS);
+
+document.body.insertAdjacentHTML('beforeend', appDownloadHTML);
+
+  function dismissAppDownload() {
+  var appDownloadElement = document.querySelector("#app-download-message");
+  if (appDownloadElement) {
+    appDownloadElement.style.display = "none";
+  }
+}
+	} else {
+		console.log("This user is on a desktop device.", navigator.userAgent);
+	}
+
+}
     function plan(id) {
       if (localStorage.getItem("user") == null && id != 3) return register()
       if (id == 3){
@@ -195,6 +223,7 @@
                     <input id="email" class="swal2-input" placeholder="Email">
                     <input id="company" class="swal2-input" placeholder="Firma"></form>
                     <select id="company_size" class="swal2-input" placeholder="Velikost firmy"
+                    <option value="0">Velikost firmy</option>
                     <option value="1">1-10 zaměstnanců</option>
                     <option value="2">11-50 zaměstnanců</option>
                     <option value="3">51-250 zaměstnanců</option>
@@ -209,7 +238,8 @@
                     preConfirm: () => {
                       fetch(page + '/contact',{method: 'POST',
                         headers: {
-                          'Content-Type': 'application/json'
+                          'Content-Type': 'application/json',
+                          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
                         },
                         body: JSON.stringify({
                           name: Swal.getPopup().querySelector('#name').value,
@@ -221,7 +251,7 @@
                             .then(response => response.json())              
                             .then(data => {
                               if (data.error) {
-                                Swal.fire("Chyba", data.error, "error")
+                                Swal.fire("Chyba", data.response, "error")
                               } else {
                                 Swal.fire("Zpráva odeslána", "Zpráva byla odeslána", "success")
                               }

@@ -9,66 +9,10 @@
   <link type="text/css" rel="stylesheet" href="./themes.css"> <!--define stylesheet-->
   <link type="text/css" rel="stylesheet" href="./button.css">
   <link rel="icon" type="image/x-icon" href="./images/logo.png">
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelector('.loading-spinner').style.display = 'flex';
-  });
-  window.onload = function() {
-    var i = 1;
-    var intervalId = setInterval(() => {
-        document.querySelector('.loading-spinner').style.backgroundColor = `rgba(255, 255, 255, ${i})`;
-        i -= 0.1;
-        if (i <= 0) {
-            clearInterval(intervalId);
-            document.querySelector('.loading-spinner').style.display = 'none';
-        }
-    }, 20);
-  }
-  </script>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
-
 <body> 
-  <style>
-    .loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: background-color 2s ease;
-  z-index: 9999;
-}
-.loading-spinner:before {
-  content: "";
-  border: solid 2px transparent;
-  border-top-color: #3498db;
-  border-left-color: #3498db;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-      transform: rotate(0deg);
-  }
-  100% {
-      transform: rotate(360deg);
-  }
-}
-.logo:hover{
-  transform: rotate(360deg);
-  transition: 1s;
-} 
-  </style>
-<div class="loading-spinner"></div>
 <div class="header" id="header"></div>
 </div>
 

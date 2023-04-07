@@ -7,11 +7,9 @@ function init(){
         throw data.error
         return
       }  
-    document.getElementById('footer').innerHTML = `<div class="footer">
-    <!-- fetch data from /footer and set data to footer -->
-    <p class="footer_cpr">
+    document.getElementById('footer').innerHTML = `
           <div class="footer_padding">
-            <div class="footer_content">
+          <div class="footer_content">
           <div class="grid_container">
           <div class="grid_item"><b>O projektu</b>
             <p>Název: ${data.name}<br>Verze: ${data.version}<br>Poslední změna: ${data.lastUpdate}<br>Hosting: <a href="${data.hosting.link}">${data.hosting.text}</a></p>
@@ -21,22 +19,19 @@ function init(){
               </p></div>
           <div class="grid_item"><b></b></div>
           <div class="grid_item"><b>Kontakt</b>
-            <p>
-            <button class="startbtn" style="  background-color: var(--button_clr);border:  none;;width:170px;height: 30px;border-radius: var(--article_border_radius);"><a style="color:#000;  text-decoration: none;" href="mailto:${data.socials.email}"><b>Napiš mi </b><ion-icon name="mail-outline"></ion-icon></a></button>
-            <br>
+            
+            <p><button class="startbtn infobtn" href="mailto:${data.socials.email}"><b>Napiš mi </b><ion-icon name="mail-outline"></ion-icon></a></button>
+            </p>
             <div class="socials">
               <a href="${data.socials.github}"><ion-icon name="logo-github"></ion-icon></a> <a href="${data.socials.twitter}"><ion-icon name="logo-twitter"></ion-icon></a> <a href="${data.socials.instagram}"><ion-icon name="logo-instagram"></ion-icon></a> <a href="${data.socials.facebook}"><ion-icon name="logo-facebook"></ion-icon></a> <a href="${data.socials.discord}"><ion-icon name="logo-discord"></ion-icon></a> <a href="${data.socials.youtube}"><ion-icon name="logo-youtube"></ion-icon></a>
             </div>
             </div>
-            </p>
-          </div>
+          </div>  
           <div class="separator_line"></div>
           </div>
-          <p>Copyright © 2023 ${data.author}, SPŠE Plzeň <a href="/tos">Podmínky služby</a> | <a href="/tos#zasady">zásady ochrany osobních údajů</a>
-            </p>
           </div>
-        </p>
-  </div>
+          <div class="footer_default"><p>Copyright © 2023 ${data.author}, SPŠE Plzeň <a href="/tos">Podmínky služby</a> | <a href="/tos#zasady">zásady ochrany osobních údajů</a>
+          </p></div>
   `})   
 document.getElementById('header').innerHTML = `<div class="header" id="header">
 <div class="name_text"><h1>Vizualizační Portál</h1></div>
@@ -88,7 +83,7 @@ document.getElementById('header').innerHTML = `<div class="header" id="header">
             <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
             <span class="text">Zařízení</span>
         </a>
-        <a href="#about">
+        <a href="./grafy.html">
           <span class="icon"><ion-icon name="information-circle-outline"></ion-icon></span>
           <span class="text">O projektu</span>
       </a>

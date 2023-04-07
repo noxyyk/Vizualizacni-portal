@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900');
 /* init */
+
 :root {
 	--clr: hsl(228, 7%, 14%);
 	--background_clr: hsl(140, 89%, 65%);
@@ -312,17 +313,52 @@ body {
 	left: 0;
 	right: 0;
 	width: 100%;
-	background-color: var(--footer_bg);
 	text-align: center;
 	color: var(--footer_clr);
+	min-height: 35px;
+	overflow: hidden;
+}
+
+.footer_padding {
 	height: fit-content;
-	min-height: 60px;
+	overflow: hidden;
+	background-color: var(--footer_bg);
+	max-height: 0;
+	transition: max-height 1s ease-in-out;
+	padding-left: 80px;
+	padding-right: 80px;
 }
-.footer_content {
-	display: none;
+
+.footer_default {
+	background-color: var(--footer_bg);
+	height: fit-content;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
 }
-.footer:hover .footer_content {
-	display: block;
+
+.footer.expanded .footer_padding {
+	max-height: 500px;
+	transition: max-height 1.1s ease-in;
+}
+
+.footer:not(.expanded):hover .footer_padding {
+	max-height: 500px;
+	transition: max-height 1.1s ease-out;
+}
+
+.footer:not(:hover) .footer_padding {
+	max-height: 0;
+	transition: max-height 0.4s ease-out;
+}
+
+.infobtn {
+	background-color: var(--button_clr);
+	border:  none;
+	width:170px;
+	height: 30px;
+	border-radius: var(--article_border_radius);
 }
 .footer_padding {
 	padding-left: 80px;
@@ -348,6 +384,9 @@ body {
 	display: grid;
 	grid-template-columns: auto auto auto auto;
 }
+.footer .grid_container .grid_item:nth-child(4){
+	text-align: center;
+	 }
 .grid_item {
 	display: block;
 	text-align: left;
@@ -371,6 +410,9 @@ body {
 		max-height: 400px;
 		overflow-y: auto;
 	}
+	.articles .grid_container{
+		grid-template-columns: auto auto;
+	}
 }
 @media only screen and (max-width: 1060px) {
 	.navigation {
@@ -380,6 +422,25 @@ body {
 	.navigation ul li {
 		width: 50px;
 		left: -10%;
+	}
+	.footer_cpr {
+		font-size: 14px;
+	}
+	.footer{
+		font-size: 14px;
+	}
+	.footer_padding {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	.socials ion-icon {
+		font-size: small;
+		padding-right: 5px;
+	}
+	.infobtn {
+		font-size: 13px;
+		width: 120px;
+		height: 20px;
 	}
 
 	@media only screen and (max-width: 900px) {
@@ -400,10 +461,33 @@ body {
 		.article {
 			width: 100%;
 		}
+		.articles .grid_container{
+			grid-template-columns: auto;
+		}
+		.grid_container .grid_item:nth-child(4){
+			text-align: center;
+			 }
+			 .socials{
+				transform: translateX(3px);
+			 }	
+			 .grid_item{
+				padding: 0px;
+			 }
 		@media only screen and (max-width: 720px) {
-			.grid_container {
-				grid-template-columns: auto;
+			@media screen and (orientation: landscape) {
+				.footer {
+					display: none;
+				}
 			}
+			#dropdown_account .dropdown-content{
+				display: none;
+			}
+			.articles .grid_container{
+				grid-template-columns: auto auto;
+			}
+			.footer .grid_container .grid_item:nth-child(3) {
+			display: none;
+ 			}
 			.dropdown {
 				top: 12px;
 			}
@@ -459,8 +543,45 @@ body {
 				right: 0px;
 			}
 		}
-
+/* Overall style for SweetAlert modals */
+.swal2-popup {
+	font-size: 14px !important;
+	border-radius: 10px !important;
+	overflow: hidden !important;
+  }
+  
+  /* Style for custom HTML container */
+  .swal2-html-container {
+	margin: 0em 0.5em !important;
+	font-size: 1em !important;
+  }
+  
+  /* Style for HTML content */
+  .swal2-content {
+	text-align: center !important;
+  }
+		@media only screen and (max-width: 500px) { 
+			.articles .grid_container{
+				grid-template-columns: auto;
+			}
+			.socials {
+				display: grid;
+				grid-template-columns: 25px 25px 25px;
+				transform: translateX(6px);
+			}
+			  .socials ion-icon {
+				padding-top: 5px;
+			}
+			.infobtn {
+				width: 70px;
+				height: 20px;
+				font-size: 10px;
+			}
+		}
 		@media only screen and (max-width: 449px) {
+			.footer_default {
+				height: fit-content;
+			  }
 			.name_text h1 {
 				font-size: 15px;
 			}
@@ -475,3 +596,40 @@ body {
 		}
 	}
 }
+.skeleton {
+	opacity: .7;
+	animation: skeleton-loading 1s linear infinite alternate;
+  } 
+  
+  @keyframes skeleton-loading {
+	0% {
+	  background-color: hsl(200, 20%, 70%);
+	}
+  
+	100% {
+	  background-color: hsla(204, 20%, 95%, 0.3);
+	}
+  }
+  ion-icon:not(:defined)::before{
+	content: "";
+	display: inline-block;
+	/* set to center */
+	transform: translate(0%, 5px);
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	animation: skeleton-loading 1s linear infinite alternate;
+  }
+/* set background to all images before loaded skeleton loading but not .logo */
+img{
+	animation: skeleton-loading 1s linear infinite alternate;
+	border-radius: 50%;
+  }
+  td img{
+	width: 50px;
+	height: 50px;
+  }
+  
+  img.loaded, .logo img{
+	animation: none;
+  }

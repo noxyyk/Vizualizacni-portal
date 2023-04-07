@@ -1,23 +1,50 @@
 const express = require('express')
 const router = express.Router()
+const rateLimit = require('express-rate-limit')
+// Rate limiter for sensitive routes
+const authLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 100, // limit each IP to 10 requests per hour
+    message: 'Překročili jste limit počtu požadavků, zkuste to prosím později.'
+})
+// Rate limiter for default routes
+const defaultLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 200, // limit each IP to 100 requests per hour
+    message: 'Překročili jste limit počtu požadavků, zkuste to prosím později.'
+})
+// Rate limiter for admin routes
+const adminLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 1000, // limit each IP to 100 requests per hour
+    message: 'Překročili jste limit počtu požadavků, zkuste to prosím později.'
+})
+const strictLimiter = rateLimit({
+    windowMs: 60 * 15 * 1000, // 1 hour
+    max: 1, // limit each IP to 2 requests per hour
+    message: 'Překročili jste limit počtu požadavků, zkuste to prosím později.'
+})
 //routes
-router.use('/delete', require('./auth/delete'))
-router.use('/login', require('./auth/login'))
-router.use('/register', require('./auth/register'))
-router.use('/verify', require('./auth/verify'))
+router.use('/delete', strictLimiter, require('./auth/delete'))
+router.use('/login', authLimiter,require('./auth/login'))
+router.use('/register', authLimiter,require('./auth/register'))
+router.use('/verify', defaultLimiter, require('./auth/verify'))
+router.use('/secret',authLimiter, require('./auth/secret'))
 
-router.use('/role', require('./change/role'))
-router.use('/change', require('./change/change'))
+router.use('/role', defaultLimiter, require('./change/role'))
+router.use('/change', defaultLimiter, require('./change/change'))
 
-router.use('/userlist', require('./info/userlist'))
-router.use('/logs', require('./info/logs'))
+router.use('/userlist', adminLimiter, require('./info/userlist'))
+router.use('/logs',  adminLimiter, require('./info/logs'))
+router.use('/contact', strictLimiter, require('./info/contact')) 
 
-router.use('/getall', require('./devices/getall'))
-router.use('/add', require('./devices/add'))
-router.use('/remove', require('./devices/delete'))
-router.use('/edit', require('./devices/edit'))
-router.use('/data', require('./devices/data'))
-router.use('/set', require('./devices/set'))
-router.use('/write', require('./devices/write'))
+router.use('/getall', defaultLimiter, require('./devices/getall'))
+router.use('/add', defaultLimiter, require('./devices/add'))
+router.use('/remove', defaultLimiter, require('./devices/delete'))
+router.use('/edit', defaultLimiter, require('./devices/edit'))
+router.use('/data', defaultLimiter, require('./devices/data'))
+router.use('/set', defaultLimiter,  require('./devices/set'))
+router.use('/write',defaultLimiter, require('./devices/write'))
+router.use('/live',defaultLimiter, require('./devices/live'))
 
 module.exports = router 

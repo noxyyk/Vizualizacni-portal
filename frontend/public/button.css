@@ -45,3 +45,24 @@ img {
 	-ms-user-drag: none;
 	user-drag: none;
 }
+@media only screen and (max-width: 500px) {
+	.swal2-show .grid-container,
+	.swal2-hide .grid-container {
+		grid-gap: 5px;
+	}
+	.swal2-show .avatar,
+.swal2-hide .avatar {
+	width: 75px;
+}
+}
+@media only screen and (max-width: 410px) {
+	.swal2-show .grid-container,
+	.swal2-hide .grid-container {
+		grid-template-columns: auto auto auto auto;
+		grid-gap: 1px;
+	}
+	.swal2-show .avatar,
+.swal2-hide .avatar {
+	width: 50px;
+}
+}

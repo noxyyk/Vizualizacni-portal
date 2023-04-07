@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="cz">
+
+
+<head>
+  <meta charset="utf-8"> <!--Define UTF-8 Characters-->
+  <meta name="viewport" content="width=device-width">
+  <title>Vizualizační Portál - živě</title>
+  <link rel="icon" type="image/x-icon" href="./images/logo.png">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.loading-spinner').style.display = 'flex';
+  });
+  window.onload = function() {
+    var i = 1;
+    var intervalId = setInterval(() => {
+        document.querySelector('.loading-spinner').style.backgroundColor = `rgba(255, 255, 255, ${i})`;
+        i -= 0.1;
+        if (i <= 0) {
+            clearInterval(intervalId);
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    }, 20);
+  }
+  </script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <style>
+     #buttons-container {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        #buttons-container button {
+            border: 4px solid hsl(0, 0%, 100%);
+            border-radius: 40px;
+            margin: auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            border: #fff solid 1px;
+        }
+        #buttons-container button:hover {
+           border: #000 solid 1px;
+        }
+        .article {
+  width: auto;
+}
+.data-table{
+  width: 100%;
+}
+.data-table td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: normal;
+  color: #444;
+}
+body {
+  background-color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #444;
+  margin: 0;
+  padding: 0;
+}
+.loading-spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.spinner {
+  width: 100px;
+  height: 100px;
+  border: 10px solid #f3f3f3;
+  border-top: 10px solid #3498db;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media screen and (max-width: 800px) {
+  .article{
+    max-width: 100%;
+  }
+  .data-table{
+   font-size: 12px;
+   margin: 0px;
+  }
+  .data-table td {
+    font-size: 11.5px;
+  }
+
+}
+@media screen and (max-width: 600px) {
+  .article{
+    max-width: 100%;
+  }
+  .data-table{
+   font-size: 10px;
+   margin: 0px;
+  }
+  .data-table td {
+    font-size: 9.5px;
+  }
+
+}
+@media screen and (max-width: 420px) {
+  .article{
+    max-width: 100%;
+  }
+  .data-table{
+   font-size: 9px;
+   margin: 0px;
+  }
+  .data-table td {
+    font-size: 8.5px;
+  }
+
+}
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+    <div id="chart-container"></div>
+</body>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const device = urlParams.get('device');
+    const tag = urlParams.get('tag');
+    const tagvalue = urlParams.get('tagvalue');
+    const measurement = urlParams.get('measurement');
+    const token = urlParams.get('token');
+    let url = `https://api.vizualizacni-portal.noxyyk.com/api/live`
+    if (window.location.href.includes("localhost")) {
+        url = `http://localhost:5002/api/live`
+    }
+    let url_request = `${url}?tag=${tag}&tagvalue=${tagvalue}&measurement=${measurement}`;
+
+      var canvas = document.createElement('canvas');
+      let value
+      document.getElementById('chart-container').appendChild(canvas);
+       // Configure chart options
+      chartOptions = { scales: {
+        xAxes: {
+          type: 'time',
+          time: {
+            unit: 'minute',
+            displayFormats: {
+              second: 'mm:ss',
+              minute: 'HH:mm',
+              hour: 'MMM d, h',
+              day: 'MMM d',
+              days: 'MMM d',
+              week: 'MMM d'
+            }
+          },
+          ticks: {
+            display: true
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Time'
+          }
+        },
+        y: {
+          ticks: {
+            display: true,
+          },
+          title: {
+            display: true,
+            text: 'hodnota'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'čas'
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: measurement,
+        }
+      }}
+      const timeUnits = [
+        { label: 'všechny hodnoty', unit: 'all', value: 1 },
+        { label: 'týdny', unit: 'week', value: 1 },
+        { label: 'dny', unit: 'day', value: 1 },
+        { label: 'hodiny', unit: 'hour', value: 1 },
+        { label: 'minuty', unit: 'minute', value: 1 },
+        { label: 'sekundy', unit: 'second', value: 1}
+      ];
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.id = 'buttons-container';
+      document.getElementById('chart-container').appendChild(buttonsContainer);
+      
+      const buttons = timeUnits.map(({ label, unit, value }) => {
+        const button = document.createElement('button');
+        button.innerText = label;
+        button.setAttribute('data-unit', `${value} ${unit}`);
+        buttonsContainer.appendChild(button);
+        return button;
+      });
+      // Create chart
+      const ctx = canvas.getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [{
+            label: tag + " - " + tagvalue,
+            data: []
+          }]
+        },
+        options: chartOptions
+      });
+      let default_chart = chart
+    // Add event listeners to buttons
+    const time_per_unit = {
+  all:9999999,
+  second: 60,
+  minute: 3600,
+  hour: 86400,
+  day: 604800,
+  week: 2629743,
+};
+
+function updateChart(chart, chartOptions, timeUnit, diff, firstTime, lastTime) {
+  if (diff < firstTime) {
+    if (lastTime - firstTime > 1200000) {
+      chartOptions.scales.xAxes.ticks.stepSize = 1;
+      chartOptions.scales.xAxes.time.unit = "day";
+    } else if (lastTime - firstTime > 6400000) {
+      chartOptions.scales.xAxes.ticks.stepSize = 20;
+      chartOptions.scales.xAxes.time.unit = "hour";
+    } else if (lastTime - firstTime > 320000) {
+      chartOptions.scales.xAxes.ticks.stepSize = 10;
+      chartOptions.scales.xAxes.time.unit = "hour";
+    } else if (lastTime - firstTime > 10000) {
+      chartOptions.scales.xAxes.ticks.stepSize = 10;
+      chartOptions.scales.xAxes.time.unit = "minute";
+    } else if (lastTime - firstTime > 500) {
+      chartOptions.scales.xAxes.ticks.stepSize = 10;
+      chartOptions.scales.xAxes.time.unit = "second";
+    } else {
+      chartOptions.scales.xAxes.ticks.stepSize = 10;
+      chartOptions.scales.xAxes.time.unit = "second";
+    }
+    chartOptions.scales.xAxes.min = moment.unix(firstTime).toDate();
+    chartOptions.scales.xAxes.max = moment.unix(lastTime).toDate();
+  } else {
+    chartOptions.scales.xAxes.ticks.stepSize = 5;
+    chartOptions.scales.xAxes.time.unit = timeUnit;
+    chartOptions.scales.xAxes.min = moment.unix(diff).toDate();
+  }
+  chart.options = chartOptions;
+  chart.update();
+}
+
+function handleButtonClick(chart, chartOptions) {
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (value == undefined) return
+      console.log(value.values  )
+      const unit = button.getAttribute("data-unit");
+      const [time, timeUnit] = unit.split(" ");
+      if (timeUnit == "all") {
+        chartOptions.scales.xAxes.ticks.stepSize = 1;
+        chartOptions.scales.xAxes.time.unit = "day";
+
+        chart.options = chartOptions;
+        chart.update();
+        return;
+      }
+      const lastTime = moment(value.values[value.values.length - 1][0]).unix();
+      const firstTime = moment(value.values[0][0]).unix();
+      const diff = lastTime - time_per_unit[timeUnit];
+      console.log(diff, firstTime, lastTime)
+
+      updateChart(chart, chartOptions, timeUnit, diff, firstTime, lastTime)
+    });
+  });
+}
+
+// Call handleButtonClick with your chart and chartOptions objects to set up the event listeners
+handleButtonClick(chart, chartOptions);
+updateStatus = true
+async function update() {
+  try {
+    const result = await (await fetch(url_request, {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}})).json()
+  if (!result.valid) {updateStatus = false; return alert(result.response)}
+  for (var key in result.response) {
+    if (result.response.hasOwnProperty(key)) {
+     value = result.response[key];
+
+      if (!chart) continue;
+      chart.data.datasets[0].data = value.values.map(function (item) {
+        return {
+          x: String(moment(item[0]).format("YYYY-MM-DD HH:mm:ss")),
+          y: String(item[1])
+        }
+      });
+      chart.options = chartOptions;
+      chart.update();
+    }
+  }
+} catch (e) {
+  alert("Chyba při načítání dat")   
+  updateStatus = false
+}
+}
+update()
+setInterval(function() {
+  if (updateStatus) update()
+}, 5000);
+if (screen.width < 550) {
+   window.screen.orientation.lock("landscape");
+}
+</script>
+</html>

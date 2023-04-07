@@ -35,7 +35,7 @@ async function validateInfluxDBVariables(token, url, org, bucket) {
   }
 }
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     setResponseHeaders(req, res)
 	const user = await verifyUser(req)
@@ -61,9 +61,7 @@ router.post('/', async (req, res) => {
         valid: true,
         devices: object.devices[index]
     })
-  } catch (error) {
-    res.status(400).send({valid: false, response: error});
-  }
+  } catch (err) {next(err)}
 })
 
 module.exports = router;
