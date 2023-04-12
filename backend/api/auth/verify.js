@@ -15,7 +15,7 @@ router.post('/', async (req, res, next) => {
 		req.headers.authorization?.split(' ')[1],
 		process.env.JWTSECRET,
 		async function (err, decoded) {
-			if (err) return res.status(401).send({ valid: false, response: 'Nastala chyba, zkuste to znovu později'})
+			if (err) return res.status(401).send({ valid: false, response: 'Nastala chyba, zkuste to znovu později', name: err.name, expiredAt: err.expiredAt})
 			if (decoded == undefined)
 				return res.status(500).send({
 					valid: false,
@@ -36,7 +36,7 @@ router.post('/', async (req, res, next) => {
 					.send({ valid: false, response: 'Nastala chyba, přihlašte se znovu' })
 			}
 
-			res.status(200).send({
+			res.status(200).send({	
 				valid: true,
 				role: decoded.role,
 				email: decoded.email,

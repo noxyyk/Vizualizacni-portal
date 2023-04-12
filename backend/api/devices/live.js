@@ -56,7 +56,7 @@ router.get('/',limiter, async (req, res, next) => {
     if(!(object.devices[index].secrets.tokens.includes(authorization))) return res.status(401).send({ valid: false, response: 'nesprávný token' })
     if(tag != object.devices[index].tag || tagvalue != object.devices[index].tagvalue) return res.status(401).send({ valid: false, response: 'nesprávný token' })
     const tokenIndex = object.devices[index].secrets.tokens.findIndex(x => x == authorization)
-    if (new Date(object.devices[index].secrets.info[tokenIndex].lastUsed).getDate() == new Date().getDate()){ 
+    if (new Date(object.devices[index].secrets.info[tokenIndex].lastUsed).getDate() != new Date().getDate()){ 
     object.devices[index].secrets.info[tokenIndex].lastUsed = new Date().getTime()  
     await db.set(user, object);
   }

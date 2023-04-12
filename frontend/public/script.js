@@ -136,19 +136,20 @@ function verifyToken() {
 				localStorage.removeItem('user')
 				login_btn()
 				validation = false
+				console.log(json)
 				toast.fire({
 					icon: 'warning',
 					text:
-						json.response.name == 'TokenExpiredError'
-							? 'Token expiroval před ' +
+						json.name == 'TokenExpiredError'
+							? ('Token expiroval před ' +
 							  time(
 							  	Math.floor(
 							  		(new Date().getTime() -
-											new Date(json.response.expiredAt).getTime()) /
+											new Date(json.expiredAt).getTime()) /
 											1000
 							  	)
 							  ) +
-							  ', přihlášení je vyžadováno'
+							  ', přihlášení je vyžadováno')
 							: 'Token je neplatný, přihlášení je vyžadováno',
 					timer: 10000,
 				})
@@ -237,8 +238,8 @@ Swal.fire({
 		inputPlaceholder: 'Zůstat přihlášen',
 		showCancelButton: true,
 		confirmButtonText: 'Přihlásit',
-		footer: '<a href="#" onclick="register();">Nejste registrován? </a>',
-		preConfirm: async () => {
+		footer: '<a href="" onclick="event.preventDefault();register()">Nejste registrován?</a>',
+		preConfirm: async function (){
 			Swal.showLoading()
 			const name = Swal.getPopup().querySelector('#login_name').value
 			const password = Swal.getPopup().querySelector('#login_pswrd').value
@@ -306,65 +307,64 @@ async function logOut() {
 //registration
 
 async function register() {
-	const register = async () => {
-		Swal.showLoading()
-		const name = Swal.getPopup().querySelector('#name').value
-		const password = Swal.getPopup().querySelector('#password').value
-		var validationErrors = []
-		if (!name || !password) {
-			Swal.showValidationMessage('Vyplňte prosím všechna pole')
-			return undefined
-		}
-		if (name.match(/[^a-zA-Z0-9]/g) || name.length < 4)
-			validationErrors.push(
-				'nesmí obsahovat speciální znaky a musí mít alespoň 4 znaky'
-			)
-		if (validationErrors.length > 0)
-			return Swal.showValidationMessage('jméno: ' + validationErrors.join(', '))
-		if (!password.match(/[a-z]/g))
-			validationErrors.push('alespoň jedno malé písmeno')
-		if (!password.match(/[A-Z]/g))
-			validationErrors.push('alespoň jedno velké písmeno')
-		if (!password.match(/\d/g)) validationErrors.push('alespoň jedno číslo')
-		if (password == name) validationErrors.push('nesmí být stejné jako jméno')
-		if (!password.match(/^.{8,}$/g)) validationErrors.push('alespoň 8 znaků')
-		if (validationErrors.length > 0)
-			return Swal.showValidationMessage('heslo: ' + validationErrors.join(', '))
-
-		const data = { username: name, password: password }
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(data),
-		}
-		try {
-			const response = await fetch(page + '/register', options)
-			const json = await response.json()
-			if (!json.valid) {
-				Swal.hideLoading()
-				return Swal.showValidationMessage(json.response)
-			}
-			notif.fire({
-				icon: 'success',
-				text: `Úspěšně registrován jako ${name}. nyní se můžete přihlásit.`,
-				footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
-			})
-		} catch (error) {
-			console.error(error)
-			Swal.hideLoading()
-			Swal.showValidationMessage('Nastala chyba')
-		}
-	}
-	Swal.fire({
+		Swal.fire({
 		title: 'Registrace',
 		html: `<form><input type="text" id="name" autocomplete="on" class="swal2-input" placeholder="Jméno">
            <input type="password" id="password" class="swal2-input" placeholder="Heslo" autocomplete="on"></form>`,
 		showCancelButton: true,
 		confirmButtonText: 'Registrovat',
-		footer: '<a href="#" onclick="logIn();">Už jste registrováni? </a>',
-		preConfirm: register,
+		footer: '<a href="" onclick="event.preventDefault();logIn();">Už jste registrováni? </a>',
+		preConfirm: async function () {
+			Swal.showLoading()
+			const name = Swal.getPopup().querySelector('#name').value
+			const password = Swal.getPopup().querySelector('#password').value
+			var validationErrors = []
+			if (!name || !password) {
+				Swal.showValidationMessage('Vyplňte prosím všechna pole')
+				return undefined
+			}
+			if (name.match(/[^a-zA-Z0-9]/g) || name.length < 4 || name.length > 20)
+				validationErrors.push(
+					'nesmí obsahovat speciální znaky a musí mít alespoň 4 znaky'
+				)
+			if (validationErrors.length > 0)
+				return Swal.showValidationMessage('jméno: ' + validationErrors.join(', '))
+			if (!password.match(/[a-z]/g))
+				validationErrors.push('alespoň jedno malé písmeno')
+			if (!password.match(/[A-Z]/g))
+				validationErrors.push('alespoň jedno velké písmeno')
+			if (!password.match(/\d/g)) validationErrors.push('alespoň jedno číslo')
+			if (password == name) validationErrors.push('nesmí být stejné jako jméno')
+			if (!password.match(/^.{8,}$/g)) validationErrors.push('alespoň 8 znaků')
+			if (validationErrors.length > 0)
+				return Swal.showValidationMessage('heslo: ' + validationErrors.join(', '))
+	
+			const data = { username: name, password: password }
+			const options = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			}
+			try {
+				const response = await fetch(page + '/register', options)
+				const json = await response.json()
+				if (!json.valid) {
+					Swal.hideLoading()
+					return Swal.showValidationMessage(json.response)
+				}
+				notif.fire({
+					icon: 'success',
+					text: `Úspěšně registrován jako ${name}. nyní se můžete přihlásit.`,
+					footer: '<a href="#" onclick="logIn();">Klikni pro přihlášení </a>',
+				})
+			} catch (error) {
+				console.error(error)
+				Swal.hideLoading()
+				Swal.showValidationMessage('Nastala chyba')
+			}
+		},
 	})
 }
 

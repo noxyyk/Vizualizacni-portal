@@ -52,7 +52,7 @@ module.exports = {
 				if (err || !decoded || !(await db.has(decoded.iss))) {
 				  reject(err);
 				}
-				  if (decoded.exp < Math.floor(Date.now() / 1000)) {reject('Token expiroval');}
+				  if (decoded?.exp != undefined && decoded.exp < Math.floor(Date.now() / 1000)) {reject('Token expiroval');}
 				  resolve(decoded);
 			  }
 			);

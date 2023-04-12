@@ -61,9 +61,6 @@ router.post('/', limiter, async (req, res, next) => {
     |> filter(fn: (r) => r.${tag} == "${tagvalue}")
     |> limit(n: 30)
   `;
-
-    router.use(limiter); // Use the limiter middleware after defining it and verifying the user's role
-
     await queryClient.queryRows(query, {
       next(row, tableMeta) {
         const timeIndex = tableMeta.columns.findIndex((column) => column.label === '_time');
