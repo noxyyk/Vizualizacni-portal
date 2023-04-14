@@ -352,7 +352,7 @@ for (var key in result.response) {
           const tag = button.getAttribute('data-tag');
           const tagvalue = button.getAttribute('data-tagvalue');
           const token = JSON.parse(localStorage.getItem('user')).token;
-          window.location.href = `/live?measurement=${measurement}&tag=${tag}&tagvalue=${tagvalue}&token=${token}`
+          window.location.href = `/live?measurement=${measurement}&tag=${tag}&tagvalue=${tagvalue}&token=${token}&device=${target}`;
           return
         }
         const lastTime = moment(value.values[value.values.length - 1][0]).unix()

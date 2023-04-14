@@ -295,7 +295,7 @@ Swal.fire({
 async function logOut() {
 	localStorage.removeItem('user')
 	localStorage.removeItem('devices')
-	login_btn()
+	await login_btn()
 
 	toast.fire({
 		//match
