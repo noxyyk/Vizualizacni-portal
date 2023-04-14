@@ -654,3 +654,8 @@ img{
   img.loaded, .logo img{
 	animation: none;
   }
+  /* pointer */
+  /* has ID */
+  .navigation ul li a, .login ul li a, button, .dropdown-content a, .swal2-html-container .grid-container .avatar, .grid_container .device, .grid_container .add_device, .article .settings, #secrets td  a, .swal2-html-container th[id]{
+	cursor: pointer;
+  }

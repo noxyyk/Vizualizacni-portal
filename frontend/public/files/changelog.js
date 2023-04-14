@@ -31,8 +31,66 @@ async function ChangeLog() {
     <div class="grid">
     
     <div class="change-grid">
+    <h2 id="brezen">Březen</h2>
+    <div id="brezen_content">
+    <p><strong>12.4.2023</strong></p>
+    <ul>
+    <li> vylepšení funkčnosti</li>
+    </ul>
+    <p><strong>7.4.2023</strong></p>
+    <ul>
+    <li>animace</li>
+    <li>funkce živě</li>
+    <li>funkce nastavení headerů</li>
+    <li>vytvoření API tokenu</li>
+    <li>použití logovacího systému</li>
+    <li>kontakt</li>
+    <li>změna CSS u SweetAlert</li>
+    <li>aktualizace knihoven</li>
+    <li>stáhnutí mobilní aplikace</li>
+    <li>animace načítaní u obrázků a zařízení</li>
+    </ul>
+    <p><strong>31.3.2023</strong></p>
+    <ul>
+    <li>zobrazení grafů dle tagů</li>
+    <li>změna knihovny databáze na quick.db</li>
+    <li>zapsání hodnoty do InfluxDB</li>
+    </ul>
+    <p><strong>15.3.2023</strong></p>
+    <ul>
+    <li>přidání await ke všem příkazům databáze</li>
+    <li>získání dat z Influx databáze</li>
+    </ul>
+    <p><strong>12.3.2023</strong></p>
+    <ul>
+    <li>funkce pro zkrácení kódu</li>
+    <li>token změněn na Bearer token</li>
+    <li>propojení s InfluxDB</li>
+    <li>nastavení databáze</li>
+    <li>získání a zapsání logů</li>
+    <li>funkce pro odstranění neplatných dat</li>
+    </ul>
+    </div></div>
+
+    <div class="change-grid">
     <h2 id="unor">Únor</h2>
     <div id="unor_content">
+    <p><strong>27.2.2023</strong></p>
+    <ul>
+    <li>role</li>
+    </ul>
+    <p><strong>26.2.2023</strong></p>
+    <ul>
+    <li>funkce na spuštění databáze</li>
+    </ul>
+    <p><strong>25.2.2023</strong></p>
+    <ul>
+    <li>regex na backendu</li>
+    <li>catch chyb</li>
+    <li>pčidat, smazat, změnit, získat všechny zařízení</li>
+    <li>ověření tokenu</li>
+    <li>website.js - záhlaví a zápatí</li>
+    </ul>
     <p><strong>3.2.2023</strong></p>
     <ul>
     <li>404 stránka</li>
@@ -79,6 +137,7 @@ async function ChangeLog() {
     <li>přidání sezaření podle posledního přihlášení</li>
     </ul>
     </div></div>
+
     <div class="change-grid">
     <h2 id="prosinec">Prosinec</h2>
     <div id="prosinec_content">
@@ -233,6 +292,12 @@ async function ChangeLog() {
     `,
 		confirmButtonText: 'Super!',
 		didOpen: () => {
+      document.getElementById('brezen').onclick = function () {
+				showHide('brezen')
+			}
+      document.getElementById('unor').onclick = function () {
+				showHide('unor')
+			}
 			document.getElementById('leden').onclick = function () {
 				showHide('leden')
 			}

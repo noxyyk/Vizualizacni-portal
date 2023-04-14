@@ -126,13 +126,13 @@
             <input id="show" type=checkbox>
               <div id="content">
                 <label id="content_label" for="show"><b>Zobrazit méně</b></label>
-                <p id="content_text">Tato práce se zabývá a následně zpracovává data z IoT zařízení, které jsou možné nastavit ve Vizualizačním IoT portálu (dále jen portál), pro správný přenos dat. Data následně budou zpracovány pro zobrazení v grafech, maximální, minimální či průměrná hodnota, uživatel si může pomocí API tyto data následně zpracovat. Pro zabezpečení je možnost přihlášení kde je šifrované. Data s přihlášením jsou ukládána do NoSQL databáze MongoDB a klíč je uložen do souboru environmental variable. Jako uživatelská administrace je možno se přihlásit, registrovat, změnit profilový obrázek, změnit heslo nebo smazání účtu a všech dat. Aplikace komunikuje mezi frontend a backend pomocí protokolu HTTP. Je možno zobrazit historii změn, jak se na projektu pracovalo. K dispozici je také návod, jak web používat. Jako administrace zařízení je možno přidat, spravovat, odstranit zařízení, počet zařízení podle druhu plánu.</p>  
+                <p id="content_text">Tato práce se zabývá a následně zpracovává data z IoT zařízení, které jsou možné nastavit ve Vizualizačním IoT portálu (dále jen "portál"), pro správný přenos dat. Data následně budou zpracovány pro zobrazení v grafech, maximální, minimální či průměrná hodnota. Uživatel si může pomocí API tyto data následně zpracovat. Pro zabezpečení je přihlášení šifrované. Data s přihlášením jsou ukládána do NoSQL databáze MongoDB a klíč je uložen do souboru environmental variable. Jako uživatelská administrace je možno se přihlásit, registrovat, změnit profilový obrázek, změnit heslo nebo smazání účtu a všech dat. Aplikace komunikuje mezi frontend a backend pomocí protokolu HTTP. Je možno zobrazit historii změn, jak se na projektu pracovalo. K dispozici je také návod, jak web používat. Jako administrace zařízení je možno přidat, spravovat, odstranit zařízení, počet zařízení podle druhu plánu.</p>  
               </div>
        <label for="show" id="more"><b>Zobrazit více</b></label>
     </div>
     <div class="article scroll" id="setup" style="position: relative;top: 140px;">
       <h2>Zařízení</h2> 
-      <p>Na portálu si můžete přidávat vlastní IoT zařízení a následně zobrazit jejich data pomocí grafů, nebo získat zpracované data pomocí API, které můžete použít pro další zpracování, například do vlastní aplikace nebo webové stránky. Každé zařízení má svůj vlastní klíč, který je potřeba pro přístup k datům. Klíč je uložen v databázi a je možné jej získat pomocí API. 
+      <p>Na portálu si můžete přidávat vlastní IoT zařízení a následně zobrazit jejich data pomocí grafů, nebo získat zpracované data pomocí API, které můžete použít pro další zpracování, například do vlastní aplikace nebo webové stránky. Každé zařízení má svůj vlastní klíč, který je potřeba pro přístup k datům. 
       Pro každého je možné si přidat až 3 zařízení zdarma, pokud chcete přidat další, musíte si zakoupit plán.
 <div class="grid_container">
     <div class="grid_item plan">
@@ -146,7 +146,7 @@
               <b>3 zařízení</b>
             </li>
             <li>
-              10 API dotazů za den
+              10 API dotazů za hodinu
             </li>
           </ul>
           <button type="button" onclick="plan(1)" class="btn">Začít s osobním</button>
@@ -162,7 +162,7 @@
               <b>5 zařízení</b>
             </li>
             <li>
-              100 API dotazů za den
+              100 API dotazů za hodinu
             </li>
           </ul>
           <button type="button" onclick="plan(2)" class="btn">Začít s pokročilým</button>

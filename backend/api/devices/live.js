@@ -31,7 +31,7 @@ db = dbInstance
 })()
 router.get('/',limiter, async (req, res, next) => {
   try {
-    //setResponseHeaders(req, res)
+    setResponseHeaders(req, res)
     let authorization = req.headers.authorization?.split(" ")[1]
     if (!authorization) return res.status(401).send({ valid: false, response: 'nesprávný token' })
 		const token_ = (await new Promise((resolve, reject) => {

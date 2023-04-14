@@ -145,3 +145,362 @@ function start() {
 	if (localStorage.getItem('user') == null) return logIn("./zarizeni.html")
 	window.open('./zarizeni.html', '_self')
 }
+const guide_css = `
+.swal2-modal {
+  min-height: 300px;
+}
+body {
+  font-family: Arial, sans-serif;
+}
+h1 {
+  text-align: center;
+}
+h2 {
+  margin-top: 20px;
+}
+.box {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 20px;
+  border: 1px solid hsl(122, 39%, 49%);;
+  background-color: hsl(122, 39%, 90%);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.box-content {
+  display: flex;
+  flex-direction: column;
+  /* padding: 10px; */
+}
+.head {
+  padding: 10px; 
+}
+.box-content button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+.content {  
+  display: none;
+}
+.content p{
+  margin-left: 15px;
+}
+.content table {
+margin-left: 30px;
+}
+.content.display {
+  display: block;
+}
+.rotate ion-icon{
+  transform: rotate(180deg);
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.method {
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.path {
+  margin-left: 10px;
+}
+.summary {
+  margin-left: 10px;
+}
+.arror {
+  margin-left: 10px;
+}
+.clipborad {
+  margin-left: 10px;
+}
+
+.parameters th {
+  padding: 5px;
+  text-align: left;
+}
+.parameters td {
+  padding: 5px;
+  text-align: left;
+}
+/* one line after th */
+.parameters tr:nth-child(1) {
+  border-bottom: 1px solid #ccc;
+}
+.white {
+  background-color: #f5f5ff;
+  height : 100%;
+  width: 100%;
+  padding: 1px;
+  text-align: left;
+  margin-left: 0px;
+}
+.content {
+  border-top: 1px solid hsl(122, 39%, 49%);
+}
+.path {
+  font-weight: bold;
+}
+.tableHead {
+  border-collapse: collapse;
+}
+.tableHead th {
+  padding: 5px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.tableHead td {
+  padding: 5px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.tableHead td {
+  vertical-align: top;
+}
+/* dark */
+.script {
+  background-color: #f5f5ff;
+  height : 100%;
+  width: 100%;
+  padding: 1px;
+  text-align: left;
+  margin-left: 0px;
+}
+.parameters th{
+  display: none;
+}`;
+function guide() {
+  Swal.fire({
+    html: `<div class="box">
+    <div class="box-content">
+    <div class="head">
+    <button  class="toggle-content">
+        <span class="method">POST</span>
+        <span class="path">/api/write</span>
+        <span class="summary">zapsat hodnoty do databáze</span>
+        <span class="arror"><ion-icon name="chevron-down-outline"></ion-icon></span>
+    </button>
+    <button>
+        <span class="clipborad"><ion-icon name="clipboard-outline"></ion-icon></span>
+    </button>
+ </div>
+    <div class="content">
+     <div class="white">
+         <p>parametry:</p>
+     </div>
+     <br>
+     <table class="tableHead">
+         <tr>
+             <th>Query:</th>
+             <th>Headers:</th>
+         </tr>
+         <tr>
+             <td>
+                  <table class="parameters">
+            <tr>
+                <th>Jméno</th>
+                <th>Hodnota</th>
+            </tr>
+            <tr>
+                <td>tag:</td>
+                <td>devID</td>
+            </tr>
+            <tr>
+                <td>tagvalue:</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>value:</td>
+                <td>23</td>
+            </tr>
+            <tr>
+                <td>measurement:</td>
+                <td>temperature</td>
+            </tr>
+                 </table>
+              </td>
+     <td>
+         <table class="parameters">
+             <tr>
+                 <th>Jméno</th>
+                 <th>Hodnota</th>
+             </tr>
+             <tr>
+                 <td>Authorization:</td>
+                 <td>Bearer {API klíč}</td>
+             </tr>
+         </table>
+     </td>
+ </tr>
+ </table>
+        <br>
+        <div class="white">
+        <p>odpovědi:</p>
+       </div>
+       <br>
+        <table class="parameters">
+               <tr>
+                 <th>Kód</th>
+                 <th>Odpověď</th>
+               </tr>
+               <tr>
+                 <td>200</td>
+                 <td>ok</td>
+               </tr>
+                 <tr>
+                     <td>401</td>
+                     <td>chybné parametry / nesprávný token</td>
+                 </tr>
+                 <tr>
+                     <td>409</td>
+                     <td>Uživatel / zařízení neexistuje</td>
+                 </tr>
+        </table>
+        <br>
+        <div class="white">
+            <p>příklad odpovědi:</p>
+    </div>
+     <br>
+     <div class="script">
+         <pre>
+         {
+             "status": "ok",
+             "message": "Data byla úspěšně zapsána"
+         }
+         </pre>
+     </div>
+ </div>
+ </div>
+ </div>
+ 
+ <div class="box">
+     <div class="box-content">
+     <div class="head">
+     <button  class="toggle-content">
+         <span class="method">POST</span>
+         <span class="path">/api/data</span>
+         <span class="summary">vypsat hodnoty z databáze</span>
+         <span class="arror"><ion-icon name="chevron-down-outline"></ion-icon></span>
+     </button>
+     <button>
+         <span class="clipborad"><ion-icon name="clipboard-outline"></ion-icon></span>
+     </button>
+  </div>
+     <div class="content">
+      <div class="white">
+          <p>parametry:</p>
+      </div>
+      <br>
+      <table class="tableHead">
+          <tr>
+              <th>Headers:</th>
+              <th>Body:</th>
+          </tr>
+          <tr>
+              <td>
+                 <table class="parameters">
+                     <tr>
+                         <th>Jméno</th>
+                         <th>Hodnota</th>
+                     </tr>
+                     <tr>
+                         <td>Authorization:</td>
+                         <td>Bearer {API klíč}</td>
+                     </tr>
+                 </table>
+               </td>
+      <td>
+          <table class="parameters">
+              <tr>
+                  <th>Jméno</th>
+                  <th>Hodnota</th>
+              </tr>
+              <tr>
+                  <td>device:</td>
+                  <td>obyvak</td>
+              </tr>
+              <tr>
+                 <td>measurement:</td>
+                 <td>temperature</td>
+             </tr>
+          </table>
+      </td>
+  </tr>
+  </table>
+         <br>
+         <div class="white">
+         <p>odpovědi:</p>
+        </div>
+        <br>
+         <table class="parameters">
+                <tr>
+                  <th>Kód</th>
+                  <th>Odpověď</th>
+                </tr>
+                <tr>
+                  <td>200</td>
+                  <td>ok</td>
+                </tr>
+                <tr>
+                 <td>400</td>
+                 <td>Invalid token / Není nastaven measurement</td>
+             </tr>
+                  <tr>
+                      <td>401</td>
+                      <td>Zařízení nenalezeno / Není nastaven token nebo url</td>
+                  </tr>
+                  <tr>
+                      <td>409</td>
+                      <td>Uživatel neexistuje</td>
+                  </tr>
+         </table>
+         <br>
+         <div class="white">
+             <p>příklad odpovědi:</p>
+     </div>
+      <br>
+      <div class="script">
+          <pre>
+          {
+              "status": "ok",
+              "message": "Data byla úspěšně zapsána"
+          }
+          </pre>
+      </div>
+  </div>
+  </div>
+  </div>`,
+    title: 'API dokumentace',
+    showConfirmButton: false,
+    showCloseButton: true,
+    width: '80%',
+    willOpen: () => {
+      let style = document.createElement('style')
+      style.innerHTML = guide_css;
+      document.head.appendChild(style);
+
+      const toggleContent = document.querySelectorAll('.toggle-content');
+      toggleContent.forEach((item) => {
+          item.addEventListener('click', () => {
+              console.log(item.parentElement.parentElement);
+              const content = item.parentElement.parentElement.querySelector('.content');
+              const arrow = item.querySelector('.arror ion-icon');
+              content.classList.toggle('display');
+              arrow.classList.toggle('rotate');
+          });
+      });
+      const copy = document.querySelectorAll('.clipborad');
+      copy.forEach((item) => {
+          item.addEventListener('click', () => {
+              const path = item.parentElement.parentElement.querySelector('.path').innerText;
+              const url = "https://api." + window.location.hostname + path;
+              navigator.clipboard.writeText(url);
+          });
+      });
+    },
+});
+}

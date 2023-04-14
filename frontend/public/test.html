@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dokumentace API</title>
+    <style>
+        body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+ul {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+    </style>
+  </head>
+  <body>
+    <h1>Dokumentace API</h1>
+    <h2>/data</h2>
+    <p>Metoda: POST</p>
+    <p>Headers:</p>
+    <ul>
+      <li>Authorization: Bearer API KEY</li>
+    </ul>
+    <p>Parametry:</p>
+    <ul>
+      <li>object.device - povinné - string</li>
+    </ul>
+    <p>Body:</p>
+    <ul>
+      <li>measurement - povinné - string</li>
+    </ul>
+    <h2>/write</h2>
+    <p>Metoda: POST</p>
+    <p>Headers:</p>
+    <ul>
+      <li>Authorization: Bearer API KEY</li>
+    </ul>
+    <p>Query parametry:</p>
+    <ul>
+      <li>tag - devID</li>
+      <li>tagvalue - 1</li>
+      <li>value - 23</li>
+      <li>measurement - temperature</li>
+    </ul>
+    <script>
+    </script>
+  </body>
+</html>

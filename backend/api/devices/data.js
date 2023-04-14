@@ -30,12 +30,10 @@ db = dbInstance
 })()
 router.post('/', limiter, async (req, res, next) => {
   try {
-    setResponseHeaders(req, res)
+    res.setHeader('Access-Control-Allow-Origin', '*')
     const user = await verifyUser(req)
     const object = await db.get(user);
     const devices = object.devices;
-    const role = object.user.role;
-    limiter.max = requests[role]
     const index = devices.findIndex(x => x.name == req.body.device);
     if (index == -1) return res.status(401).send({ valid: false, response: 'Zařízení nenalezeno' })
     const { token, url, org, bucket } = devices[index];
@@ -87,11 +85,18 @@ router.post('/', limiter, async (req, res, next) => {
           res.status(400).send('Invalid token');
           return;
         }
+        if(req.get("origin") == 'https://vizualizacni-portal.noxyyk.com') {
         res.status(200).send({
           valid: true,
           response: data,
           secrets: secrets
-        });
+        });}else{
+          if (!req.body.measurement) return res.status(400).send({ valid: false, response: 'Není nastaven measurement' })
+          res.status(200).send({
+            valid: true,
+            response: data[req.body.measurement],
+          });
+        }
       },
     });
   } catch (err) {next(err)}
