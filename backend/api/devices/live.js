@@ -3,7 +3,7 @@ const router = require('express').Router()
 const jwt = require('jsonwebtoken');
 const logger = require('../../logs/logger');
 const rateLimit = require('express-rate-limit')
-const {verifyUser} = require('../../modules/auth')
+const {verifyUser, setResponseHeaders} = require('../../modules/auth')
 const requests = {
   'user': 10,
   'advanced': 100,
@@ -47,12 +47,21 @@ router.get('/',limiter, async (req, res, next) => {
 			);
 		  }));
     const user = token_.iss
-    const device = token_.device
+    let device
+    let website = (req.get("origin") == 'https://vizualizacni-portal.noxyyk.com')
+    if(website) {
+      device = req.query.device
+  } else {
+      device = token_.device
+  }
     if (!user || !device) return res.status(401).send({ valid: false, response: 'nesprávný token' })
     const object = await db.get(user);
     const {tag, tagvalue, measurement} = req.query
     const index = object.devices.findIndex(x => x.name == device);
     if (index == -1) return res.status(401).send({ valid: false, response: 'Zařízení nenalezeno' })
+    if (website){
+      authorization = object.devices[index].secrets.tokens[0]
+    }
     if(!(object.devices[index].secrets.tokens.includes(authorization))) return res.status(401).send({ valid: false, response: 'nesprávný token' })
     if(tag != object.devices[index].tag || tagvalue != object.devices[index].tagvalue) return res.status(401).send({ valid: false, response: 'nesprávný token' })
     const tokenIndex = object.devices[index].secrets.tokens.findIndex(x => x == authorization)

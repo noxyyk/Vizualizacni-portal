@@ -12,7 +12,7 @@ function init(){
           <div class="footer_content">
           <div class="grid_container">
           <div class="grid_item"><b>O projektu</b>
-            <p>Název: ${data.name}<br>Verze: ${data.version}<br>Poslední změna: ${data.lastUpdate}<br>Hosting: <a href="${data.hosting.link}">${data.hosting.text}</a></p>
+            <p><span style="cursor:pointer" onclick="guide()">API dokumentace</span><br>Verze: ${data.version}<br>Poslední změna: ${data.lastUpdate}<br>Hosting: <a href="${data.hosting.link}">${data.hosting.text}</a></p>
             </div>
           <div class="grid_item"><b>O mě</b>
             <p>Přezdívka: ${data.username}<br>Stránka: <a href="${data.page}">${data.page}</a><br>věk: ` +  ((new Date(Date.now() - (((new Date(data.age)).getTime()))).getUTCFullYear())-1970) + `<br>Třída: ${data.class}
@@ -149,13 +149,10 @@ const guide_css = `
 .swal2-modal {
   min-height: 300px;
 }
-body {
-  font-family: Arial, sans-serif;
-}
-h1 {
+.box h1 {
   text-align: center;
 }
-h2 {
+.box h2 {
   margin-top: 20px;
 }
 .box {
@@ -167,71 +164,71 @@ h2 {
   border-radius: 5px;
   overflow: hidden;
 }
-.box-content {
+.box .box-content {
   display: flex;
   flex-direction: column;
   /* padding: 10px; */
 }
-.head {
+.box .head {
   padding: 10px; 
 }
-.box-content button {
+.box .box-content button {
   border: none;
   background-color: transparent;
   cursor: pointer;
 }
-.content {  
+.box .content {  
+  padding: 0;
   display: none;
 }
-.content p{
+.box .content p{
   margin-left: 15px;
 }
-.content table {
+.box .content table {
 margin-left: 30px;
 }
-.content.display {
+.box .content.display {
   display: block;
 }
-.rotate ion-icon{
+.box .rotate ion-icon{
   transform: rotate(180deg);
 }
-.head {
+.box .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.method {
+.box .method {
   background-color: #4CAF50;
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
 }
-.path {
+.box .path {
   margin-left: 10px;
 }
-.summary {
+.box .summary {
   margin-left: 10px;
 }
-.arror {
+.box .arror {
   margin-left: 10px;
 }
-.clipborad {
+.box .clipborad {
   margin-left: 10px;
 }
 
-.parameters th {
+.box .parameters th {
   padding: 5px;
   text-align: left;
 }
-.parameters td {
+.box .parameters td {
   padding: 5px;
   text-align: left;
 }
-/* one line after th */
-.parameters tr:nth-child(1) {
+.box .parameters tr:nth-child(1) {
   border-bottom: 1px solid #ccc;
 }
-.white {
+.box .white {
   background-color: #f5f5ff;
   height : 100%;
   width: 100%;
@@ -239,30 +236,29 @@ margin-left: 30px;
   text-align: left;
   margin-left: 0px;
 }
-.content {
+.box .content {
   border-top: 1px solid hsl(122, 39%, 49%);
 }
-.path {
+.box .path {
   font-weight: bold;
 }
-.tableHead {
+.box .tableHead {
   border-collapse: collapse;
 }
-.tableHead th {
+.box .tableHead th {
   padding: 5px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
-.tableHead td {
+.box .tableHead td {
   padding: 5px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
-.tableHead td {
+.box .tableHead td {
   vertical-align: top;
 }
-/* dark */
-.script {
+.box .script {
   background-color: #f5f5ff;
   height : 100%;
   width: 100%;
@@ -270,7 +266,7 @@ margin-left: 30px;
   text-align: left;
   margin-left: 0px;
 }
-.parameters th{
+.box .parameters th{
   display: none;
 }`;
 function guide() {
@@ -466,8 +462,17 @@ function guide() {
       <div class="script">
           <pre>
           {
-              "status": "ok",
-              "message": "Data byla úspěšně zapsána"
+            "valid":true,
+            "response": {
+                "values": [
+                ["2023-03-30T21:02:47.744252Z","0.6996007451734343"],
+                ["2023-03-30T21:02:48.7565157Z","82.91015100133646"],
+                ["2023-03-30T21:02:49.762536Z","52.66027838126273"],
+                ["2023-03-30T21:02:50.7756547Z","6.6677244324441"]
+            ],
+            "tag":"devID",
+            "value":"1"
+            }
           }
           </pre>
       </div>

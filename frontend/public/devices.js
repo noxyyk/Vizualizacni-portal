@@ -351,24 +351,8 @@ for (var key in result.response) {
           const measurement = button.getAttribute('data-measurement');
           const tag = button.getAttribute('data-tag');
           const tagvalue = button.getAttribute('data-tagvalue');
-          Swal.fire({
-            title: 'Zadejte token',
-            input: 'text',
-            inputAttributes: {
-              autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Zobrazit',
-            showLoaderOnConfirm: true,
-            preConfirm: (token) => {
-              if (token === "" || token == null) {
-                return Swal.showValidationMessage(
-                  `Token musí být vyplněn`
-                )
-              }
-              window.location.href = `/live?measurement=${measurement}&tag=${tag}&tagvalue=${tagvalue}&token=${token}`
-            },
-          })
+          const token = JSON.parse(localStorage.getItem('user')).token;
+          window.location.href = `/live?measurement=${measurement}&tag=${tag}&tagvalue=${tagvalue}&token=${token}`
           return
         }
         const lastTime = moment(value.values[value.values.length - 1][0]).unix()

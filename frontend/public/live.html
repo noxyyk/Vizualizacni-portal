@@ -154,7 +154,7 @@ body {
     if (window.location.href.includes("localhost")) {
         url = `http://localhost:5002/api/live`
     }
-    let url_request = `${url}?tag=${tag}&tagvalue=${tagvalue}&measurement=${measurement}`;
+    let url_request = `${url}?tag=${tag}&tagvalue=${tagvalue}&measurement=${measurement}&device=${device}`;
 
       var canvas = document.createElement('canvas');
       let value

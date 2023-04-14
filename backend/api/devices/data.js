@@ -35,7 +35,9 @@ router.post('/', limiter, async (req, res, next) => {
     const object = await db.get(user);
     const devices = object.devices;
     const index = devices.findIndex(x => x.name == req.body.device);
-    if (index == -1) return res.status(401).send({ valid: false, response: 'Zařízení nenalezeno' })
+
+    console.log(req.body.device, devices)
+    if (index == -1) return res.status(404).send({ valid: false, response: 'Zařízení nenalezeno' })
     const { token, url, org, bucket } = devices[index];
     const tag = devices[index].tag||'devID';
     const tagvalue = devices[index].tagvalue||'22';
@@ -85,6 +87,7 @@ router.post('/', limiter, async (req, res, next) => {
           res.status(400).send('Invalid token');
           return;
         }
+        console.log(req.get("origin"))
         if(req.get("origin") == 'https://vizualizacni-portal.noxyyk.com') {
         res.status(200).send({
           valid: true,
